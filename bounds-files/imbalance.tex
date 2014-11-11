@@ -1,0 +1,73 @@
+A better understanding of the behavior of cover trees can be acheived partially
+by introducing a measure of tree imbalance.  Numerous measures of tree imbalance
+have already been established, but we aim to capture a different measure of
+imbalance that utilizes the leveled structure of the cover tree.
+
+We already know each node in a cover tree is indexed with an integer level (or
+scale).  In the explicit representation of the cover tree, each non-leaf node
+has children at a lower level.  But these children need not be strictly one
+level lower; see Figure \ref{fig:imbalance}.  In Figure
+\ref{fig:imbalance-good}, each cover tree node has children that are strictly
+one level lower; we will refer to this as a {\em perfectly balanced cover tree}.
+Figure \ref{fig:imbalance-bad}, on the other hand, has many children with far
+lower levels than their parents.  We will refer to this as an {\em imbalanced
+cover tree}.
+
+\begin{figure}
+\caption{Balanced and imbalanced cover trees.}
+\label{fig:imbalance}
+\end{figure}
+
+An imbalanced cover tree can---and often does---happen in practice.  Consider a
+dataset with a single outlier which is very far away from all of the other
+points.  Figure \ref{fig:outlier} shows what happens in this situation: the root
+node has two children; one of these children has only the outlier as a
+descendant, and the other child has the rest of the points in the dataset as a
+descendant.  In fact, it is easy to find datasets with multiple outliers which
+give rise to a chain-like structure at the top of the tree: see Figure
+\ref{fig:outliers} for an illustration\footnote{As a side note, this behavior is
+not limited to cover trees, and can happen to mean-split $kd$-trees too,
+especially in higher dimensions.}.
+
+\begin{figure}
+\caption{Single-outlier cover tree.}
+\label{fig:outlier}
+\end{figure}
+
+\begin{figure}
+\caption{Multiple-outlier cover tree.}
+\label{fig:outliers}
+\end{figure}
+
+A tree that has this chain-like structure all the way down is going to perform
+abysmally; motivated by this observation, we define a measure of tree imbalance.
+
+\begin{defn}
+The {\it cover node imbalance} $i(\mathscr{N}_i)$ for a cover tree node
+$\mathscr{N}_i$ with scale $s_i$ in the cover tree $\mathscr{T}$ is defined as
+the cumulative number of missing levels between the node and its children.  If
+the node has a leaf child (which has level $-\infty$), then number of missing
+levels is defined as the difference between $s_i$ and $s_{\min} - 1$ where
+$s_{\min}$ is the smallest scale of a non-leaf node in $\mathscr{T}$.
+Explicitly written, this calculation is
+
+\begin{equation}
+i(\mathscr{N}_i) = \left( \sum_{\mathscr{N}_c \in \mathscr{C}(\mathscr{N}_i),
+\mathscr{C}(\mathscr{N}_c) \ne \emptyset} s_i - s_c - 1 \right) + \left(
+\sum_{\mathscr{N}_c \in \mathscr{C}(\mathscr{N}_i), \mathscr{C}(\mathscr{N}_c) =
+\emptyset} \max(s_i - s_{\min} - 1, 0) \right).
+\end{equation}
+\end{defn}
+
+Given this definition for a single node, then, we can generalize to the full
+tree.
+
+\begin{defn}
+The {\it cover tree imbalance} $b(\mathscr{T})$ for a cover tree $\mathscr{T}$
+is defined as the cumulative number of missing levels in the tree.  This can be
+expressed as a function of cover node imbalances easily:
+
+\begin{equation}
+b(\mathscr{T}) = \sum_{\mathscr{N}_i \in \mathscr{T}} i(\mathscr{N}_i).
+\end{equation}
+\end{defn}
