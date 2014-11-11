@@ -1,0 +1,378 @@
+Ram et.~al. present a clever technique for bounding the
+running time of approximate kernel density estimation based on the properties of
+the kernel, when the kernel is shift-invariant and satisfies a few assumptions
+\cite{ram2009}.  We will restate these assumptions and provide an adapted proof
+using Theorem \ref{thm:ct-runtime}, which gives a tighter bound.
+
+Approximate kernel density estimation is a common application of dual-tree
+algorithms \cite{gray2003nonparametric, nbody}.  Given a query set $S_q$, a
+reference set $S_r$ of size $N$, and a kernel function $\mathcal{K}(\cdot,
+\cdot)$, the goal is to calculate, for each $p_q \in S_q$, a density estimate
+$f(p_q)$ such that $| f(p_q) - f^*(p_q) | < N \epsilon$ for some
+parameter $\epsilon$ and
+
+%\vspace*{-0.5em}
+\begin{equation}
+f^*(p_q) = \sum_{p_r \in S_r} \mathcal{K}(p_q, p_r).
+\end{equation}
+%\vspace*{-0.5em}
+
+This is related to the well-studied problem of kernel summation, which can
+also be solved with dual-tree algorithms \cite{lee2006faster, lee2008fast}.  In
+both of those problems, simple geometric observations can be made to accelerate
+computation: when $\mathcal{K}(\cdot, \cdot)$ is shift-invariant, faraway points
+have very small kernel evaluations.  Thus, trees can be built on $S_q$ and
+$S_r$, and node combinations can be pruned when the nodes are far apart while
+still obeying the error bound $N \epsilon$.\footnote{Here we consider
+only absolute-value approximation.  Our methods can be easily adapted to other
+schemes, such as relative-value approximation.  \cite{ram2009} considers
+relative-value approximation in far more detail.}
+
+A tree-independent algorithm for solving approximate kernel density estimation
+is given as a \texttt{BaseCase()} function in Algorithm \ref{alg:kde_base_case}
+and a \texttt{Score()} function in Algorithm \ref{alg:kde_score} (a correctness
+proof can be found in \cite{curtin2013tree}).  This function
+assumes a shift-invariant kernel $\mathcal{K}(p_i, p_j) = \mathcal{K}(d( p_i,
+p_j ))$.  The list $f_p$ holds partial kernel density estimates for
+each query point, and the list $f_n$ holds partial kernel density
+estimates for each query node.  At the beginning of the dual-tree traversal, the
+lists $f_p$ and $f_n$, which are both of size $O(N)$, are each
+initialized to 0.
+
+After the dual-tree traversal, the actual kernel density estimates $f$
+must be extracted.  This can be done by traversing the query tree and
+calculating $f(p_q) = f_p(p_q) + \sum_{\mathscr{N}_i \in T}
+f_n(\mathscr{N}_i)$, where $T$ is the set of nodes in $\mathscr{T}_q$ that
+have $p_q$ as a descendant.  %It is possible to implement this in a way where
+Each query node needs to be visited only once.
+
+Note that this version is far simpler than the algorithm proposed in,
+e.g., \cite{gray2003nonparametric}; however, it is sufficient for our runtime
+analysis.  Real-world implementations, such as the one found in \textbf{mlpack}
+\cite{mlpack2013}, tend to be far more complex.
+
+\begin{algorithm}[tb]
+  \begin{algorithmic}[1]
+    \STATE {\bfseries Input:} query point $p_q$, reference point $p_r$, list of
+  kernel point estimates $\hat{f}_p$
+    \STATE {\bfseries Output:} kernel value $\mathcal{K}(p_q, p_r)$
+
+    \medskip
+    \STATE $f_p(p_q) \gets f_p(p_q) + \mathcal{K}(p_q, p_r)$
+    \RETURN $\mathcal{K}(p_q, p_r)$
+  \end{algorithmic}
+
+  \caption{Approximate kernel density estimation \texttt{BaseCase()}}
+  \label{alg:kde_base_case}
+\end{algorithm}
+
+\begin{algorithm}[tb]
+  \begin{algorithmic}[1]
+    \STATE {\bfseries Input:} query node $\mathscr{N}_q$, reference node
+$\mathscr{N}_r$, list of node kernel estimates $\hat{f}_n$
+    \STATE {\bfseries Output:} a score for the node combination $(\mathscr{N}_q,
+\mathscr{N}_r)$, or $\infty$ if the combination should be pruned
+
+    \medskip
+
+    \IF{$\mathcal{K}(d_{\min}(\mathscr{N}_q, \mathscr{N}_r)) -
+\mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r)) < \epsilon$}
+      \STATE $f_n(\mathscr{N}_q) \gets f_n(\mathscr{N}_q) + |
+\mathscr{D}^p(\mathscr{N}_r) | \left(\mathcal{K}(d_{\min}(\mathscr{N}_q,
+\mathscr{N}_r)) + \mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r))\right) /\;2$
+      \RETURN $\infty$
+    \ENDIF
+
+    \RETURN $\mathcal{K}(d_{\min}(\mathscr{N}_q, \mathscr{N}_r)) -
+\mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r))$
+  \end{algorithmic}
+
+  \caption{Approximate kernel density estimation \texttt{Score()}}
+  \label{alg:kde_score}
+\end{algorithm}
+
+\begin{thm}
+Assume that $\mathcal{K}(p_i, p_j) = \mathcal{K}\left(d(p_i, p_j)\right)$ is a shift-invariant kernel with some bandwidth $h > 0$, where $\mathcal{K}(x)$ is smooth, non-negative, monotonically decreasing, and concave for $x \in [0, h]$ and convex for $x \in (h, \infty)$. Then, given a query set $S_q$ and a reference set $S_r$ with
+expansion constant $c_r$, an inverse degree of bichromaticity $\nu$ and using the
+approximate kernel density estimation \texttt{BaseCase()} and \texttt{Score()}
+as given in Algorithms \ref{alg:kde_base_case} and \ref{alg:kde_score},
+respectively, with the traversal given in Algorithm \ref{alg:cover-tree-dual},
+the running time of approximate kernel density estimation for some $\epsilon$
+error parameter is bounded by
+%\begin{equation}
+$O(c_r^{8 + \log_2 \zeta} \nu N)$
+%\end{equation}
+where $\zeta = -\mathcal{K}'(h) \mathcal{K}^{-1}(\epsilon) \epsilon^{-1}$.
+
+\label{thm:kde-bound}
+\end{thm}
+
+\begin{proof}
+It is clear that \texttt{BaseCase()} and \texttt{Score()} both take $O(1)$ time,
+so Theorem \ref{thm:ct-runtime} implies the total runtime of the dual-tree
+algorithm is bounded by $O(c_r^4 \nu |R^*| N)$.  Thus, we will bound $|R^*|$
+using techniques related to those used in \cite{ram2009}.  The bounding of
+$|R^*|$ is split into two sections: first, show that when the scale $s_r^{\max}$
+is small enough, $R^*$ is empty.  Second, bound $R^*$ when $s_r^{\max}$ is larger.
+
+The \texttt{Score()} function is such that any node in $|R^*|$ for a given query
+node $\mathscr{N}_q$ obeys
+
+\vspace*{-0.8em}
+\begin{equation}
+\mathcal{K}(d_{\min}(\mathscr{N}_q, \mathscr{N}_r)) -
+\mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r))
+\ge \epsilon.
+\end{equation}
+
+Thus, we are interested in the maximum possible value $\mathcal{K}(a) -
+\mathcal{K}(b)$ for a fixed value of $b - a > 0$.  Due to the nature of
+$\mathcal{K}(\cdot)$, the maximum value of $\mathcal{K}'(\cdot)$ is
+$\mathcal{K}'(h)$; therefore, the maximum possible value of $\mathcal{K}(a) -
+\mathcal{K}(b)$ is when the interval $[a, b]$ is centered on $h$.  Further,
+$\mathcal{K}(a) - \mathcal{K}(b) \le \epsilon$ when $(b - a) \le (-\epsilon /
+\mathcal{K}'(h))$.  Note that
+
+\vspace*{-1.5em}
+\begin{equation}
+d_{\max}(\mathscr{N}_q, \mathscr{N}_r) - d_{\min}(\mathscr{N}_q, \mathscr{N}_r)
+= d(p_q, p_r) + 2^{s_r^{\max} + 1} - d(p_q, p_r) + 2^{s_r^{\max} + 1} = 2^{s_r^{\max} + 2}.
+\end{equation}
+\vspace*{-0.8em}
+
+Therefore, $|R^*| = \emptyset$ when
+%\begin{eqnarray}
+$2^{s_r^{\max} + 2} \le -\epsilon / \mathcal{K}'(h)$, or when
+%\begin{equation}
+$s_r^{\max} \le \log_2( -\epsilon / \mathcal{K}'(h) ) - 2$.
+%\end{equation}
+%
+Consider, then, the case when $s_r^{\max} > \log_2( -\epsilon /
+\mathcal{K}'(h) ) - 2$.  It is trivial to see that for any $\mathscr{N}_r \in
+R^*$, $\mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r)) > \epsilon$;
+alternately stated, this means that
+%\begin{equation}
+$d(p_q, p_r) < \mathcal{K}^{-1}(\epsilon) + 2^{s_r^{\max} + 1}$.
+%\end{equation}
+Therefore, bounding the number of points in the set
+%\begin{equation}
+$B_{S_r}(p_q, \mathcal{K}^{-1}(\epsilon) + 2^{s_r^{\max} + 1}) \cap
+C_{s_r^{\max}}$
+%\end{equation}
+is sufficient to bound $|R^*|$.  For notational convenience, define $\omega = \mathcal{K}^{-1}(\epsilon) /
+2^{s_r^{\max} + 1} + 1$.  Using Lemma \ref{lem:packing} with $\delta =
+2^{s_r^{\max}}$ and $\rho = 2 \omega$ gives $|R^*| = c_r^{3 + \log_2 \omega}$.
+
+%The procedure to bound this will be the same as
+%for the nearest neighbor search proof---a packing bound.  See that
+
+%\vspace*{-1.0em}
+%\begin{eqnarray}
+%B_{S_r}\left(p_q, \mathcal{K}^{-1}(\epsilon) + 2^{s_r^{\max} + 1}\right) &\subseteq&
+%B_{S_r}\left(p_r, 2 (\mathcal{K}^{-1}(\epsilon) + 2^{s_r^{\max} + 1})\right) \\
+% &=& B_{S_r}\left(p_r, 2^{s_r^{\max} + 2} \left(
+%\frac{\mathcal{K}^{-1}(\epsilon)}{2^{s_r^{\max} + 1}} + 1\right)\right).
+%\label{eqn:kde_ball}
+%\end{eqnarray}
+%\vspace*{-0.5em}
+
+%For notational convenience, define $\omega = \mathcal{K}^{-1}(\epsilon) /
+%2^{s_r^{\max} + 1} + 1$.  Applying the definition of expansion constant,
+
+%\begin{equation}
+%\left| B_{S_r}\left(p_r, 2^{s_r^{\max} + 2} \omega \right) \right|
+%\le c_r^{3 + \log_2 \omega} \left|
+%B_{S_r}\left(p_r, 2^{s_r^{\max} - 1}\right) \right|.
+%\end{equation}
+
+%The total number of nodes in $R^*$ is bounded by the number of disjoint balls of
+%size $2^{s_r^{\max} - 1}$ that can be packed into the ball in Equation
+%\ref{eqn:kde_ball}.  In the worst case, this packing is perfect, and
+
+%\begin{equation}
+%\left| B_{S_r}(p_q, \mathcal{K}^{-1}(\epsilon) + 2^{s_r^{\max} + 1}) \cap
+%C_{s_r^{\max}} \right| \le \frac{\left| B_{S_r}\left(p_r, 2^{s_r^{\max} + 2}
+%\omega \right) \right|}{\left| B_{S_r}\left(p_r, 2^{s_r^{\max} - 1}\right) \right|} \le c_r^{3
+%+ \log_2 \omega}.
+%\end{equation}
+
+The value $\omega$ is maximized when $s_r^{\max}$ is minimized.  Using the lower
+bound on $s_r^{\max}$, $\omega$ is bounded as
+%
+%\begin{equation}
+%$\omega = \frac{\mathcal{K}^{-1}(\epsilon)}{2^{s_r^{\max} + 1} + 1} \le
+%\frac{\mathcal{K}^{-1}(\epsilon)}{2^{s_r^{\max} + 1}} = -2 \mathcal{K}'(h)
+%\mathcal{K}^{-1}(\epsilon) \epsilon^{-1}.
+%\end{equation}
+$\omega = -2 \mathcal{K}'(h) \mathcal{K}^{-1}(\epsilon) \epsilon^{-1}$.
+%
+Finally, with $\zeta = -\mathcal{K}'(h) \mathcal{K}^{-1}(\epsilon)
+\epsilon^{-1}$, we are able to conclude that $|R^*| \le c_r^{3 + \log_2 (2
+\zeta)} = c_r^{4 + \log_2 \zeta}$.  Therefore, the entire dual-tree traversal
+takes $O(c_r^{8 + \log_2 \zeta} \nu N)$ time.
+
+The postprocessing step to extract the estimates $f(\cdot)$ requires one
+traversal of the tree $\mathscr{T}_r$; the tree has $O(N)$ nodes, so this takes
+only $O(N)$ time.
+%However, there is one more component to consider: the extraction of the
+%estimates $f(p_q)$ for each $p_q$.  As discussed earlier, this process can be
+%completed in one breadth-first or depth-first traversal of the query tree
+%$\mathscr{T}_q$; this takes $O(N)$ time because there are $O(N)$ nodes.%: at
+%each node $\mathscr{N}_q$, distribute the partial kernel density estimate to
+%each of its children; for each $\mathscr{N}_c \in \mathscr{C}(\mathscr{N}_q)$,
+%set
+%\begin{equation}
+%$f_n(\mathscr{N}_c) \gets f_n(\mathscr{N}_c) +
+%f_n(\mathscr{N}_q).$
+%\end{equation}
+%Continue this process until the leaf nodes are reached; then, for each leaf node
+%$\mathscr{N}_l$ which holds point $p_l$, take
+%\begin{equation}
+%$f(p_l) \gets f_p(p_l) + f_n(\mathscr{N}_l)$
+%\end{equation}
+%and this will produce the correct estimates $f(\cdot)$.  Because
+%there are $O(N)$ nodes and each node has up to $c^4$ children, this process can
+%take no longer than $O(c^4 N)$ time.
+This is less than the runtime of the
+dual-tree traversal, so the runtime of the dual-tree traversal dominates the
+algorithm's runtime, and the theorem holds.
+\end{proof}
+
+
+%Define the inverse of the kernel function $\mathcal{K}(\cdot)$ as
+%$\mathcal{K}^{-1}(\cdot)$, and define the set $P^*$ as the points held in each
+%node in $R^*$. The set $P^*$ for a query node $\mathscr{N}_q$ with
+%point $p_q$ can be split into three disjoint sets:
+
+%\begin{eqnarray}
+%P^*_l &=& \{ p_r \in P^* : d(p_q, p_r) < h - 2^{s_r^{\max} + 1} \}, \\
+%P^*_m &=& \{ p_r \in P^* : h - 2^{s_r^{\max} + 1} \le d(p_q, p_r) \le h +
+%2^{s_r^{\max} + 1} \}, \\
+%P^*_r &=& \{ p_r \in P^* : d(p_q, p_r) > h + 2^{s_r^{\max} + 1} \}.
+%\end{eqnarray}
+
+%First, consider the set $P^*_l$.  For any $p_r \in P^*_l$, we can use the
+%concavity of $\mathcal{K}(\cdot)$ in the region $[0, h]$ to see that
+
+%\begin{eqnarray}
+%\epsilon &<& \mathcal{K}(\max(0, (d(p_q, p_r) - 2^{s_r^{\max} + 1}))) -
+%\mathcal{K}(d(p_q, p_r) + 2^{s_r^{\max} + 1}) \\
+% &\le& \mathcal{K}(d(p_q, p_r) + 2^{s_r^{\max} + 1}) - 2^{s_r^{\max} + 2}
+%\mathcal{K}'(d(p_q, p_r) + 2^{s_r^{\max} + 1}) - \mathcal{K}(d(p_q, p_r) +
+%2^{s_r^{\max} + 1}) \\
+% &=& -2^{s_r^{\max} + 2} \mathcal{K}'(d(p_q, p_r) + 2^{s_r^{\max} + 1}).
+%\end{eqnarray}
+
+%Denoting the inverse function of $\mathcal{K}'(\cdot)$ as
+%$\mathcal{K}'^{-1}_{[a, b]}(\cdot)$ where the output value is restricted to be
+%in the range $[a, b]$, we can place a lower bound on $d(p_q, p_r)$:
+
+%\begin{equation}
+%d(p_q, p_r) > \mathcal{K}'^{-1}_{[0, h]}\left( \frac{-\epsilon}{2^{s_r^{\max} +
+%2}} \right) - 2^{s_r^{\max} + 1}.
+%\end{equation}
+
+%Now, consider the set $P^*_u$.  We can make a similar argument using the
+%convexity of $\mathcal{K}(\cdot)$ in the region $[h, \infty]$ to see that
+
+%\begin{eqnarray}
+%\epsilon &<& \mathcal{K}(d(p_r, p_q) - 2^{s_r^{\max} + 1}) -
+%\mathcal{K}(d(p_q, p_r) + 2^{s_r^{\max} + 1}) \\
+% &\le& \mathcal{K}(d(p_q, p_r) - 2^{s_r^{\max} + 1}) - \left(\mathcal{K}(d(p_q,
+%p_r) - 2^{s_r^{\max} + 1}) + 2^{s_r^{\max} + 2} \mathcal{K}'(d(p_q, p_r) -
+%2^{s_r^{\max} + 1}) \\
+% &=& -2^{s_r^{\max} + 2} \mathcal{K}'(d(p_q, p_r) - 2^{s_r^{\max} + 1}).
+%\end{eqnarray}
+
+%This leads to an upper bound on $d(p_q, p_r)$:
+
+%\begin{equation}
+%d(p_q, p_r) < \mathcal{K}'^{-1}_{[h, \infty]}\left(
+%\frac{-\epsilon}{2^{s_r^{\max} + 2}}\right) + 2^{s_r^{\max} + 1}.
+%\end{equation}
+
+%Lastly, we consider the set $P^*_m$.  Here, we have that
+
+%\begin{eqnarray}
+%\epsilon &<& \mathcal{K}(d(p_q, p_r) - 2^{s_r^{\max} + 1}) - \mathcal{K}(d(p_q,
+%p_r) + 2^{s_r^{\max} + 1}) \\
+% &\le& -2^{s_r^{\max} + 1} \mathcal{K}'(h).
+%\end{eqnarray}
+
+%To complete the analysis, we must split into two cases for $s_r^{\max}$.  When
+%$s_r^{\max} < \lfloor \log_2 \left
+
+%In the monochromatic case, $\nu = 1$ and the bound is easier to
+%understand.
+The dependence on $\epsilon$ (through $\zeta$) is expected: as $\epsilon \to 0$
+and the search becomes exact, $\zeta$ diverges both because $\epsilon^{-1}$
+diverges and also because $\mathcal{K}^{-1}(\epsilon)$ diverges, and the runtime
+goes to the worst-case $O(N^2)$; exact kernel density estimation means no nodes
+can be pruned at all.
+
+%As we will show, many kernels have a property such that $-\mathcal{K}'(h)
+%\mathcal{K}^{-1}(\epsilon)$ has zero dependence on the bandwidth of the kernel.
+%Although this result may seem counterintuitive, the only quantities of the
+%kernel that affect the runtime are the maximum derivative (which is at the
+%inflection point) and the radius of the ball for which $\mathcal{K}(\cdot) \ge
+%\epsilon$.
+
+%To see an example of the lack of dependence on kernel bandwidth, consider the
+%common Gaussian kernel:
+
+For the Gaussian kernel with bandwidth $\sigma$ defined by $\mathcal{K}_g(d) =
+\exp(-d^2 / (2 \sigma^2))$, $\zeta$ does not
+depend on the kernel bandwidth; only
+the approximation parameter $\epsilon$.  For this kernel, $h = \sigma$ and
+therefore $-\mathcal{K}'_g(h) = \sigma^{-1} e^{-1 / 2}$.  Additionally,
+$\mathcal{K}_g^{-1}(\epsilon) = \sigma \sqrt{2 \ln (1 / \epsilon)}$.  This means
+that for the Gaussian kernel, $\zeta = \sqrt{(-2 \ln \epsilon) / (e
+\epsilon^2)}$.  Again, as $\epsilon \to 0$, the
+runtime diverges; however, note that there is no dependence on the kernel
+bandwidth $\sigma$.  For a reasonably chosen $\epsilon = 0.05$, the runtime is
+approximately $O(c_r^{8.89} \nu N)$; for $\epsilon = 0.01$, the runtime is
+approximately $O(c_r^{11.52} \nu N)$.  For very small $\epsilon = 0.00001$, the
+runtime is approximately $O(c_r^{22.15} \nu N)$.
+
+%Next, consider this sigmoidal kernel: $\mathcal{K}_s(d) = (1 + \exp(\alpha (d -
+%\beta)))^{-1}$; note that this is not the more common `sigmoid kernel', which is
+%actually a hyperbolic tangent.  Instead, this kernel resembles a step function.
+%Some elementary calculus gives an inflection point $h = \beta$, $\mathcal{K}'(h)
+%= -\alpha / 4$, and $\mathcal{K}^{-1}(\epsilon) = \ln(\epsilon^{-1} - 1) /
+%\alpha + \beta$.  This gives the following expression for $\zeta$:
+
+%\vspace*{-0.8em}
+%\begin{equation}
+%\zeta = (1/4) ( \epsilon^{-1} \ln(\epsilon^{-1} - 1) +
+%(\beta \alpha) / \epsilon ).
+%\end{equation}
+%\vspace*{-0.8em}
+%
+%Now, consider the problem of range count, where the number of points in the
+%range $[0, u]$ for each query point $p_q \in S_q$ is desired.  If the sigmoidal
+%kernel is used with $\beta = u$ for approximate kernel density estimation, then
+%as $\alpha \to 0$ and $\epsilon \to 0$, the results will converge to the result
+%for exact range count.  Therefore, when $\alpha > 0$ or $\epsilon > 0$, the
+%result is approximate range count, and we can use the results of Theorem
+%\ref{thm:kde-bound} to show a runtime bound.
+%
+%Suppose, for the sake of simplicity, that $\alpha = O(\epsilon^{-1})$; then,
+%$\zeta = O(\epsilon^{-1} \log \epsilon^{-1} + \epsilon^{-2} u) = O(\epsilon^{-2}
+%u)$.  Then, the runtime of approximate range count is bounded as
+%
+%\vspace*{-1em}
+%\begin{eqnarray}
+%\begin{equation}
+%O(c_r^{8 + \log_2(\epsilon^{-2} u)} \nu N) = O(c_r^{8 + 2 \log_2(\epsilon^{-1}) +
+%\log_2(u)} \nu N)
+% = O(\epsilon^{-1} u c_r^{8 + 3 \log_2 c_r} \nu N).
+%\end{equation}
+%\end{eqnarray}
+%\vspace*{-1.5em}
+
+%Unfortunately, this bounding technique gives a bad relationship to the
+%approximation parameter $\epsilon$ (and rederivations with $\alpha \ne \epsilon$
+%suffer from the same issue).  Another drawback of this technique is that it
+%cannot account for a range $[l, h]$ with $l > 0$.  Therefore, in the next
+%section, we develop an alternate methodology for bounding the running time of
+%range search and range count.

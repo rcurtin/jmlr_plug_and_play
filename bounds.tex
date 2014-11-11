@@ -1,0 +1,289 @@
+\documentclass{article} % For LaTeX2e
+\usepackage{nips14submit_e,times}
+\usepackage{hyperref}
+\hypersetup{colorlinks,
+            urlcolor=blue,
+            citecolor=green,
+            linkcolor=red}
+\usepackage{url}
+%\documentstyle[nips13submit_09,times,art10]{article} % For LaTeX 2.09
+\usepackage{mathrsfs}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{color}
+
+\usepackage{pstricks}
+\usepackage{tikz}
+%\usepackage{subcaption}
+
+\title{Plug-and-play dual-tree algorithm runtime analysis}
+
+
+%\author{
+%David S.~Hippocampus\thanks{ Use footnote for providing further information
+%about author (webpage, alternative address)---\emph{not} for acknowledging
+%funding agencies.} \\
+%Department of Computer Science\\
+%Cranberry-Lemon University\\
+%Pittsburgh, PA 15213 \\
+%\texttt{hippo@cs.cranberry-lemon.edu} \\
+%\And
+%Coauthor \\
+%Affiliation \\
+%Address \\
+%\texttt{email} \\
+%\AND
+%Coauthor \\
+%Affiliation \\
+%Address \\
+%\texttt{email} \\
+%\And
+%Coauthor \\
+%Affiliation \\
+%Address \\
+%\texttt{email} \\
+%\And
+%Coauthor \\
+%Affiliation \\
+%Address \\
+%\texttt{email} \\
+%(if needed)\\
+%}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+% Misc. math commands.  I couldn't figure out how to make the Unicode cat
+% character, sadly.
+\newcommand{\argmax}{\operatornamewithlimits{argmax}}
+\newcommand{\var}{\operatorname{var}}
+
+\newcommand{\K}{\mathcal{K}}
+\newcommand{\hilbert}{\mathcal{H}}
+\newcommand{\Real}{\mathcal{R}}
+
+\renewcommand{\algorithmicforall}{\textbf{for each}}
+\renewcommand{\algorithmicrepeat}{\textbf{do}}
+\renewcommand{\algorithmicuntil}{\textbf{while}}
+
+\newtheorem{defn}{Definition}
+\newtheorem{thm}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{cor}{Corollary}
+
+%\nipsfinalcopy % Uncomment for camera-ready version
+
+\begin{document}
+
+
+\maketitle
+
+\vspace*{-0.8em}
+\begin{abstract}
+%A large collection of machine learning algorithms contain subproblems that can
+%be efficiently solved with trees.  In the situation where a dual-tree algorithm
+%with cover trees is used to solve a problem, rigorous worst-case runtime bounds
+%can often be shown.  A worst-case runtime bound is proven for all cover tree
+%dual-tree algorithms; this bound can be employed to give useful runtime bounds
+%for individual problems.  We show a new, tighter bound of $O(c^9 \nu N)$ for
+%all-nearest-neighbor search and also provide linear runtime bounds for
+%approximate kernel density estimation and exact range count/search under some
+%mild assumptions.  These are the first linear runtime bounds we are aware of for
+%range count/search.
+Numerous machine learning algorithms contain pairwise statistical
+problems in their core. Often, tree structures are used
+to solve these problems efficiently. Dual-tree
+algorithms using cover trees have
+rigorous worst-case runtime guarantees for some of these problems. In this paper, we present a {\em
+problem-independent} runtime guarantee for {\em any} dual-tree
+algorithm using the cover tree, separating out the problem-dependent and
+the problem-independent elements. This allows us to just plug in
+bounds for the problem-dependent elements to get runtime guarantees
+for dual-tree algorithms for any pairwise statistical problem. We
+demonstrate this plug-and-play procedure for nearest-neighbor search
+and approximate kernel density estimation to get improved runtime
+guarantees.  Under some assumptions, we also present the first linear runtime
+guarantee for dual-tree based range search.
+\end{abstract}
+
+\vspace*{-1em}
+
+%\section{Dual-tree algorithms for pairwise statistical problems (Introduction)}
+\section{Dual-tree algorithms}
+\vspace*{-0.5em}
+
+%\begin{itemize}
+%\item What are pairwise statistical problems? Examples?
+%
+%A surprising number of machine learning algorithms have bottlenecks which, if
+%implemented naively, depend on the calculation of potentially large numbers of
+%distances.  A common example is nearest neighbor search: if search
+%for the nearest neighbor of a single query point in a reference set of size $N$,
+%simple linear scan costs $O(N)$ time.  For many decades, spatial data structures
+%have been employed to accelerate this type of computation, beginning with the
+%quad tree \cite{finkel1974quad}; building trees on the reference set often
+%results in expected runtimes of $O(\log N)$ per query point.
+%
+A surprising number of machine learning algorithms have computational
+bottlenecks that can be expressed as pairwise statistical problems.
+All-nearest-neighbor search is one such problem, naively requiring $O(N)$ time
+to answer in single query in a reference set of size $N$; answering $O(N)$
+queries subsequently requiring the prohibitive $O(N^2)$ time. Kernel density
+estimation is also a pairwise statistical problem, naively requiring $O(N^2)$
+time to answer $O(N)$ queries. The reference set is typically indexed with
+spatial data structures to accelerate this type of computation
+\cite{finkel1974quad, langford2006}; these result in $O(\log N)$ runtime per
+query under favorable conditions.
+
+%\item What are dual-tree algorithms? Brief explanation.
+%
+%More recently, Gray and Moore \cite{nbody} observed that problems often have
+%large query {\em sets}, not just a few query points, and introduced dual-tree
+%algorithms.  One example is all-nearest-neighbor search: find the nearest
+%neighbor of every point in the reference set.  Simple implementations scale
+%poorly, but dual-tree algorithms can obtain orders-of-magnitude speedup for a
+%multitude of problems.
+%
+%Following this, numerous dual-tree algorithms have been developed to solve a
+%wide variety of problems; these include kernel density estimation
+%\cite{gray2003nonparametric}, fast max-kernel search \cite{curtin2013fast},
+%approximate nearest neighbor search \cite{ram2009rank}, mean shift
+%\cite{wang2007fast}, minimum spanning tree calculation
+%\cite{march2010euclidean}, $n$-point correlation function estimation
+%\cite{march2012fast}, kernel summation \cite{lee2006faster}, particle
+%smoothing \cite{klaas2006fast}, variational inference \cite{amizadeh2012variational} and range search \cite{nbody}.
+%
+Gray and Moore \cite{nbody} generalized the fast-multipole-method from
+computational physics to obtain {\em dual-tree algorithms}. These are extremely
+useful when there are large query {\em sets}, not just a few query points.
+%\item What (pairwise statistical) problems have they been applied to?
+%
+Following this, numerous dual-tree algorithms have been developed to solve a
+wide variety of problems; these include kernel density estimation
+\cite{gray2003nonparametric}, fast max-kernel search \cite{curtin2013fast},
+approximate nearest neighbor search \cite{ram2009rank}, mean shift
+\cite{wang2007fast}, minimum spanning tree calculation
+\cite{march2010euclidean}, $n$-point correlation function estimation
+\cite{march2012fast}, kernel summation \cite{lee2006faster}, particle
+smoothing \cite{klaas2006fast}, variational inference \cite{amizadeh2012variational} and range search \cite{nbody}.
+%
+%\item Existing analyses of dual-tree algorithms
+Some of these algorithms are derived using the cover tree
+\cite{langford2006}, a data structure with beneficial theoretical qualities.
+Dual-tree all nearest-neighbor search and approximate kernel density estimation with cover trees have $O(N)$ runtime guarantees for $O(N)$ queries \cite{ram2009}; minimum spanning tree calculation scales as $O(N \log N)$ \cite{march2010euclidean}. Other problems have similar worst-case guarantees \cite{curtin2014dual, march2013multi}.
+% Is there a better reference for the npcf runtime bound?
+
+%\item General tree/problem independent dual-tree algorithms (maybe)
+%\item What is lacking -- general dual-tree analysis (since the algorithms are so similar in structure)
+%A recent framework for understanding and unifying dual-tree algorithms
+%observes that all dual-tree algorithms are particularly similar, and generalizes
+%them \cite{curtin2013tree}.  A
+%nice benefit of this viewpoint is that it allows quick and easy development of
+%new dual-tree algorithms.  In this paper, we make the same observation about
+%runtime proofs for cover tree dual-tree algorithms, and show that
+%runtime analysis of generalized cover tree dual-tree algorithms is
+%possible.  Thus, the contributions of this paper are:
+%
+%\vspace*{-0.5em}
+%\begin{itemize}
+%  \item A general runtime bound for dual-tree algorithms that use the cover
+%tree.
+%
+%  \item \mbox{A nearest neighbor search runtime bound,
+%slightly improving on existing linear-time results.}
+%
+%  \item An approximate kernel density estimation runtime bound,
+%improving on existing linear-time results.
+%
+%  \item Novel runtime analysis of dual-tree range count and range
+%search.
+%\end{itemize}
+Curtin et.~al. \cite{curtin2013tree} observe that all dual-tree
+algorithms are similar and propose a unified framework which allows the
+development of dual-tree algorithms in a problem independent (and tree
+independent) manner. In this paper, we make the same observation about runtime
+proofs for cover tree dual-tree algorithms, and show that runtime analysis
+of a generalized dual-tree algorithm is possible. The specific contributions of
+this paper are:
+\vspace*{-0.3em}
+\begin{itemize}
+  \item A general runtime bound for dual-tree algorithms that use the cover
+tree.
+  \item An improved linear runtime guarantee for all nearest-neighbor search.
+  \item An improved linear runtime guarantee for approximate kernel density
+estimation.
+  \item The first linear runtime guarantee for dual-tree range count and range
+search.
+\end{itemize}
+
+%The following section will detail theory prerequisites, and then introduce the
+%general runtime bound.
+
+
+%\item This paper's contribution:
+%  \begin{itemize}
+%  \item Problem independent dual-tree algorithm analysis
+%  \item Examples of final problem dependent runtime bounds for NNS and KDE which match existing results (from LTAPS) -- implying nothing is lost yet for doing problem independent analysis
+%  \item Novel runtime analyses of dual-tree range count (or range search).
+%  \end{itemize}
+%\item This paper's structure (to be written last)
+%\end{itemize}
+
+\vspace*{-1em}
+\section{Preliminaries}
+\vspace*{-0.6em}
+
+\input{bounds-files/sec01-supporting-lemmas.tex}
+
+\vspace*{-0.6em}
+\section{General runtime bound}
+\vspace*{-0.4em}
+
+\input{bounds-files/general-runtime-bound.tex}
+
+\vspace*{-0.8em}
+\section{Nearest neighbor search}
+\vspace*{-0.4em}
+
+\input{bounds-files/sec02-nearest-neighbor-search.tex}
+
+\vspace*{-0.6em}
+\section{Approximate kernel density estimation}
+\vspace*{-0.6em}
+
+\input{bounds-files/sec03-approx-kde.tex}
+
+\vspace*{-0.8em}
+\section{Range Search and Range Count}
+\vspace*{-0.4em}
+
+\input{bounds-files/sec04-range-search.tex}
+
+%\section{Range Search with Aspect Ratio}
+
+%\input{bounds-files/sec05-range-search-aspect-ratio.tex}
+
+\section{Conclusion}
+
+\input{bounds-files/conclusion.tex}
+
+\bibliographystyle{plain}
+\bibliography{bounds}
+
+% Appendix doesn't have anything useful or non-straightforward.
+%\appendix
+%\input{appendix-ec}
+
+\end{document}

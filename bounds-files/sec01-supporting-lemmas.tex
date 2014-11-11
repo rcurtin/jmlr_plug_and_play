@@ -1,0 +1,198 @@
+For simplicity, the algorithms considered in this paper will be presented in a
+tree-independent context, as in \cite{curtin2013tree}, but the only type of
+tree we will consider is the cover tree \cite{langford2006}, and the only type
+of traversal we will consider is the cover tree pruning dual-tree traversal, which
+we will describe below.
+
+As we will be making heavy use of trees, we must establish notation (taken from
+\cite{curtin2013tree}).  $\mathscr{T}_i$ represents a tree; $\mathscr{N}_i$
+represents a node; $\mathscr{C}(\mathscr{N}_i)$ is the set of children of the
+node $\mathscr{N}_i$; $\mathscr{P}(\mathscr{N}_i)$ is the set of points held in
+a node; and $\mathscr{D}^p(\mathscr{N}_i)$ is the set of all descendant points
+of the node $\mathscr{N}_i$.
+
+First, we will introduce the cover tree\footnote{In our discussions, we will
+only consider the explicit cover tree, as opposed to the implicit cover tree
+\cite{langford2006}.  This has the effect of making the traversal more complex,
+but it helps simplify our proofs.  Familiarity with the implicit cover tree
+representation should not
+be required for understanding any of our work here.}.  The cover tree is a
+leveled hierarchical data structure originally proposed for the task of nearest
+neighbor search by Beygelzimer et~al.~\cite{langford2006}.  Each cover tree node
+holds one point $p_i$ and may have a number of child nodes; if the cover tree
+node has children, then one child will be the self-child, which holds the same
+point.  In addition, each level in the tree is indexed by an integer scale
+$s_i$; as the tree is descended, $s_i$ decreases.  Every descendant of a node
+$\mathscr{N}_i$ has a maximum distance of $2^{s_i + 1}$ from $p_i$.
+
+Assuming a cover tree $\mathscr{T}$ is built on a dataset $S_r$, let $C_{s_i}$
+denote the set of points held in all nodes in $\mathscr{T}$ with scale $s_i$.
+Then, the cover tree satisfies the following invariants for all scales $s_i$:
+
+\vspace*{-0.5em}
+\begin{itemize}
+
+\item {\em (Nesting)}.  $C_{s_i} \subset C_{s_i - 1}$.  This means that when a
+point $p_i \in S_r$ is held in a node at some scale $s_i$, then each smaller
+scale will also have a node containing $p_i$.
+
+\item {\em (Covering tree)}.  For every point $p_i \in C_{s_i - 1}$, there
+exists a point $p_j \in C_{s_i}$ such that $d(p_i, p_j) < 2^{s_i}$, and the node
+holding $p_j$ with scale $s_i$ is the parent node of the node holding $p_i$ with
+scale $s_i - 1$.
+
+\item {\em (Separation)}.  For all distinct points $p_i, p_j \in C_{s_i}$,
+$d(p_i, p_j) > 2^{s_i}$.
+
+\end{itemize}
+\vspace*{-0.5em}
+
+A batch construction algorithm is given in \cite{langford2006}.  In addition,
+the cover tree has a number of other useful properties and lemmas based on the
+expansion constant \cite{karger2002finding}; we restate the definition below.
+
+\begin{defn}
+\label{def:int_dim}
+Let $B_S(p, \Delta)$ be the set of points in $S$ within a closed ball of radius
+$\Delta$ around some $p \in S$ with respect to a metric $d$:
+%
+$B_S(p, \Delta) = \{ r \in S \colon d(p, r) \leq \Delta \}$.
+%
+Then, the {\bf expansion constant} of $S$ with respect to the metric $d$ is the
+smallest $c \ge 2$ such that
+
+\vspace*{-0.8em}
+\begin{equation}
+| B_S(p, 2 \Delta) | \le c | B_S(p, \Delta) |\ \forall\ p \in S,\
+\forall\ \Delta > 0.
+\end{equation}
+\vspace*{-1.4em}
+
+\end{defn}
+
+The expansion constant is used heavily in the cover tree literature.  It is
+related to a notion of instrinic dimensionality, and in many scenarios, $c$ is
+independent of the number of points in the dataset \cite{langford2006,
+karger2002finding}.
+%properties of cover trees in \cite{langford2006}.
+One result we will use is that
+the number of children of any cover tree node is $c^4$ (Lemma 4.1,
+\cite{langford2006}), where $c$ is the expansion constant of the dataset the
+cover tree is built on.
+
+%\begin{lemma}
+%\label{lem:width}
+%(Lemma 4.1, \cite{langford2006}) The number of children of any cover tree node $\mathscr{N}_i$ is bounded by
+%$c^4$, where $c$ is the expansion constant of the dataset the cover tree is
+%built on, as defined in Definition \ref{def:int_dim}.
+%\end{lemma}
+
+%\begin{lemma}
+%\label{lem:depth}
+%(Lemma 4.3, \cite{langford2006}) The maximum depth of any point $p_r$ in a cover
+%tree $\mathscr{T}_r$ is $O(c^2 \log N)$, where $N$ is the number of points in
+%the dataset that $\mathscr{T}_r$ is built on.
+%\end{lemma}
+
+Next we show the standard cover tree dual-tree pruning traversal, in a
+problem-independent form.  This is given in Algorithm \ref{alg:cover-tree-dual}.
+The algorithm is adapted from the original cover tree batch nearest neighbors
+algorithm \cite{langford2006} and implements the dual-tree recursion for the
+cover tree.  This traversal was first presented by Curtin and Ram
+\cite{curtin2014dual}.
+%
+The correctness of this
+traversal for various problem-dependent choices of the \texttt{BaseCase()} and
+the \texttt{Score()} functions has been proven \cite{curtin2013tree}.
+%  Now, we must introduce the inverse degree of bichromaticity.
+
+\begin{algorithm}[htb]
+  \begin{algorithmic}[1]
+    \STATE {\bfseries Input:} query node $\mathscr{N}_q$, set of reference nodes
+$R$ \label{alg:line:ct-dual-input}
+    \STATE {\bfseries Output:} none
+
+    \medskip
+    \STATE $s^{\max}_r \gets \max_{\mathscr{N}_r \in R} s_r$
+    \IF{$(s_q < s^{\max}_r)$ {\bf or} $(s^{\max}_r = -\infty)$}
+\label{alg:line:ct-dual-ref-recursion-start}
+      \FORALL{$\mathscr{N}_r \in R$} \label{alg:line:ct-dual-base-case-start}
+        \STATE \texttt{BaseCase($p_q$, $p_r$)}
+      \ENDFOR \label{alg:line:ct-dual-base-case-end}
+      \STATE $R_r \gets \{ \mathscr{N}_r \in R : s_r = s^{\max}_r \}$
+\label{alg:line:ct-dual-ref-set}
+      \STATE $R_{r - 1} \gets \{ \mathscr{C}(\mathscr{N}_r) : \mathscr{N}_r \in
+R_r \} \cup (R \setminus R_r)$ \label{alg:line:ct-dual-ref-children}
+      \STATE $R'_{r - 1} \gets \{ \mathscr{N}_r \in R_{r - 1} :
+\texttt{Score(}\mathscr{N}_q\texttt{,} \mathscr{N}_r\texttt{)} \ne \infty \}$
+\label{alg:line:ct-dual-ref-score}
+      \STATE recurse with $\mathscr{N}_q$ and $R'_{r - 1}$
+\label{alg:line:ct-dual-ref-recursion-end}
+    \ELSE \label{alg:line:ct-dual-query-recursion-start}
+      \FORALL{$\mathscr{N}_{qc} \in \mathscr{C}(\mathscr{N}_q)$}
+        \STATE $R' \gets \{ \mathscr{N}_r \in R :
+\texttt{Score(}\mathscr{N}_q\texttt{,} \mathscr{N}_r\texttt{)} \ne \infty \}$
+\label{alg:line:ct-dual-query-pruning}
+        \STATE recurse with $\mathscr{N}_{qc}$ and $R'$
+\label{alg:line:ct-dual-query-recursion}
+      \ENDFOR \label{alg:line:ct-dual-query-recursion-end}
+    \ENDIF
+  \end{algorithmic}
+  \caption{The standard pruning dual-tree traversal for cover trees.}
+  \label{alg:cover-tree-dual}
+\end{algorithm}
+
+\begin{defn}
+\label{def:bichromaticity}
+Let $\mathscr{T}_q$ and $\mathscr{T}_r$ be two cover trees built on query set
+$S_q$ and reference set $S_r$, respectively.  Now consider a pruning dual-tree
+traversal (such as Algorithm \ref{alg:cover-tree-dual}) with the property that
+the scales of nodes in $\mathscr{T}_q$ and $\mathscr{T}_r$ are kept as close as
+possible---that is, the tree with the larger scale is always descended.  Then,
+the {\bf inverse degree of bichromaticity} $\nu$ of the tree pair
+$(\mathscr{T}_q, \mathscr{T}_r)$ is the maximum number of recursions in
+$\mathscr{T}_r$ following a recursion in $\mathscr{T}_q$ before another
+recursion in $\mathscr{T}_q$ or the termination of the algorithm (whichever
+happens first).
+
+This quantity is related to the {\bf degree of bichromaticity} $\kappa$
+\cite{ram2009}, which is the maximum number of recursions in $\mathscr{T}_q$
+between any two recursions in $\mathscr{T}_r$.
+\end{defn}
+
+Although $\kappa$ and $\nu$ can be difficult to bound, it is reasonable to
+%monochromatic case where $S_q = S_r$, the trees $\mathscr{T}_q$ and
+%$\mathscr{T}_r$ are identical, so $\kappa = \nu = 1$.  It is reasonable to
+say that $\kappa \sim \nu \sim O(1)$ for datasets with roughly similar
+distributions of pairwise distances.
+
+\begin{lemma}
+Consider a dataset $S$ with expansion constant $c$ and a subset $C \subseteq S$
+such that every point in $C$ is separated by $\delta$.  Then, given any query
+point $p \not\in S$ and some radius $\rho \delta$,
+
+\vspace*{-0.7em}
+\begin{equation}
+| B_S(p, \rho \delta) \cap C | \le c^{2 + \log_2 \rho}.
+\end{equation}
+\vspace*{-1.1em}
+\label{lem:packing}
+\end{lemma}
+
+\vspace*{-1em}
+\begin{proof}
+This is based on the packing argument from Lemma 4.1 in \cite{langford2006}.
+Observe that $B_S(p, \rho \delta) \subseteq B_S(p_i, 2 \rho \delta)$ for any
+$p_i \in S$, and that $| B_S(p, 2 \rho \delta) | = c^{2 + \log_2 \rho} |
+B_S(p, \delta / 2) |$.  Because each point in $C$ is separated by $\delta$, the
+number of points in $B_S(p, \rho \delta) \cap C$ is
+bounded by the number of disjoint balls of radius $\delta / 2$ that can be
+packed into $B_S(p, \rho \delta)$.  In the worst case, this packing is
+perfect, and
+
+\vspace*{-0.7em}
+\begin{equation}
+|B_S(p, \rho \delta)| \le \frac{|B_S(p_i, 2 \rho \delta)|}{|B_S(p_i, \delta
+/ 2)|} \le c^{2 + \log_2 \rho}.
+\end{equation}\end{proof}
+\vspace*{-2.2em}

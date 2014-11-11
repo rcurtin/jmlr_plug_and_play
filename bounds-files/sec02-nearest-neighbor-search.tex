@@ -1,0 +1,314 @@
+Consider nearest neighbor search, given as a \texttt{BaseCase()} function
+(Algorithm \ref{alg:nn_base_case}) and a \texttt{Score()} function (Algorithm
+\ref{alg:nn_score}).  The goal is, for every query point $p_q$, find the nearest
+neighbor $p_r$ in the reference set $S_r$.  This algorithm stores the current
+nearest neighbor candidates in the array $N$ and their distances in the array
+$D$.\footnote{See Curtin et.~al. \cite{curtin2013tree} for a more complete
+discussion of how this algorithm works and a proof of correctness.}  The
+\texttt{Score()} function depends on a bound function $B(\mathscr{N}_q)$ which
+represents the maximum distance that could possibly improve a nearest neighbor
+candidate for any descendant point of the query node $\mathscr{N}_q$.  The
+standard bound function $B(\mathscr{N}_q)$ used for cover trees is
+%\begin{equation}
+$B(\mathscr{N}_q) \le D[p_q] + 2^{s_q + 1}$ (this is adapted from
+Beygelzimer et.~al. \cite{langford2006}).
+%\end{equation}
+
+%\begin{figure}
+
+%\begin{minipage}{0.4\textwidth}
+\begin{algorithm}[tb]
+%\begin{subfigure}[b]{0.48\textwidth}
+%  \SetAlgoLined
+\begin{algorithmic}
+    \STATE {\bfseries Input:} query point $p_q$, reference point $p_r$, list of
+candidate neighbors $N$ and distances $D$
+    \STATE {\bfseries Output:} distance $d$ between $p_q$ and $p_r$
+
+    \medskip
+%    \STATE $d \gets \| p_q - p_r \|$
+%    \medskip
+
+    \IF{$d(p_q, p_r) < D[p_q]$ \AND \texttt{BaseCase($p_q$, $p_r$)} not yet called}
+    \STATE  $D[p_q] \gets d(p_q, p_r)$, and $N[p_q] \gets p_r$
+    \ENDIF
+
+    \RETURN $d(p_q, p_r)$
+  \end{algorithmic}
+
+  \caption{Nearest neighbor search \texttt{BaseCase()}}
+  \label{alg:nn_base_case}
+%\end{subfigure}
+\end{algorithm}
+%\end{minipage}
+
+%\begin{subfigure}[b]{0.48\textwidth}
+%\begin{minipage}{0.4\textwidth}
+\begin{algorithm}[tb]
+  \begin{algorithmic}
+    \STATE {\bfseries Input:} query node $\mathscr{N}_q$, reference node
+$\mathscr{N}_r$
+    \STATE {\bfseries Output:} a score for the node combination $(\mathscr{N}_q,
+\mathscr{N}_r)$, or $\infty$ if the combination should be pruned
+
+    \medskip
+
+    \IF{$d_{\min}(\mathscr{N}_q, \mathscr{N}_r) < B(\mathscr{N}_q)$}
+      \RETURN $d_{\min}(\mathscr{N}_q, \mathscr{N}_r)$
+    \ENDIF
+
+%    \medskip
+    \RETURN $\infty$
+  \end{algorithmic}
+
+  \caption{Nearest neighbor search \texttt{Score()}}
+  \label{alg:nn_score}
+\end{algorithm}
+%\end{minipage}
+%\end{subfigure}
+%\end{figure}
+
+%\begin{equation}
+%\begin{split}
+%B(\mathscr{N}_q) = \min &\left\{ \max \big\{ \max_{p \in \mathscr{P}_q}
+%D[p], \max_{\mathscr{N}_c \in \mathscr{C}_q} B(\mathscr{N}_c) \big\},
+%\right. \\
+% & \left. \min_{p \in \mathscr{P}_q} \big(D[p] + \rho(\mathscr{N}_q) +
+%\lambda(\mathscr{N}_q)\big)
+%,\right. \\
+% & \left. \min_{\mathscr{N}_c \in \mathscr{C}_q} \Big(B(\mathscr{N}_c) + 2
+%\big(\lambda(\mathscr{N}_q) - \lambda(\mathscr{N}_c)\big)\Big) \right. \\
+% & B(\operatorname{Par}(\mathscr{N}_q)) \bigg\} . \\
+%\end{split}
+%\end{equation}
+
+%Although that is a particularly complex definition, what we'll be talking about
+%is only cover trees, and we can relax the bound a bit:
+
+%\begin{eqnarray}
+%B(\mathscr{N}_q) &\le& \min_{p \in \mathscr{P}_q} \big(D[p] +
+%\rho(\mathscr{N}_q) + \lambda(\mathscr{N}_q) \big) \\
+% &=& \min_{p \in \mathscr{P}_q} \big(D[p] + \lambda(\mathscr{N}_q) \big) \\
+% &=& D[p_q] + \lambda(\mathscr{N}_q) \\
+% &=& D[p_q] + 2^{s_q + 1} \\
+%&=:& B_c(\mathscr{N}_q).
+%\end{eqnarray}
+
+In this formulation, the query node $\mathscr{N}_q$ holds the the query point
+$p_q$, the quantity $D[p_q]$ is the current nearest neighbor candidate distance
+for the query point $p_q$, and $2^{s_q + 1}$ corresponds to the furthest
+descendant distance of $\mathscr{N}_q$.  For notational convenience in the
+following proof, take $c_{qr} = \max((\max_{p_q \in S_q} c'_r), c_r)$, where
+$c'_r$ is the expansion constant of the set $S_r \cup \{ p_q \}$.
+
+%This follows because $\rho(\mathscr{N}_q) = 0$ for all cover tree
+%nodes because each cover tree node only holds one point and that point is the
+%centroid of the node.  Also, for a cover tree node $\mathscr{N}_i$ with scale
+%$s_i$,
+
+%\begin{equation}
+%\label{eqn:ct-fdd-bound}
+%\lambda(\mathscr{N}_i) \le 2^{s_i + 1}.
+%\end{equation}
+
+\begin{thm}
+Using cover trees, the standard cover tree pruning dual-tree traversal, and the
+nearest neighbor search \texttt{BaseCase()} and \texttt{Score()} as given in
+Algorithms \ref{alg:nn_base_case} and \ref{alg:nn_score}, respectively, and also
+given a reference set $S_r$ with expansion constant $c_r$, a query set $S_q$,
+and an inverse degree of bichromaticity $\nu$, the running time of the
+algorithm is bounded by $O(c_r^4 c_{qr}^5 \nu N)$.
+\label{thm:nns}
+\end{thm}
+
+\begin{proof}
+The running time of \texttt{BaseCase()} and \texttt{Score()} are clearly $O(1)$.
+Due to Theorem \ref{thm:ct-runtime}, we therefore know that the runtime of the
+algorithm is bounded by $O(c_r^4 \nu |R^*| N)$.  Thus, the only thing that
+remains is to bound the maximum size of the reference set, $|R^*|$.
+
+Assume that when $R^*$ is encountered, the maximum reference scale is
+$s_r^{\max}$ and the query node is $\mathscr{N}_q$.  Every node $\mathscr{N}_r
+\in R^*$ satisfies the property enforced in line
+\ref{alg:line:ct-dual-ref-score} that
+%\begin{equation}
+$d_{\min}(\mathscr{N}_q, \mathscr{N}_r) \le B(\mathscr{N}_q)$.
+%\end{equation}
+%Relaxing this slightly,
+%\begin{equation}
+%d_{\min}(\mathscr{N}_q, \mathscr{N}_r) \le B_c(\mathscr{N}_q).
+%\end{equation}
+Using the definition of $d_{\min}(\cdot, \cdot)$ and $B(\cdot)$, we
+expand the equation.  Note that $p_q$ is the point held in $\mathscr{N}_q$ and
+$p_r$ is the point held in $\mathscr{N}_r$.  Also, take $\hat{p}_r$ to be the
+current nearest neighbor candidate for $p_q$; that is, $D[p_q] = d(p_q,
+\hat{p}_r)$.  Then,
+
+\vspace*{-1em}
+\begin{eqnarray}
+%d(p_q, p_r) - \lambda(\mathscr{N}_q) - \lambda(\mathscr{N}_r) &\le& D[p_q] +
+%2^{s_q + 1} \\
+%d(p_q, p_r) &\le& d(p_q, \hat{p}_r) + \lambda(\mathscr{N}_q) +
+%\lambda(\mathscr{N}_r) + 2^{s_q + 1} \\
+%d(p_q, p_r) - 2^{s_q + 1} - 2^{s_r + 1} &\le& D[p_q] + 2^{s_q + 1} \\
+d(p_q, p_r) &\le& d(p_q, \hat{p}_r) + 2^{s_q + 1} + 2^{s_r + 1} + 2^{s_q + 1}
+\label{eqn:pr_dist} \\
+ &\le& d(p_q, \hat{p}_r) + 2(2^{s_r^{\max} + 1})
+\end{eqnarray}
+\vspace*{-0.9em}
+
+\noindent where the last step follows because $s_q + 1 \le s_r^{\max}$ and $s_r
+\le s_r^{\max}$.  Define the set of points $P$ as the points held in each node
+in $R^*$ (that is, $P = \{ p_r \in \mathscr{P}(\mathscr{N}_r) : \mathscr{N}_r
+\in R^* \}$).  Then, we can write
+
+%\begin{equation}
+% = \{ p_r : \mathscr{N}_r \in \mathscr{C}(\mathscr{N}_p), \; s_p = s_r^{\max} + 1 \}.
+%\end{equation}
+%
+%  Stated differently, we have that each point $p_r$ for each node
+%$\mathscr{N}_r \in R$ is such that
+
+\vspace*{-0.8em}
+\begin{equation}
+P \subseteq B_{S_r}(p_q, d(p_q, \hat{p}_r) + 2(2^{s_r^{\max} + 1}))
+\end{equation}
+\vspace*{-0.8em}
+
+%\noindent or that
+
+%\begin{equation}
+%R \subseteq B_{S_r}(p_q, d(p_q, \hat{p}_r) + 3(2^{s_r^{\max} + 1})).
+%\end{equation}
+
+Suppose that the true nearest neighbor is $p_r^*$ and $d(p_q, p_r^*) >
+2^{s_r^{\max} + 1}$.  Then, $p_r^*$ must be held as a descendant point of some
+node in $R^*$ which holds some point $\tilde{p}_r$.  Using the triangle
+inequality,
+
+%\begin{eqnarray}
+\vspace*{-1.0em}
+\begin{equation}
+d(p_q, \hat{p}_r) \le d(p_q, \tilde{p}_r)
+ \le d(p_q, p_r^*) + d(\tilde{p}_r, p_r^*)
+ \le d(p_q, p_r^*) + 2^{s_r^{\max} + 1}.
+%\end{eqnarray}
+\end{equation}
+\vspace*{-0.8em}
+
+This gives that
+%\begin{equation}
+$P \subseteq B_{S_r \cup \{ p_q \}}(p_q, d(p_q, p_r^*) + 3(2^{s_r^{\max} +
+1}))$.
+% &\subseteq& B_{S_r \cup \{ p_q \}}(p_q, d(p_q, p_r^*) + 3(2^{s_r^{\max} + 1}))
+%\end{equation}
+The previous step is necessary: to apply the definition of the expansion
+constant, the ball must be centered at a point in the set; now, the center
+($p_q$) is part of the set.
+
+\vspace*{-1.2em}
+\begin{eqnarray}
+| B_{S_r \cup \{ p_q \}}(p_q, d(p_q, p_r^*) + 3(2^{s_r^{\max} + 1})) | &\le& |
+B_{S_r \cup \{ p_q \}}(p_q, 4 d(p_q, p_r^*)) | \\
+% &\le& | B_{S_{qr}}(p_q, 8 d(p_q, p_r^*)) | \\
+% &\le& (c'_r)^3 | B_{S_r \cup \{ p_q \}}(p_q, d(p_q, p_r^*) / 2) | \\
+ &\le& c_{qr}^3 | B_{S_r \cup \{ p_q \}}(p_q, d(p_q, p_r^*) / 2 |
+\end{eqnarray}
+\vspace*{-0.8em}
+
+\noindent which follows because the expansion constant of the set $S_r \cup \{
+p_q \}$ is bounded above by $c_{qr}$.  Next, we know that $p_r^*$ is the closest
+point to $p_q$ in $S_r \cup \{ p_q \}$; thus, there cannot exist a point $p'_r
+\ne p_q \in S_r \cup \{ p_q \}$ such that
+%\begin{equation}
+$p'_r \in B_{S_{qr}}(p_q, d(p_q, p_r^*) / 2)$
+%\end{equation}
+because that would imply that $d(p_q, p'_r) < d(p_q, p_r^*)$, which is
+a contradiction.  Thus, the only point in the ball is $p_q$, and we have that $|
+B_{S_r \cup \{ p_q \}}(p_q, d(p_q, p_r^*) / 2) | = 1$, giving the result that
+$|R| \le c_{qr}^3$ in this case.
+
+%%%%%%%%
+
+% Changes from below by Pari are applied.
+
+%****************************************************
+
+%Again, I think the proof from Eq 18 onwards is incorrect. If $B_{S_{qr}}(p_q, \cdot)$ is infact the ball around the data, then $|B_{S_{qr}}(p_q, d(p_q, \hat{p}_r) / 2)| \not= 1$. This would hold only for the actual nearest-neighbor of $p_q$, not any neighbor candidate. If you mean that $B_{S_{qr}}(p_q, \cdot)$ is infact the intersection of the ball around the data and the set of all (implicit) nodes at scale $s_r^{\max}$, then the definition of expansion constant (as in Eq 19) cannot be applied to that set. It can only be applied to the actual ball around the data.
+
+%The fix is straightforward though -- you just have to replace $\hat{p}_r$ with $p_r^*$, the true nearest neighbour of $p_q$. Now $\hat{p}_r$ at least has an implicit node at scale $s_r^{\max}$. Let $\tilde{p}_r$ be the node at scale $s_r^{\max}$ which contains $p_r^*$ as a descendant. So $\tilde{p}_r$'s farthest descendant is at most $2^{s_r^{\max} + 1}$ away from it. So it follows that:
+%\begin{eqnarray*}
+%d(p_q, \hat{p}_r) & \leq & d(p_q, \tilde{p}_r) \mbox{ since $\hat{p}_r$ is the current closest, } \\
+% & \leq & d(p_q, p_r^*) + d(\tilde{p}_r, p_r^*) \mbox{ by triangle inequality, } \\
+% & \leq & d(p_q, p_r^*) + 2^{s_r^{\max} + 1}.
+%\end{eqnarray*}
+%Now you can say that
+%$$B_{S_{qr}}(p_q, d(p_q, \hat{p}_r) + 3(2^{s_r^{\max} + 1})) \subseteq B_{S_{qr}}(p_q, d(p_q, p_r^*) + 2^{s_r^{\max} + 1} + 3(2^{s_r^{\max} + 1})),$$
+%and work with the right hand side ball and use the argument that $|B_{S_{qr}}(p_q, d(p_q, p_r^*) / 2)| = 1$.
+
+
+%****************************************************
+
+%%%%%%%%
+
+The other case is when $d(p_q, p_r^*) \le 2^{s_r^{\max} + 1}$, which means that
+$d(p_q, \hat{p}_r) \le 2^{s_r^{\max} + 2}$. %  We use a packing argument,
+%similar to the proof of Lemma~4.1 in \cite{langford2006}.
+Note that $P \in C_{s_r^{\max}}$, and therefore
+
+\vspace*{-1em}
+\begin{eqnarray}
+P &\subseteq& B_{S_r}(p_q, d(p_q, p_r^*) + 3(2^{s_r^{\max} + 1})) \cap
+C_{s_r^{\max}} \\
+ &\subseteq& B_{S_r}(p_q, 4(2^{s_r^{\max} + 1})) \cap C_{s_r^{\max}}.
+\end{eqnarray}
+\vspace*{-0.6em}
+
+Every point in $C_{s_r^{\max}}$ is separated by at least $2^{s_r^{\max}}$.
+Using Lemma \ref{lem:packing} with $\delta = 2^{s_r^{\max}}$ and $\rho = 8$
+yields that $|P| \le c_r^5$.  This gives the result, because $c_r^5 \le
+c_{qr}^5$.
+\end{proof}
+
+%By assumption (and Equation \ref{eqn:pr_dist}), for any $p_r \in
+%P$,
+%\begin{equation}
+%$d(p_q, p_r) \leq 2^{s_r^{\max} + 3}$.
+%\end{equation}
+%Therefore, for any such $p_r$,
+
+%\vspace*{-0.5em}
+%\begin{eqnarray}
+%\begin{equation}
+%B_{S_r} \left( p_q, d(p_q, p_r^*) + 3(2^{s_r^{\max} + 1}) \right) \subseteq
+%B_{S_r} \left( p_q, 2^{s_r^{\max} + 3} \right)
+% \subseteq B_{S_r} \left(p_r, 2^{s_r^{\max} + 4} \right).
+% &\subseteq& B_{S_r} \left(p_r, 2^{s_r^{\max} + 4} \right).
+%\end{eqnarray}
+%\end{equation}
+
+%Applying the definition of $c_r$, we have that
+%\begin{equation}
+%$| B_{S_r} (p_r, 2^{s_r^{\max} + 4} ) | \leq c_r^5 | B_{S_r} (p_r,
+%2^{s_r^{\max}-1} ) |$.
+%\label{eqn:packing1}
+%\end{equation}
+
+%Any two points corresponding to nodes in $R^*$ are separated by at least
+%$2^{s_r^{\max}}$, so each ball
+%can  contain only one node in $R^*$. Therefore, the total
+%number of nodes in $R^*$ is bounded by the number of disjoint balls of size
+%$2^{s_r^{\max} - 1}$ that can be packed into a ball of size $2^{s_r^{\max} +
+%4}$.
+%
+%In the worst case, this packing is perfect, and we have that
+%\begin{equation}
+%|B_{S_r}(p_q, d(p_q, p_r^*) + 4(2^{s_r^{\max} + 1})) \cap C_{s_r^{\max}}| \;
+%\leq \;  \frac{\left| B_{S_r} \left(p_r, 2^{s_r^{\max} + 4} \right) \right|}{
+%\left| B_{S_r} \left(p_q, 2^{s_r^{\max} - 1} \right) \right|} \; \leq \; c_r^5
+%\end{equation}
+
+%\noindent which gives the result because $c_r^5 \le c_{qr}^5$.
+
+In the monochromatic case where $S_q = S_r$, the bound is $O(c^9 \nu N)$ because
+$c = c_r = c_{qr}$.

@@ -1,0 +1,107 @@
+\begin{thm}
+\label{thm:ct-runtime}
+%For any dual-tree algorithm using cover trees and the standard cover tree
+%dual-tree pruning traversal (Algorithm \ref{alg:cover-tree-dual}) with reference
+%set $S_r$ that has expansion constant $c_r$ and query set $S_q$, the runtime is
+%bounded above by $O(c_r^4 | R^* | \nu \chi \psi N)$, where $ | R^* | $ is
+%the maximum size of the reference set $R$ (line
+%\ref{alg:line:ct-dual-input}) at any point in the dual-tree pruning traversal,
+%$\chi$ is the longest possible running time of \texttt{BaseCase()}, and $\psi$
+%is the longest possible running time of \texttt{Score()}.
+Given a reference set $S_r$ of size $N$ with an expansion constant $c_r$ and a
+set of queries $S_q$ of size $O(N)$, a standard cover tree based dual-tree
+algorithm (Algorithm \ref{alg:cover-tree-dual}) takes $O(c_r^4 | R^* | \nu \chi
+\psi N)$, where $ | R^* | $ is the maximum size of the reference set $R$ (line
+\ref{alg:line:ct-dual-input}) during the dual-tree recursion, $\chi$ is
+the maximum possible runtime of \texttt{BaseCase()}, and $\psi$ is the maximum
+possible runtime of \texttt{Score()}.
+\end{thm}
+
+\vspace*{-1.23em}
+\begin{proof}
+Consider a reference recursion (lines
+\ref{alg:line:ct-dual-ref-recursion-start}--\ref{alg:line:ct-dual-ref-recursion-end}).
+The work done in the base case loop from lines
+\ref{alg:line:ct-dual-base-case-start}--\ref{alg:line:ct-dual-base-case-end} is
+$O(\chi | R |)$.  Define $| R^* |$ to be the largest set $|R|$ for any scale
+$s_r^{\max}$ and any query node $\mathscr{N}_q$ during the course of the
+algorithm; then, it is true that $| R | \le | R^* |$.
+%
+Then, lines \ref{alg:line:ct-dual-ref-children} and
+\ref{alg:line:ct-dual-ref-score} take $O(c_r^4 \psi | R |) \le O(c_r^4 \psi |
+R^* |)$ time, because each reference node has $c_r^4$ children.  So, one
+full reference recursion takes $O(c_r^4 \psi | R^* |)$ time.
+
+Now, note that there are $O(N)$ nodes in $\mathscr{T}_q$.  Thus, line
+\ref{alg:line:ct-dual-query-recursion} is visited $O(N)$ times.  Each of these
+$O(N)$ visits to line \ref{alg:line:ct-dual-query-recursion} implies a
+recursion, in which the reference set is descended up to $\nu$ times (lines
+\ref{alg:line:ct-dual-ref-recursion-start}--\ref{alg:line:ct-dual-ref-recursion-end})
+before the query node is descended or the algorithm terminates.  In addition,
+each $O(N)$ recursion implies an $O(\psi |R|) \le O(\psi |R^*|)$ operation for
+the calculation of $R'$ (line \ref{alg:line:ct-dual-query-pruning}).  Thus, the
+full runtime of the algorithm is bounded as $O(c_r^4 |R^*| \nu \chi \psi N +
+\psi |R^*| N) = O(c_r^4 |R^*| \nu \chi \psi N)$.
+\end{proof}
+\vspace*{-0.8em}
+
+This result holds for any dual-tree algorithm regardless of the problem. Hence,
+%for any pairwise statistical problem, the runtime of the dual-tree algorithm (of
+the runtime of any dual-tree algorithm
+%that problem)
+would be at least $O(N)$ using our bound, which matches the intuition that
+answering $O(N)$ queries would take at least $O(N)$ time. For a particular
+problem and data, if $c_r$, $|R^*|$, $\nu$, $\chi$ and
+$\psi$ are bounded by constants independent of $N$ (for large enough $N$), then
+the dual-tree algorithm for that problem has a runtime linear in $N$. Our
+theoretical result separates out the problem-dependent and the
+problem-independent elements of the runtime bound, which allows us to simply
+plug in the problem-dependent bounds to get runtime bounds for any dual-tree
+algorithm without requiring an analysis from scratch.
+% This discussion already happened earlier... sort of.
+%The expansion constant is related to a notion of intrinsic dimensionality of a
+%dataset (as discussed earlier). A relatively small $c_r$ corresponds to
+%a dataset with low intrinsic dimensionality, while a value of $c_r$ independent
+%of $N$ implies that the intrinsic dimensionality of the data is independent of
+%the number of points in the dataset. The latter is a reasonable assumption in
+%many scenarios.
+%Our bound has a linear dependence on the inverse constant of bichromaticity
+%$\nu$; this results from the worst-case situation where the reference tree is
+%recursed entirely after all query tree recursions
+% this makes sense, given that $\nu$ represents the maximum number of times
+%any set $R$ is descended for any query node $\mathscr{N}_q$ before
+%$\mathscr{N}_q$ is recursed.
+If $\nu \sim \kappa$, which is a reasonable assumption, this is a better result
+than the results of Ram et.~al.  \cite{ram2009} who found a dependence of
+$c_q^{4 \kappa}$ in their proofs.
+
+The quantity $|R^*|$ bounds the amount of work that needs to be done for each
+recursion. In the worst case, $|R^*|$ can be $N$. However,
+dual-tree algorithms rely on branch-and-bound techniques to prune away
+work (Lines \ref{alg:line:ct-dual-ref-score} and
+\ref{alg:line:ct-dual-query-pruning} in Algorithm \ref{alg:cover-tree-dual}). A
+small value of $|R^*|$ will imply that the algorithm is extremely successful in
+pruning away work at Line \ref{alg:line:ct-dual-ref-score} in Algorithm
+\ref{alg:cover-tree-dual}. An (upper) bound on $|R^*|$ (and the algorithm's
+success in pruning work) will depend on the problem and the data.  As we will
+show, bounding $|R^*|$ is often possible. % In addition, we will also show that
+For many dual-tree algorithms, $\chi \sim \psi \sim O(1)$; often, cached
+sufficient statistics~\cite{moore2000anchors} can enable $O(1)$ runtime
+implementations of \texttt{BaseCase()} and \texttt{Score()}.
+
+% Space constraints :(
+
+%The runtime bound $\chi$ for the \texttt{BaseCase($p_q$, $p_r$)} function
+%corresponds to the time required to process a pair of points. For example, in
+%range search, \texttt{BaseCase()} corresponds to the
+%time taken to compute $d(p_q, p_r)$ and determine if that falls into the desired
+%range.  For general kernel summations, this corresponds to computing the
+%pairwise kernel function between $p_q$ and $p_r$ and then summing it to the
+%output for $p_q$.  In general, the runtime of \texttt{BaseCase()} is dominated
+%by the pairwise function computation which is independent of $N$ and is usually
+%$O(1)$. The \texttt{Score()} function is an operation on a pair of nodes and
+%usually involves computing a bound which requires a pairwise function
+%computation between the node centers (similar to the \texttt{BaseCase()}
+%function except that it is for node centres) and certain cached node statistics
+%(such as node radius in the metric space). Hence its runtime bound $\psi$ is
+%usually a constant independent of $N$ or simply $O(1)$.

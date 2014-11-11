@@ -1,0 +1,108 @@
+In this section, we will bound the running time of range search in a different
+way, by using the aspect ratio of the reference set $S_r$.
+
+Define $\tau_r$ to be the aspect ratio of the reference set $S_r$, which is the
+largest distance between any two points in $S_r$ (denote this quantity as
+$\gamma_r$) divided by the smallest nonzero distance between any two points in
+$S_r$ (denote this quantity as $\delta_r$).
+
+\begin{thm}
+Under the standard assumptions and given a reference set aspect ratio of
+$\tau_r$, using the range search \texttt{BaseCase()} and \texttt{Score()} as
+given in Algorithms \ref{alg:rs_bc} and \ref{alg:rs_sc}, respectively, with a
+search range of $[l, u]$, and also assuming that the length of the list of
+results for each query point in $S_q$ is $O(1)$, the running time of range
+search or range count is bounded by
+
+\begin{equation}
+\begin{split}
+  O((1 + \tau_r) c_r^{7 + \log_2 c_r} \nu N),& \text{\ \ \ \ if } u \ge \gamma_r\\
+  O((1 + \frac{u}{\gamma_r} \tau_r) c_r^{7 + \log_2 c_r} \nu N),&
+\text{\ \ \ \ otherwise}.
+\end{split}
+\end{equation}
+
+\end{thm}
+
+\begin{proof}
+As in the previous proof, we know that the running time of \texttt{BaseCase()}
+and \texttt{Score()} are $O(1)$, and that the runtime of the algorithm is
+bounded by $O(c_r^4 \nu |R^*| N)$.  Thus, again, our goal is to bound the
+maximum size of the reference set $| R^* |$.
+
+From Equation \ref{eqn:rsballs}, we can ignore the inner ball term to see that
+
+\begin{equation}
+|R^*| \le \left| B_{S_r}(p_q, u + 2^{s_r^{\max} + 1}) \cap C_{s_r^{\max}}
+\right|.
+\end{equation}
+
+It is true that $|B_{S_r}(p_r, \gamma_r)| = N$ for all $p_r \in S_r$; also, if
+$u \ge \gamma_r$, then $B_{S_r}(p_r, u) = B_{S_r}(p_r, \gamma_r)$.  Thus, define
+the auxiliary quantity $\zeta_r = \min (u, \gamma_r)$.  Using this auxiliary
+quantity, we can now employ a packing argument, as in previous proofs.  For any
+$p_r \in P$,
+
+\begin{eqnarray}
+|B_{S_r}(p_q, u + 2^{s_r^{\max} + 1})| &\le& |B_{S_r}(p_q, \zeta_r +
+2^{s_r^{\max} + 1})| \\
+ &\le& |B_{S_r}(p_q, (1 + \frac{\zeta_r}{2^{s_r^{\max} + 1}}) 2^{s_r^{\max} +
+1})| \\
+ &\le& |B_{S_r}(p_r, (1 + \frac{\zeta_r}{2^{s_r^{\max} + 1}}) 2^{s_r^{\max} +
+2})| \\
+ &\le& c_r^{3 \log_2{(1 + \zeta_r / 2^{s_r^{\max} + 1})}} | B_{S_r}(p_r,
+2^{s_r^{\max} - 1})|.
+\end{eqnarray}
+
+The total number of nodes in $R$ is bounded by the number of disjoint balls of
+size $2^{s_r^{\max} - 1}$ that can be packed into a ball of radius $(1 + \zeta_r
+/ 2^{s_r^{\max} + 1}) 2^{s_r^{\max} + 2}$.  In the worst case, this packing is
+perfect, and we have that
+
+\begin{equation}
+\left| B_{S_r}(p_q, \zeta_r + 2^{s_r^{\max} + 1}) \cap C_{s_r^{\max}} \right|
+\le
+\frac{| B_{S_r}(p_r, (1 + \zeta_r / 2^{s_r^{\max} + 1}) 2^{s_r^{\max} + 2}) |}{|
+B_{S_r}(p_r, 2^{s_r^{\max} - 1}) |} \le c_r^{3 \log_2{(1 + \zeta_r /
+2^{s_r^{\max} + 1})}}.
+\end{equation}
+
+We can simplify the last term:
+
+\begin{equation}
+c_r^{3 \log_2(1 + \zeta_r / 2^{s_r^{\max} + 1})} = (1 +
+\frac{\zeta_r}{2^{s_r^{\max} + 1}}) c_r^{3 \log_2 c_r}.
+\end{equation}
+
+In the worst case, $s_r^{\max}$ is the bottom level of the tree, and
+$2^{s_r^{\max}}$ is the distance between the two closest points in $S_r$ (call
+this distance $\delta_r$).  Expand $\zeta_r$ to its definition to get the result
+that
+
+\begin{equation}
+|R^*| =
+\begin{cases}
+  (1 + \tau_r) c^{3 \log_2 c},& \text{if } u \ge \gamma_r \\
+  (1 + \frac{u}{\gamma_r} \tau_r) c_r^{3 \log_2 c_r},& \text{otherwise}.
+\end{cases}
+\end{equation}
+
+\end{proof}
+
+It is important to note that as $u$ decreases, the running time of the algorithm
+also decreases accordingly.
+
+Possibilities for improvement:
+
+\begin{itemize}
+  \item Can we use a packing argument to bound the number of balls in a `slice'?
+
+  \item Can we incorporate the lower bound $l$ into the proof to subtract large
+parts away?
+
+  \item Can we modify the \texttt{Score()} rules for pruning when a node is
+entirely contained within the range, and then only consider slices of size
+$2^{s_r^{\max} + 1}$ centered at radius $u$ and $l$?
+\end{itemize}
+
+The second two ideas depend on the first idea.

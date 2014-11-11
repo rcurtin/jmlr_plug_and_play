@@ -1,0 +1,137 @@
+\section{Expansion Constant Properties}
+
+I talked to someone who wasn't convinced that all of the following useful lemmas
+were true, so I went out and proved them.  Now I've typeset them.
+
+\begin{lemma}
+\label{lem:ec_rec}
+Given an expansion constant $c$ as defined in Definition \ref{def:int_dim}, for any
+ball $B_S(p, 2^i \Delta)$ where $p \in S$, $i \in \mathbb{N}$, $\Delta > 0$,
+
+\begin{equation}
+| B_S(p, 2^i \Delta) | \le c^i | B_S(p, \Delta) |.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+This follows from $i$ recursive applications of the definition of the expansion
+constant.
+\end{proof}
+
+\begin{lemma}
+\label{lem:ec_re}
+Given an expansion constant $c$ as defined in Definition \ref{def:int_dim}, for any
+ball $B_S(p, \alpha \Delta)$ where $p \in S$, $\alpha \in \Real$, $\alpha \ge 1$,
+$\Delta > 0$,
+
+\begin{equation}
+| B_S(p, \alpha \Delta) | \le c^{\log_2 \alpha} | B_S(p, \Delta) |.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+By Definition \ref{def:int_dim} and Lemma \ref{lem:ec_rec}, it is obvious that
+the statement holds when $\alpha \in \mathbb{N}$.  However, the definition of
+expansion constant makes no particular bound on the number of points added when
+the ball is not doubled but simply increased by some real factor.  We will
+perform this proof by contradiction.
+
+Assume that there exists some $\alpha \in \mathbb{R}$ where $\alpha > 1$ and
+
+\begin{equation}
+| B_S(p, \alpha \Delta) | > c^{\log_2 \alpha} | B_S(p, \Delta) |.
+\end{equation}
+
+By Definition \ref{def:int_dim}, we also know that
+
+\begin{equation}
+| B_S(p, \alpha \Delta) | \le c | B_S(p, (\alpha / 2) \Delta) |.
+\end{equation}
+
+Combining these two equations gives that
+
+\begin{equation}
+c | B_S(p, (\alpha / 2) \Delta) | > c^{\log_2 \alpha} | B_S(p, \Delta) |
+\end{equation}
+
+\noindent or alternately
+
+\begin{equation}
+c^{(1 - \log_2 \alpha)} | B_S(p, (\alpha / 2) \Delta) | > | B_S(p, \Delta) |.
+\end{equation}
+
+First, assume that $\alpha < 2$.  Then, $|B_S(p, (\alpha / 2) \Delta)| \le
+|B_S(p, \Delta)|$.  Thus,
+
+\begin{equation}
+c^{(1 - \log_2 \alpha)} | B_S(p, \Delta) | > | B_S(p, \Delta) |
+\end{equation}
+
+\noindent which is a contradiction because $c^{(1 - \log_2 \alpha)} > 1$.
+
+Now, assume that $\alpha > 2$.  Define $\beta = 2^i \alpha$ where $i \in
+\mathbb{N}$ is such that $1 < \beta < 2$.  Then,
+
+\begin{equation}
+| B_S(p, (2^i \beta / 2) \Delta) | \le c^i | B_S(p, (\beta / 2) \Delta) |.
+\end{equation}
+
+Because $\beta < 2$, $|B_S(p, (\beta / 2) \Delta)| \le |B_S(p, \Delta)|$.  Thus,
+
+\begin{equation}
+|B_S(p, (2^i\beta / 2) \Delta)| \le c^i | B_S(p, \Delta) |.
+\end{equation}
+
+From earlier, this implies that
+
+\begin{equation}
+\label{eqn:contr}
+(c^{(1 - \log_2 (2^i \beta))}) (c^i) |B_S(p, \Delta) | > |B_S(p, \Delta) |.
+\end{equation}
+
+Note that $(c^{(1 - \log_2 (2^i \beta))}) (c^i) = c^{(1 - \log_2 \beta)}$, which
+is greater than $1$ because $\beta < 2$.  This means that Equation
+\ref{eqn:contr} is a contradiction, and thus, for all $\alpha \in \mathbb{R}$,
+the statement of the lemma holds.
+\end{proof}
+
+\begin{lemma}
+\label{lem:ec_neg}
+Given an expansion constant $c$ as defined in Definition \ref{def:int_dim}, for
+any ball $B_S(p, 2^{-i} \Delta)$ where $p \in S$, $i \in \mathbb{N}$, $\delta >
+0$,
+
+\begin{equation}
+|B_S(p, 2^{-i} \Delta)| \ge c^{-i} |B_S(p, \Delta)|.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Observe that $|B_S(p, \Delta)| \le c^i |B_S(p, 2^{-i} \Delta)|$.  Simple
+algebraic manipulation yields the result.
+\end{proof}
+
+\begin{lemma}
+Given an expansion constant $c$ as defined in Definition \ref{def:int_dim}, for
+any ball $B_S(p, \alpha \Delta)$ where $p \in S$, $\alpha \in \mathbb{R}$,
+$0 < \alpha \ge 1$, $\delta > 0$,
+
+\begin{equation}
+|B_S(p, \alpha \Delta)| \ge c^{\log_2 \alpha} |B_S(p, \Delta)|.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+(idea) This is a relatively straightforward combination of the proofs of
+Lemmas \ref{lem:ec_neg} and \ref{lem:ec_re}.
+\end{proof}
+
+Two important observations:
+
+\begin{itemize}
+  \item We can place an upper bound on the number of points added as a ball
+grows an arbitrary amount.
+
+  \item We can place a lower bound on the number of points removed as a ball
+shrinks an arbitrary amount.
+\end{itemize}
