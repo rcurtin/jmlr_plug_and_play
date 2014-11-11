@@ -144,7 +144,6 @@ $p_r$ is the point held in $\mathscr{N}_r$.  Also, take $\hat{p}_r$ to be the
 current nearest neighbor candidate for $p_q$; that is, $D[p_q] = d(p_q,
 \hat{p}_r)$.  Then,
 
-\vspace*{-1em}
 \begin{eqnarray}
 %d(p_q, p_r) - \lambda(\mathscr{N}_q) - \lambda(\mathscr{N}_r) &\le& D[p_q] +
 %2^{s_q + 1} \\
@@ -155,7 +154,6 @@ d(p_q, p_r) &\le& d(p_q, \hat{p}_r) + 2^{s_q + 1} + 2^{s_r + 1} + 2^{s_q + 1}
 \label{eqn:pr_dist} \\
  &\le& d(p_q, \hat{p}_r) + 2(2^{s_r^{\max} + 1})
 \end{eqnarray}
-\vspace*{-0.9em}
 
 \noindent where the last step follows because $s_q + 1 \le s_r^{\max}$ and $s_r
 \le s_r^{\max}$.  Define the set of points $P$ as the points held in each node
@@ -169,11 +167,9 @@ in $R^*$ (that is, $P = \{ p_r \in \mathscr{P}(\mathscr{N}_r) : \mathscr{N}_r
 %  Stated differently, we have that each point $p_r$ for each node
 %$\mathscr{N}_r \in R$ is such that
 
-\vspace*{-0.8em}
 \begin{equation}
 P \subseteq B_{S_r}(p_q, d(p_q, \hat{p}_r) + 2(2^{s_r^{\max} + 1}))
 \end{equation}
-\vspace*{-0.8em}
 
 %\noindent or that
 
@@ -187,14 +183,12 @@ node in $R^*$ which holds some point $\tilde{p}_r$.  Using the triangle
 inequality,
 
 %\begin{eqnarray}
-\vspace*{-1.0em}
 \begin{equation}
 d(p_q, \hat{p}_r) \le d(p_q, \tilde{p}_r)
  \le d(p_q, p_r^*) + d(\tilde{p}_r, p_r^*)
  \le d(p_q, p_r^*) + 2^{s_r^{\max} + 1}.
 %\end{eqnarray}
 \end{equation}
-\vspace*{-0.8em}
 
 This gives that
 %\begin{equation}
@@ -206,7 +200,6 @@ The previous step is necessary: to apply the definition of the expansion
 constant, the ball must be centered at a point in the set; now, the center
 ($p_q$) is part of the set.
 
-\vspace*{-1.2em}
 \begin{eqnarray}
 | B_{S_r \cup \{ p_q \}}(p_q, d(p_q, p_r^*) + 3(2^{s_r^{\max} + 1})) | &\le& |
 B_{S_r \cup \{ p_q \}}(p_q, 4 d(p_q, p_r^*)) | \\
@@ -214,7 +207,6 @@ B_{S_r \cup \{ p_q \}}(p_q, 4 d(p_q, p_r^*)) | \\
 % &\le& (c'_r)^3 | B_{S_r \cup \{ p_q \}}(p_q, d(p_q, p_r^*) / 2) | \\
  &\le& c_{qr}^3 | B_{S_r \cup \{ p_q \}}(p_q, d(p_q, p_r^*) / 2 |
 \end{eqnarray}
-\vspace*{-0.8em}
 
 \noindent which follows because the expansion constant of the set $S_r \cup \{
 p_q \}$ is bounded above by $c_{qr}$.  Next, we know that $p_r^*$ is the closest
@@ -256,13 +248,11 @@ $d(p_q, \hat{p}_r) \le 2^{s_r^{\max} + 2}$. %  We use a packing argument,
 %similar to the proof of Lemma~4.1 in \cite{langford2006}.
 Note that $P \in C_{s_r^{\max}}$, and therefore
 
-\vspace*{-1em}
 \begin{eqnarray}
 P &\subseteq& B_{S_r}(p_q, d(p_q, p_r^*) + 3(2^{s_r^{\max} + 1})) \cap
 C_{s_r^{\max}} \\
  &\subseteq& B_{S_r}(p_q, 4(2^{s_r^{\max} + 1})) \cap C_{s_r^{\max}}.
 \end{eqnarray}
-\vspace*{-0.6em}
 
 Every point in $C_{s_r^{\max}}$ is separated by at least $2^{s_r^{\max}}$.
 Using Lemma \ref{lem:packing} with $\delta = 2^{s_r^{\max}}$ and $\rho = 8$
@@ -277,7 +267,6 @@ c_{qr}^5$.
 %\end{equation}
 %Therefore, for any such $p_r$,
 
-%\vspace*{-0.5em}
 %\begin{eqnarray}
 %\begin{equation}
 %B_{S_r} \left( p_q, d(p_q, p_r^*) + 3(2^{s_r^{\max} + 1}) \right) \subseteq

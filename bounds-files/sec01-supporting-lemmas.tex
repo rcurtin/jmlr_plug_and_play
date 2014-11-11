@@ -29,7 +29,6 @@ Assuming a cover tree $\mathscr{T}$ is built on a dataset $S_r$, let $C_{s_i}$
 denote the set of points held in all nodes in $\mathscr{T}$ with scale $s_i$.
 Then, the cover tree satisfies the following invariants for all scales $s_i$:
 
-\vspace*{-0.5em}
 \begin{itemize}
 
 \item {\em (Nesting)}.  $C_{s_i} \subset C_{s_i - 1}$.  This means that when a
@@ -45,7 +44,6 @@ scale $s_i - 1$.
 $d(p_i, p_j) > 2^{s_i}$.
 
 \end{itemize}
-\vspace*{-0.5em}
 
 A batch construction algorithm is given in \cite{langford2006}.  In addition,
 the cover tree has a number of other useful properties and lemmas based on the
@@ -61,12 +59,10 @@ $B_S(p, \Delta) = \{ r \in S \colon d(p, r) \leq \Delta \}$.
 Then, the {\bf expansion constant} of $S$ with respect to the metric $d$ is the
 smallest $c \ge 2$ such that
 
-\vspace*{-0.8em}
 \begin{equation}
 | B_S(p, 2 \Delta) | \le c | B_S(p, \Delta) |\ \forall\ p \in S,\
 \forall\ \Delta > 0.
 \end{equation}
-\vspace*{-1.4em}
 
 \end{defn}
 
@@ -171,15 +167,12 @@ Consider a dataset $S$ with expansion constant $c$ and a subset $C \subseteq S$
 such that every point in $C$ is separated by $\delta$.  Then, given any query
 point $p \not\in S$ and some radius $\rho \delta$,
 
-\vspace*{-0.7em}
 \begin{equation}
 | B_S(p, \rho \delta) \cap C | \le c^{2 + \log_2 \rho}.
 \end{equation}
-\vspace*{-1.1em}
 \label{lem:packing}
 \end{lemma}
 
-\vspace*{-1em}
 \begin{proof}
 This is based on the packing argument from Lemma 4.1 in \cite{langford2006}.
 Observe that $B_S(p, \rho \delta) \subseteq B_S(p_i, 2 \rho \delta)$ for any
@@ -190,9 +183,7 @@ bounded by the number of disjoint balls of radius $\delta / 2$ that can be
 packed into $B_S(p, \rho \delta)$.  In the worst case, this packing is
 perfect, and
 
-\vspace*{-0.7em}
 \begin{equation}
 |B_S(p, \rho \delta)| \le \frac{|B_S(p_i, 2 \rho \delta)|}{|B_S(p_i, \delta
 / 2)|} \le c^{2 + \log_2 \rho}.
 \end{equation}\end{proof}
-\vspace*{-2.2em}

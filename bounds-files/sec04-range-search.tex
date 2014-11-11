@@ -61,12 +61,10 @@ search \texttt{BaseCase()} and \texttt{Score()} as given in Algorithms
 pruning dual-tree traversal as given in Algorithm \ref{alg:cover-tree-dual}, and
 also assuming that for some $\alpha > 0$,
 
-\vspace*{-1em}
 \begin{equation}
 \left| \{ p_r: p_r \in S_r, (1 - \alpha) l \le d(p_q, p_r) \le (1 + \alpha) u \}
 \right| = O(1),
 \end{equation}
-\vspace*{-1.5em}
 
 \noindent the running time of range search or range count is bounded by
 $O(c_r^{8 + \beta} \nu N)$ with
@@ -76,7 +74,6 @@ $\beta = \log_2 (1 + \alpha^{-1})$.
 \label{thm:rs}
 \end{thm}
 
-\vspace*{-2.5em}
 \begin{proof}
 Both \texttt{BaseCase()} (Algorithm \ref{alg:rs_bc}) and \texttt{Score()}
 (Algorithm \ref{alg:rs_sc}) take $O(1)$ time.  Therefore, using Lemma
@@ -89,7 +86,6 @@ is made up of reference nodes $\mathscr{N}_r$ that are within a margin of
 $2^{s_q + 1} + 2^{s_r + 1} \le 2^{s_r^{\max} + 2}$ of the range $[l, u]$.  Given
 that $p_r$ is the point in $\mathscr{N}_r$,
 
-\vspace*{-1em}
 \begin{equation}
 %p_r &\in& \left( B_{S_r}(p_q, u + \lambda_q + \lambda_r) \cap
 %C_{s_r^{\max}}\right) \setminus \left( B_{S_r}(p_q, l - \lambda_q - \lambda_r)
@@ -98,7 +94,6 @@ p_r \in \left( B_{S_r}(p_q, u + 2^{s_r^{\max} + 2}) \cap
 C_{s_r^{\max}}\right)\setminus \left( B_{S_r}(p_q, l - 2^{s_r^{\max} + 2}) \cap
 C_{s_r^{\max}} \right). \label{eqn:rsballs}
 \end{equation}
-\vspace*{-1em}
 
 A bound on the number of elements in this set is a bound on $|R^*|$.  %First,
 %consider the case where $u \le 2^{s_r^{\max} + 1}$.  Then,
@@ -136,7 +131,6 @@ the smaller ball, take $\delta = 2^{s_r^{\max}}$ and $\rho = 4 (1 +
 %any $p_r \in P$, $d(p_q, p_r) \le (1 + \alpha^{-1}) 2^{s_r^{\max} + 1}$.
 %Therefore,
 
-%\vspace*{-1em}
 %\begin{eqnarray}
 %|B_{S_r}(p_q, (1 + \alpha^{-1}) 2^{s_r^{\max} + 2})| &\le& |B_{S_r}(p_r, (1 +
 %\alpha^{-1}) 2^{s_r^{\max} + 3})| \\
@@ -152,7 +146,6 @@ the smaller ball, take $\delta = 2^{s_r^{\max}}$ and $\rho = 4 (1 +
 %|.
 %&\le& (1 + \alpha^{-1}) c_{qr}^{2 + \log_2 c_{qr}}
 %\end{eqnarray}
-%\vspace*{-1em}
 
 %Because each point in $P \subseteq C_{s_r^{\max}}$ is separated by at least
 %$2^{s_r^{\max}}$, $| B_{S_r}(p_r, 2^{s_r^{\max} - 1}) | = 1$ for any $p_r \in
@@ -160,14 +153,12 @@ the smaller ball, take $\delta = 2^{s_r^{\max}}$ and $\rho = 4 (1 +
 %$2^{s_r^{\max} - 1}$ that can be packed into a ball of radius $(1 + \alpha^{-1})
 %2^{s_r^{\max} + 2}$.  In the worst case, this packing is perfect, giving
 
-%\vspace*{-1em}
 %\begin{equation}
 %\left| B_{S_r}\left(p_q, (1 + \alpha^{-1}) 2^{s_r^{\max} + 2}\right) \cap C_{s_r^{\max}}
 %\right| \le \frac{\left| B_{S_r}\left( p_r, (1 + \alpha^{-1}) 2^{s_r^{\max} +
 %3}\right) \right|}{\left| B_{S_r}\left( p_r, (1 + \alpha^{-1}) 2^{s_r^{\max} -
 %1}\right) \right|} \le c_r^{4 + \log_2 (1 + \alpha^{-1})}.
 %\end{equation}
-%\vspace*{-1em}
 
 %Therefore, in this case, $|R^*| \le c_r^{4 + \log_2 (1 + \alpha^{-1})}$.
 Now, consider the other case: $u > \alpha^{-1} 2^{s_r^{\max} + 1}$.
@@ -178,7 +169,6 @@ Now, consider the other case: $u > \alpha^{-1} 2^{s_r^{\max} + 1}$.
 %\end{eqnarray}
 This means
 
-\vspace*{-1em}
 \begin{equation}
 B_{S_r}(p_q, u + 2^{s_r^{\max} + 1}) \setminus B_{S_r}(p_q, l - 2^{s_r^{\max} +
 1}) \subseteq B_{S_r}(p_q, (1 + \alpha) u) \setminus B_{S_r}(p_q, (1 - \alpha)
@@ -189,7 +179,6 @@ l)
 B_{S_r}(p_q, (1 - \alpha) l) | = O(1)$, $|R^*| = O(1)$.  Thus, the theorem
 holds.
 \end{proof}
-\vspace*{-0.4em}
 
 %\begin{figure}
 %\begin{centering}

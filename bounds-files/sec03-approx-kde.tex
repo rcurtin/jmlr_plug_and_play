@@ -11,11 +11,9 @@ reference set $S_r$ of size $N$, and a kernel function $\mathcal{K}(\cdot,
 $f(p_q)$ such that $| f(p_q) - f^*(p_q) | < N \epsilon$ for some
 parameter $\epsilon$ and
 
-%\vspace*{-0.5em}
 \begin{equation}
 f^*(p_q) = \sum_{p_r \in S_r} \mathcal{K}(p_q, p_r).
 \end{equation}
-%\vspace*{-0.5em}
 
 This is related to the well-studied problem of kernel summation, which can
 also be solved with dual-tree algorithms \cite{lee2006faster, lee2008fast}.  In
@@ -118,7 +116,6 @@ is small enough, $R^*$ is empty.  Second, bound $R^*$ when $s_r^{\max}$ is large
 The \texttt{Score()} function is such that any node in $|R^*|$ for a given query
 node $\mathscr{N}_q$ obeys
 
-\vspace*{-0.8em}
 \begin{equation}
 \mathcal{K}(d_{\min}(\mathscr{N}_q, \mathscr{N}_r)) -
 \mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r))
@@ -133,12 +130,10 @@ $\mathcal{K}'(h)$; therefore, the maximum possible value of $\mathcal{K}(a) -
 $\mathcal{K}(a) - \mathcal{K}(b) \le \epsilon$ when $(b - a) \le (-\epsilon /
 \mathcal{K}'(h))$.  Note that
 
-\vspace*{-1.5em}
 \begin{equation}
 d_{\max}(\mathscr{N}_q, \mathscr{N}_r) - d_{\min}(\mathscr{N}_q, \mathscr{N}_r)
 = d(p_q, p_r) + 2^{s_r^{\max} + 1} - d(p_q, p_r) + 2^{s_r^{\max} + 1} = 2^{s_r^{\max} + 2}.
 \end{equation}
-\vspace*{-0.8em}
 
 Therefore, $|R^*| = \emptyset$ when
 %\begin{eqnarray}
@@ -166,7 +161,6 @@ is sufficient to bound $|R^*|$.  For notational convenience, define $\omega = \m
 %The procedure to bound this will be the same as
 %for the nearest neighbor search proof---a packing bound.  See that
 
-%\vspace*{-1.0em}
 %\begin{eqnarray}
 %B_{S_r}\left(p_q, \mathcal{K}^{-1}(\epsilon) + 2^{s_r^{\max} + 1}\right) &\subseteq&
 %B_{S_r}\left(p_r, 2 (\mathcal{K}^{-1}(\epsilon) + 2^{s_r^{\max} + 1})\right) \\
@@ -174,7 +168,6 @@ is sufficient to bound $|R^*|$.  For notational convenience, define $\omega = \m
 %\frac{\mathcal{K}^{-1}(\epsilon)}{2^{s_r^{\max} + 1}} + 1\right)\right).
 %\label{eqn:kde_ball}
 %\end{eqnarray}
-%\vspace*{-0.5em}
 
 %For notational convenience, define $\omega = \mathcal{K}^{-1}(\epsilon) /
 %2^{s_r^{\max} + 1} + 1$.  Applying the definition of expansion constant,
@@ -341,12 +334,10 @@ runtime is approximately $O(c_r^{22.15} \nu N)$.
 %= -\alpha / 4$, and $\mathcal{K}^{-1}(\epsilon) = \ln(\epsilon^{-1} - 1) /
 %\alpha + \beta$.  This gives the following expression for $\zeta$:
 
-%\vspace*{-0.8em}
 %\begin{equation}
 %\zeta = (1/4) ( \epsilon^{-1} \ln(\epsilon^{-1} - 1) +
 %(\beta \alpha) / \epsilon ).
 %\end{equation}
-%\vspace*{-0.8em}
 %
 %Now, consider the problem of range count, where the number of points in the
 %range $[0, u]$ for each query point $p_q \in S_q$ is desired.  If the sigmoidal
@@ -360,7 +351,6 @@ runtime is approximately $O(c_r^{22.15} \nu N)$.
 %$\zeta = O(\epsilon^{-1} \log \epsilon^{-1} + \epsilon^{-2} u) = O(\epsilon^{-2}
 %u)$.  Then, the runtime of approximate range count is bounded as
 %
-%\vspace*{-1em}
 %\begin{eqnarray}
 %\begin{equation}
 %O(c_r^{8 + \log_2(\epsilon^{-2} u)} \nu N) = O(c_r^{8 + 2 \log_2(\epsilon^{-1}) +
@@ -368,7 +358,6 @@ runtime is approximately $O(c_r^{22.15} \nu N)$.
 % = O(\epsilon^{-1} u c_r^{8 + 3 \log_2 c_r} \nu N).
 %\end{equation}
 %\end{eqnarray}
-%\vspace*{-1.5em}
 
 %Unfortunately, this bounding technique gives a bad relationship to the
 %approximation parameter $\epsilon$ (and rederivations with $\alpha \ne \epsilon$
