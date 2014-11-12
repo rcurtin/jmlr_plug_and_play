@@ -72,4 +72,18 @@ b(\mathscr{T}) = \sum_{\mathscr{N}_i \in \mathscr{T}} i(\mathscr{N}_i).
 \end{equation}
 \end{defn}
 
-It would be useful to bound $i(\mathscr{T})$.
+A perfectly balanced cover tree $\mathscr{T}_b$ with no missing levels has
+imbalance $i(\mathscr{T}_b) = 0$.  A worst-case cover tree $\mathscr{T}_w$ which
+is entirely a chain-like structure with maximum scale $s_{\max}$ and minimum
+scale $s_{\min}$ will have imbalance $i(\mathscr{T}_w) = N (s_{\max} -
+s_{\min})$.  Because of this chain-like structure, each level has only one node
+and thus there are at least $N$ levels; or, $s_{\max} - s_{\min} \ge N$, meaning
+that the imbalance is actually quadratic in $N$!
+
+As we will see later empirically, the notion of cover tree imbalance does a good
+job of capturing the `goodness' of a tree.  We will use this notion in order to
+quantify the worst-case performance of dual-tree algorithms using the cover
+tree.
+
+{\bf TODO: Can any bound be proven on $i(\mathscr{T})$?  I haven't thought of
+anything successfully yet.}

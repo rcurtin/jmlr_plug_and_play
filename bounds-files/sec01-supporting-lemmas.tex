@@ -1,29 +1,49 @@
 For simplicity, the algorithms considered in this paper will be presented in a
-tree-independent context, as in \cite{curtin2013tree}, but the only type of
-tree we will consider is the cover tree \cite{langford2006}, and the only type
-of traversal we will consider is the cover tree pruning dual-tree traversal, which
+tree-independent context, as in \cite{curtin2013tree}, but the only type of tree
+we will consider is the cover tree \cite{langford2006}, and the only type of
+traversal we will consider is the cover tree pruning dual-tree traversal, which
 we will describe below.
 
 As we will be making heavy use of trees, we must establish notation (taken from
-\cite{curtin2013tree}).  $\mathscr{T}_i$ represents a tree; $\mathscr{N}_i$
-represents a node; $\mathscr{C}(\mathscr{N}_i)$ is the set of children of the
-node $\mathscr{N}_i$; $\mathscr{P}(\mathscr{N}_i)$ is the set of points held in
-a node; and $\mathscr{D}^p(\mathscr{N}_i)$ is the set of all descendant points
-of the node $\mathscr{N}_i$.
+\cite{curtin2013tree}).  The notation we will be using is defined in Table
+\ref{tab:notation}.
 
-First, we will introduce the cover tree\footnote{In our discussions, we will
-only consider the explicit cover tree, as opposed to the implicit cover tree
-\cite{langford2006}.  This has the effect of making the traversal more complex,
-but it helps simplify our proofs.  Familiarity with the implicit cover tree
-representation should not
-be required for understanding any of our work here.}.  The cover tree is a
-leveled hierarchical data structure originally proposed for the task of nearest
-neighbor search by Beygelzimer et~al.~\cite{langford2006}.  Each cover tree node
-holds one point $p_i$ and may have a number of child nodes; if the cover tree
-node has children, then one child will be the self-child, which holds the same
-point.  In addition, each level in the tree is indexed by an integer scale
-$s_i$; as the tree is descended, $s_i$ decreases.  Every descendant of a node
-$\mathscr{N}_i$ has a maximum distance of $2^{s_i + 1}$ from $p_i$.
+\begin{table}
+{\small
+\begin{center}
+\begin{tabular}{|c|l|}
+\hline
+{\bf Symbol} & {\bf Description} \\ \hline
+$\mathscr{N}$ & A tree node \\ \hline
+$\mathscr{C}_i$ & Set of child nodes of $\mathscr{N}_i$ \\ \hline
+$\mathscr{P}_i$ & Set of points held in $\mathscr{N}_i$ \\ \hline
+$\mathscr{D}_i^n$ & Set of descendant nodes of $\mathscr{N}_i$ \\ \hline
+$\mathscr{D}_i^p$ & Set of points contained in $\mathscr{N}_i$ and
+$\mathscr{D}_i^n$ \\ \hline
+$\mu_i$ & Center of $\mathscr{N}_i$ (for cover trees, $\mu_i = p_i$) \\ \hline
+$\lambda_i$ & Furthest descendant distance \\ \hline
+\end{tabular}
+\end{center}
+}
+\caption{Notation for trees.  See \cite{curtin2013tree} for details.}
+\label{tab:notation}
+\end{table}
+
+The cover tree is a leveled hierarchical data structure originally proposed for
+the task of nearest neighbor search by Beygelzimer
+et~al.~\cite{langford2006}.  The original description of the tree describes both
+an {\it implicit} and {\it explicit} representation, where the explicit
+representation is the actual structure that would be implemented in practice.
+Thus, we will consider only the explicit representation in this paper.
+
+Each node $\mathscr{N}_i$ in the cover tree is indexed by an integer scale $s_i$
+and holds one point $p_i$ which is also the center of the node ($p_i = \mu_i$).
+The cover tree node may have a number of child nodes; if the cover tree node
+does have children, then one child will be the self-child, which holds the same
+point $p_i$ with a smaller scale $s_i$.  Each child of $\mathscr{N}_i$ will have
+scale less than $s_i$, and every descendant point of a node $\mathscr{N}_i$
+(that is, the set $\mathscr{D}_i^p$) has a maximum distance of $2^{s_i + 1}$
+from the point $p_i$.
 
 Assuming a cover tree $\mathscr{T}$ is built on a dataset $S_r$, let $C_{s_i}$
 denote the set of points held in all nodes in $\mathscr{T}$ with scale $s_i$.
@@ -70,11 +90,21 @@ The expansion constant is used heavily in the cover tree literature.  It is
 related to a notion of instrinic dimensionality, and in many scenarios, $c$ is
 independent of the number of points in the dataset \cite{langford2006,
 karger2002finding}.
-%properties of cover trees in \cite{langford2006}.
-One result we will use is that
-the number of children of any cover tree node is $c^4$ (Lemma 4.1,
-\cite{langford2006}), where $c$ is the expansion constant of the dataset the
-cover tree is built on.
+
+The expansion constant can be used to show a few useful bounds on various
+properties of the cover tree; we restate these results below, given some cover
+tree built on a dataset $S$ with expansion constant $c$ and $|S| = N$:
+
+\begin{itemize}
+  \item {\bf Width bound:} no cover tree node has more than $c^4$ children
+(Lemma 4.1, \cite{langford2006}).
+
+  \item {\bf Depth bound:} the maximum depth of any node is $O(c^2 \log N)$
+(Lemma 4.3, \cite{langford2006}).
+
+  \item {\bf Space bound:} a cover tree has $O(N)$ nodes (Theorem 1,
+\cite{langford2006}).
+\end{itemize}
 
 %\begin{lemma}
 %\label{lem:width}
@@ -89,78 +119,6 @@ cover tree is built on.
 %tree $\mathscr{T}_r$ is $O(c^2 \log N)$, where $N$ is the number of points in
 %the dataset that $\mathscr{T}_r$ is built on.
 %\end{lemma}
-
-Next we show the standard cover tree dual-tree pruning traversal, in a
-problem-independent form.  This is given in Algorithm \ref{alg:cover-tree-dual}.
-The algorithm is adapted from the original cover tree batch nearest neighbors
-algorithm \cite{langford2006} and implements the dual-tree recursion for the
-cover tree.  This traversal was first presented by Curtin and Ram
-\cite{curtin2014dual}.
-%
-The correctness of this
-traversal for various problem-dependent choices of the \texttt{BaseCase()} and
-the \texttt{Score()} functions has been proven \cite{curtin2013tree}.
-%  Now, we must introduce the inverse degree of bichromaticity.
-
-\begin{algorithm}[htb]
-  \begin{algorithmic}[1]
-    \STATE {\bfseries Input:} query node $\mathscr{N}_q$, set of reference nodes
-$R$ \label{alg:line:ct-dual-input}
-    \STATE {\bfseries Output:} none
-
-    \medskip
-    \STATE $s^{\max}_r \gets \max_{\mathscr{N}_r \in R} s_r$
-    \IF{$(s_q < s^{\max}_r)$ {\bf or} $(s^{\max}_r = -\infty)$}
-\label{alg:line:ct-dual-ref-recursion-start}
-      \FORALL{$\mathscr{N}_r \in R$} \label{alg:line:ct-dual-base-case-start}
-        \STATE \texttt{BaseCase($p_q$, $p_r$)}
-      \ENDFOR \label{alg:line:ct-dual-base-case-end}
-      \STATE $R_r \gets \{ \mathscr{N}_r \in R : s_r = s^{\max}_r \}$
-\label{alg:line:ct-dual-ref-set}
-      \STATE $R_{r - 1} \gets \{ \mathscr{C}(\mathscr{N}_r) : \mathscr{N}_r \in
-R_r \} \cup (R \setminus R_r)$ \label{alg:line:ct-dual-ref-children}
-      \STATE $R'_{r - 1} \gets \{ \mathscr{N}_r \in R_{r - 1} :
-\texttt{Score(}\mathscr{N}_q\texttt{,} \mathscr{N}_r\texttt{)} \ne \infty \}$
-\label{alg:line:ct-dual-ref-score}
-      \STATE recurse with $\mathscr{N}_q$ and $R'_{r - 1}$
-\label{alg:line:ct-dual-ref-recursion-end}
-    \ELSE \label{alg:line:ct-dual-query-recursion-start}
-      \FORALL{$\mathscr{N}_{qc} \in \mathscr{C}(\mathscr{N}_q)$}
-        \STATE $R' \gets \{ \mathscr{N}_r \in R :
-\texttt{Score(}\mathscr{N}_q\texttt{,} \mathscr{N}_r\texttt{)} \ne \infty \}$
-\label{alg:line:ct-dual-query-pruning}
-        \STATE recurse with $\mathscr{N}_{qc}$ and $R'$
-\label{alg:line:ct-dual-query-recursion}
-      \ENDFOR \label{alg:line:ct-dual-query-recursion-end}
-    \ENDIF
-  \end{algorithmic}
-  \caption{The standard pruning dual-tree traversal for cover trees.}
-  \label{alg:cover-tree-dual}
-\end{algorithm}
-
-\begin{defn}
-\label{def:bichromaticity}
-Let $\mathscr{T}_q$ and $\mathscr{T}_r$ be two cover trees built on query set
-$S_q$ and reference set $S_r$, respectively.  Now consider a pruning dual-tree
-traversal (such as Algorithm \ref{alg:cover-tree-dual}) with the property that
-the scales of nodes in $\mathscr{T}_q$ and $\mathscr{T}_r$ are kept as close as
-possible---that is, the tree with the larger scale is always descended.  Then,
-the {\bf inverse degree of bichromaticity} $\nu$ of the tree pair
-$(\mathscr{T}_q, \mathscr{T}_r)$ is the maximum number of recursions in
-$\mathscr{T}_r$ following a recursion in $\mathscr{T}_q$ before another
-recursion in $\mathscr{T}_q$ or the termination of the algorithm (whichever
-happens first).
-
-This quantity is related to the {\bf degree of bichromaticity} $\kappa$
-\cite{ram2009}, which is the maximum number of recursions in $\mathscr{T}_q$
-between any two recursions in $\mathscr{T}_r$.
-\end{defn}
-
-Although $\kappa$ and $\nu$ can be difficult to bound, it is reasonable to
-%monochromatic case where $S_q = S_r$, the trees $\mathscr{T}_q$ and
-%$\mathscr{T}_r$ are identical, so $\kappa = \nu = 1$.  It is reasonable to
-say that $\kappa \sim \nu \sim O(1)$ for datasets with roughly similar
-distributions of pairwise distances.
 
 \begin{lemma}
 Consider a dataset $S$ with expansion constant $c$ and a subset $C \subseteq S$

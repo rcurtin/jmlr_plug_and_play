@@ -135,9 +135,9 @@ guarantee for dual-tree based range search.
 %
 A surprising number of machine learning algorithms have computational
 bottlenecks that can be expressed as pairwise statistical problems.
-All-nearest-neighbor search is one such problem, naively requiring $O(N)$ time
+Nearest neighbor search is one such problem, naively requiring $O(N)$ time
 to answer in single query in a reference set of size $N$; answering $O(N)$
-queries subsequently requiring the prohibitive $O(N^2)$ time. Kernel density
+queries subsequently requires prohibitive $O(N^2)$ time. Kernel density
 estimation is also a pairwise statistical problem, naively requiring $O(N^2)$
 time to answer $O(N)$ queries. The reference set is typically indexed with
 spatial data structures to accelerate this type of computation
@@ -181,6 +181,25 @@ Some of these algorithms are derived using the cover tree
 \cite{langford2006}, a data structure with beneficial theoretical qualities.
 Dual-tree all nearest-neighbor search and approximate kernel density estimation with cover trees have $O(N)$ runtime guarantees for $O(N)$ queries \cite{ram2009}; minimum spanning tree calculation scales as $O(N \log N)$ \cite{march2010euclidean}. Other problems have similar worst-case guarantees \cite{curtin2014dual, march2013multi}.
 % Is there a better reference for the npcf runtime bound?
+
+Gray and Moore \cite{nbody} generalized the fast multipole method from
+computational physics to obtain dual-tree algorithms.  These are extremely
+useful when there are large query sets, not just a few query points.  Dual-tree
+algorithms can be easily understood through the recent framework of Curtin
+et~al. \cite{curtin2013tree}: two trees (a query tree and a reference tree) are
+traversed by a {\it pruning dual-tree traversal}.  This traversal visits
+combinations of nodes from the trees in some sequence (each combination consisting of a query node and a
+reference node), calling a problem-specific \texttt{Score()} function to
+determine if the node combination can be pruned.  If not, then a
+problem-specific \texttt{BaseCase()} function is called for each combination of
+points held in the query node and reference node.  This has significant
+similarity to the more common single-tree branch-and-bound algorithms, except
+that the algroithm must recurse into child nodes of {\it both} the query tree
+and reference tree.
+
+There exist numerous dual-tree algorithms for problems as diverse as kernel
+density estimation \cite{gray2003nonparametric}, mean shift \cite{wang2007fast},
+minimum spanning tree calcul
 
 %\item General tree/problem independent dual-tree algorithms (maybe)
 %\item What is lacking -- general dual-tree analysis (since the algorithms are so similar in structure)
