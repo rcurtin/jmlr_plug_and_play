@@ -61,8 +61,8 @@ too, especially in higher dimensions.}.
 \begin{center}
   \input{figures/single-outlier-tree.tex}
 \end{center}
-\caption{Single-outlier cover tree.}
 \label{fig:outlier}
+\caption{Single-outlier cover tree.}
 \end{figure}
 
 \begin{figure}
@@ -80,22 +80,25 @@ imbalance.
 \begin{defn}
 The {\it cover node imbalance} $i(\mathscr{N}_i)$ for a cover tree node
 $\mathscr{N}_i$ with scale $s_i$ in the cover tree $\mathscr{T}$ is defined as
-the cumulative number of missing levels between the node and its children.  If
-the node has a leaf child (which has level $-\infty$), then number of missing
-levels is defined as the difference between $s_i$ and $s_{\min} - 1$ where
-$s_{\min}$ is the smallest scale of a non-leaf node in $\mathscr{T}$.
+the cumulative number of missing levels between the node and its parent
+$\mathscr{N}_p$ (which has scale $s_p$).  If
+the node is a leaf child (that is, $s_i = -\infty$), then number of missing
+levels is defined as the difference between $s_p$ and $s_{\min} - 1$ where
+$s_{\min}$ is the smallest scale of a non-leaf node in $\mathscr{T}$.  If
+$\mathscr{N}_i$ is the root of the tree, then the cover node imbalance is 0.
 Explicitly written, this calculation is
 
 \begin{equation}
-i(\mathscr{N}_i) = \left( \sum_{\mathscr{N}_c \in \mathscr{C}(\mathscr{N}_i),
-\mathscr{C}(\mathscr{N}_c) \ne \emptyset} s_i - s_c - 1 \right) + \left(
-\sum_{\mathscr{N}_c \in \mathscr{C}(\mathscr{N}_i), \mathscr{C}(\mathscr{N}_c) =
-\emptyset} \max(s_i - s_{\min} - 1, 0) \right).
+i(\mathscr{N}_i) = \begin{dcases*}
+  s_p - s_i - 1 & if $\mathscr{N}_i$ is not a leaf and not the root node \\
+  \max(s_p - s_{\min} - 1, \; 0) & if $\mathscr{N}_i$ is a leaf \\
+  0 & if $\mathscr{N}_i$ is the root node.
+  \end{dcases*}
 \end{equation}
 \end{defn}
 
-Given this definition for a single node, then, we can generalize to the full
-tree.
+This simple definition of cover node imbalance is easy to calculate, and using
+it, we can generalize to a measure of imbalance for the full tree.
 
 \begin{defn}
 The {\it cover tree imbalance} $b(\mathscr{T})$ for a cover tree $\mathscr{T}$
@@ -108,12 +111,13 @@ b(\mathscr{T}) = \sum_{\mathscr{N}_i \in \mathscr{T}} i(\mathscr{N}_i).
 \end{defn}
 
 A perfectly balanced cover tree $\mathscr{T}_b$ with no missing levels has
-imbalance $i(\mathscr{T}_b) = 0$.  A worst-case cover tree $\mathscr{T}_w$ which
-is entirely a chain-like structure with maximum scale $s_{\max}$ and minimum
-scale $s_{\min}$ will have imbalance $i(\mathscr{T}_w) = N (s_{\max} -
-s_{\min})$.  Because of this chain-like structure, each level has only one node
-and thus there are at least $N$ levels; or, $s_{\max} - s_{\min} \ge N$, meaning
-that the imbalance is actually quadratic in $N$!
+imbalance $i(\mathscr{T}_b) = 0$ (for instance, Figure
+\ref{fig:imbalance-good}).  A worst-case cover tree $\mathscr{T}_w$ which is
+entirely a chain-like structure with maximum scale $s_{\max}$ and minimum scale
+$s_{\min}$ will have imbalance $i(\mathscr{T}_w) \sim N (s_{\max} - s_{\min})$.
+Because of this chain-like structure, each level has only one node and thus
+there are at least $N$ levels; or, $s_{\max} - s_{\min} \ge N$, meaning that the
+imbalance is actually quadratic in $N$!
 
 As we will see later empirically, the notion of cover tree imbalance does a good
 job of capturing the `goodness' of a tree.  We will use this notion in order to
