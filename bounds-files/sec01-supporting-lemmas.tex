@@ -1,11 +1,11 @@
 For simplicity, the algorithms considered in this paper will be presented in a
-tree-independent context, as in \cite{curtin2013tree}, but the only type of tree
-we will consider is the cover tree \cite{langford2006}, and the only type of
-traversal we will consider is the cover tree pruning dual-tree traversal, which
-we will describe below.
+tree-independent context, as in \citet{curtin2013tree}, but the only type of
+tree we will consider is the cover tree \citep{langford2006}, and the only type
+of traversal we will consider is the cover tree pruning dual-tree traversal,
+which we will describe below.
 
-As we will be making heavy use of trees, we must establish notation (taken from
-\cite{curtin2013tree}).  The notation we will be using is defined in Table
+As we will be making heavy use of trees, we must establish notation \citep[taken
+from][]{curtin2013tree}.  The notation we will be using is defined in Table
 \ref{tab:notation}.
 
 \begin{table}
@@ -30,11 +30,11 @@ $\lambda_i$ & Furthest descendant distance \\ \hline
 \end{table}
 
 The cover tree is a leveled hierarchical data structure originally proposed for
-the task of nearest neighbor search by Beygelzimer
-et~al.~\cite{langford2006}.  The original description of the tree describes both
-an {\it implicit} and {\it explicit} representation, where the explicit
-representation is the actual structure that would be implemented in practice.
-Thus, we will consider only the explicit representation in this paper.
+the task of nearest neighbor search.  The original description of the tree
+describes both an {\it implicit} and {\it explicit} representation, where the
+explicit representation is the actual structure that would be implemented in
+practice.  Thus, we will consider only the explicit representation in this
+paper.
 
 Each node $\mathscr{N}_i$ in the cover tree is indexed by an integer scale $s_i$
 and holds one point $p_i$ which is also the center of the node ($p_i = \mu_i$).
@@ -65,9 +65,12 @@ $d(p_i, p_j) > 2^{s_i}$.
 
 \end{itemize}
 
-A batch construction algorithm is given in \cite{langford2006}.  In addition,
-the cover tree has a number of other useful properties and lemmas based on the
-expansion constant \cite{karger2002finding}; we restate the definition below.
+A batch construction algorithm is given by \citet{langford2006}, called
+\texttt{Construct}; but the details of construction are not relevant to our
+work, so we only mention this as a reference.  More relevant to our work is the
+number of useful and unique theoretical properties the cover tree possesses,
+based on the expansion constant \citep{karger2002finding}; we restate the
+definition below.
 
 \begin{defn}
 \label{def:int_dim}
@@ -87,9 +90,9 @@ smallest $c \ge 2$ such that
 \end{defn}
 
 The expansion constant is used heavily in the cover tree literature.  It is
-related to a notion of instrinic dimensionality, and in many scenarios, $c$ is
-independent of the number of points in the dataset \cite{langford2006,
-karger2002finding}.
+related to a notion of instrinic dimensionality, and previous work has shown
+that there are many scenarios where $c$ is independent of the number of points
+in the dataset.
 
 The expansion constant can be used to show a few useful bounds on various
 properties of the cover tree; we restate these results below, given some cover
@@ -120,6 +123,10 @@ tree built on a dataset $S$ with expansion constant $c$ and $|S| = N$:
 %the dataset that $\mathscr{T}_r$ is built on.
 %\end{lemma}
 
+Lastly, we introduce a convenience lemma of our own which is a generalization of
+the packing arguments used by \citet{langford2006}.  This is a more flexible
+version of their argument.
+
 \begin{lemma}
 Consider a dataset $S$ with expansion constant $c$ and a subset $C \subseteq S$
 such that every point in $C$ is separated by $\delta$.  Then, given any query
@@ -144,4 +151,5 @@ perfect, and
 \begin{equation}
 |B_S(p, \rho \delta)| \le \frac{|B_S(p_i, 2 \rho \delta)|}{|B_S(p_i, \delta
 / 2)|} \le c^{2 + \log_2 \rho}.
-\end{equation}\end{proof}
+\end{equation}
+\end{proof}

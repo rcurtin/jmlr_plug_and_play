@@ -1,4 +1,5 @@
-\documentclass{article} % For LaTeX2e
+\documentclass[twoside,11pt]{article} % For LaTeX2e
+\usepackage{jmlr2e}
 \usepackage{hyperref}
 \hypersetup{colorlinks,
             urlcolor=blue,
@@ -7,60 +8,17 @@
 \usepackage{url}
 %\documentstyle[nips13submit_09,times,art10]{article} % For LaTeX 2.09
 \usepackage{mathrsfs}
-\usepackage{amsthm}
+%\usepackage{amsthm}
 \usepackage{amsmath}
 \usepackage{amsfonts}
-\usepackage{amssymb}
+%\usepackage{amssymb}
 \usepackage{algorithmic}
 \usepackage{algorithm}
 \usepackage{color}
 
 \usepackage{pstricks}
 \usepackage{tikz}
-%\usepackage{subcaption}
-
-\title{Plug-and-play dual-tree algorithm runtime analysis}
-\author{Ryan R. Curtin, Dongryeol Lee, William B. March, Parikshit Ram}
-\date{\today}
-
-%\author{
-%David S.~Hippocampus\thanks{ Use footnote for providing further information
-%about author (webpage, alternative address)---\emph{not} for acknowledging
-%funding agencies.} \\
-%Department of Computer Science\\
-%Cranberry-Lemon University\\
-%Pittsburgh, PA 15213 \\
-%\texttt{hippo@cs.cranberry-lemon.edu} \\
-%\And
-%Coauthor \\
-%Affiliation \\
-%Address \\
-%\texttt{email} \\
-%\AND
-%Coauthor \\
-%Affiliation \\
-%Address \\
-%\texttt{email} \\
-%\And
-%Coauthor \\
-%Affiliation \\
-%Address \\
-%\texttt{email} \\
-%\And
-%Coauthor \\
-%Affiliation \\
-%Address \\
-%\texttt{email} \\
-%(if needed)\\
-%}
-
-% The \author macro works with any number of authors. There are two commands
-% used to separate the names and addresses of multiple authors: \And and \AND.
-%
-% Using \And between authors leaves it to \LaTeX{} to determine where to break
-% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
-% puts 3 of 4 authors names on the first line, and the last on the second
-% line, try using \AND instead of \And before the third author name.
+\usepackage{subcaption}
 
 \newcommand{\fix}{\marginpar{FIX}}
 \newcommand{\new}{\marginpar{NEW}}
@@ -78,15 +36,36 @@
 \renewcommand{\algorithmicrepeat}{\textbf{do}}
 \renewcommand{\algorithmicuntil}{\textbf{while}}
 
+%\newtheorem{defn}{Definition}
+%\newtheorem{thm}{Theorem}
+%\newtheorem{lemma}{Lemma}
+%\newtheorem{cor}{Corollary}
 \newtheorem{defn}{Definition}
 \newtheorem{thm}{Theorem}
-\newtheorem{lemma}{Lemma}
 \newtheorem{cor}{Corollary}
-
 
 
 \begin{document}
 
+\title{Plug-and-play dual-tree algorithm runtime analysis}
+
+\author{\name Ryan R. Curtin \email ryan@ratml.org\\
+  \addr School of Computational Science and Engineering\\
+  Georgia Institute of Technology\\
+  Atlanta, GA 30332-0250, USA
+  \AND
+  \name Dongryeol Lee \email drselee@gmail.com\\
+  \addr GE Research\\
+  Schenedectadadaty, NY\\
+  \AND
+  \name William B. March \email march@ices.utexas.edu\\
+  \addr Austin, TX, USA\\
+  \AND
+  \name Parikshit Ram \email p.ram@gatech.edu\\
+  \addr Skytree
+}
+
+\editor{Unknown}
 
 \maketitle
 
@@ -126,10 +105,10 @@ queries subsequently requires prohibitive $O(N^2)$ time. Kernel density
 estimation is also a pairwise statistical problem, naively requiring $O(N^2)$
 time to answer $O(N)$ queries. The reference set is typically indexed with
 spatial data structures to accelerate this type of computation
-\cite{finkel1974quad, langford2006}; these result in $O(\log N)$ runtime per
+\citep{finkel1974quad, langford2006}; these result in $O(\log N)$ runtime per
 query under favorable conditions.
 
-Gray and Moore \cite{nbody} generalized the fast multipole method from
+\citet{nbody} generalized the fast multipole method from
 computational physics to obtain dual-tree algorithms.  These are extremely
 useful when there are large query sets, not just a few query points.  Instead of
 building a tree on the reference set and searching with each query point
@@ -138,7 +117,7 @@ both the query and reference trees simultaneously (a {\it dual-tree traversal},
 from which the class of algorithms takes its name).
 
 Dual-tree algorithms can be easily understood through the recent framework of
-Curtin et~al. \cite{curtin2013tree}: two trees (a query tree and a reference
+\citet{curtin2013tree}: two trees (a query tree and a reference
 tree) are traversed by a {\it pruning dual-tree traversal}.  This traversal
 visits combinations of nodes from the trees in some sequence (each combination
 consisting of a query node and a reference node), calling a problem-specific
@@ -150,41 +129,42 @@ algorithms, except that the algroithm must recurse into child nodes of {\it
 both} the query tree and reference tree.
 
 There exist numerous dual-tree algorithms for problems as diverse as kernel
-density estimation \cite{gray2003nonparametric}, mean shift \cite{wang2007fast},
-minimum spanning tree calculation \cite{march2010euclidean}, $n$-point
-correlation function estimation \cite{march2012fast}, max-kernel search
-\cite{curtin2013fast}, particle smoothing \cite{klaas2006fast}, variational
-inference \cite{amizadeh2012variational}, and range search \cite{nbody}, to name
+density estimation \citep{gray2003nonparametric}, mean shift \citep{wang2007fast},
+minimum spanning tree calculation \citep{march2010euclidean}, $n$-point
+correlation function estimation \citep{march2012fast}, max-kernel search
+\citep{curtin2013fast}, particle smoothing \citep{klaas2006fast}, variational
+inference \citep{amizadeh2012variational}, and range search \citep{nbody}, to name
 a few.
 
-Some of these algorithms are derived using the cover tree \cite{langford2006}, a
+Some of these algorithms are derived using the cover tree \citep{langford2006}, a
 data structure with beneficial theoretical qualities.  Dual-tree all
 nearest-neighbor search and approximate kernel density estimation with cover
-trees have $O(N)$ runtime guarantees for $O(N)$ queries \cite{ram2009}; minimum
-spanning tree calculation scales as $O(N \log N)$ \cite{march2010euclidean}.
-Other problems have similar worst-case guarantees \cite{curtin2014dual,
+trees have $O(N)$ runtime guarantees for $O(N)$ queries \citep{ram2009}; minimum
+spanning tree calculation scales as $O(N \log N)$ \citep{march2010euclidean}.
+Other problems have similar worst-case guarantees \citep{curtin2014dual,
 march2013multi}.
 
-In this work we combine the generalization of Curtin et~al.
-\cite{curtin2013tree} with the theoretical results of Beygelzimer et~al.
-\cite{langford2006} (and others) in order to develop a worst-case runtime bound
-for any dual-tree algorithm when the cover tree is used.
+In this work we combine the generalization of \citet{curtin2013tree} with the
+theoretical results of \citet{langford2006} and others in order to develop a
+worst-case runtime bound for any dual-tree algorithm when the cover tree is
+used.
 
 Section \ref{sec:preliminaries} lays out the required background, notation, and
 introduces the cover tree and its associated theoretical properties.  Readers
-familiar with the cover tree literature and dual-tree algorithms (especially
-\cite{curtin2013tree}) may find that section to be review.  Following that, we
-introduce an intuitive measure of cover tree imbalance in Section
-\ref{sec:imbalance}.  This measure of imbalance is then used to prove the main
-result of the paper in Section \ref{sec:bound}, which is a worst-case runtime
-bound for generalized dual-tree algorithms.  We apply this result to three
-specific problems: nearest neighbor search (Section \ref{sec:nns}), approximate
-kernel density estimation (Section \ref{sec:akde}), and range search / range
-count (Section \ref{sec:rs}), showing linear runtime bounds for each of those
-algorithms.  Each of these bounds is an improvement on the state-of-the-art, and
-in the case of range search, is the first such bound.  We then investigate the
-empirical performance of cover trees for these algorithms, with a focus on
-understanding the dataset-dependent constants that our bounds use.
+familiar with the cover tree literature and dual-tree algorithms
+\citep[especially][]{curtin2013tree} may find that section to be review.
+Following that, we introduce an intuitive measure of cover tree imbalance in
+Section \ref{sec:imbalance}.  This measure of imbalance is then used to prove
+the main result of the paper in Section \ref{sec:bound}, which is a worst-case
+runtime bound for generalized dual-tree algorithms.  We apply this result to
+three specific problems: nearest neighbor search (Section \ref{sec:nns}),
+approximate kernel density estimation (Section \ref{sec:akde}), and range search
+/ range count (Section \ref{sec:rs}), showing linear runtime bounds for each of
+those algorithms.  Each of these bounds is an improvement on the
+state-of-the-art, and in the case of range search, is the first such bound.  We
+then investigate the empirical performance of cover trees for these algorithms,
+with a focus on understanding the dataset-dependent constants that our bounds
+use.
 
 \section{Preliminaries}
 \label{sec:preliminaries}
@@ -224,7 +204,7 @@ understanding the dataset-dependent constants that our bounds use.
 
 \input{bounds-files/conclusion.tex}
 
-\bibliographystyle{plain}
+%\bibliographystyle{plain}
 \bibliography{bounds}
 
 % Appendix doesn't have anything useful or non-straightforward.
