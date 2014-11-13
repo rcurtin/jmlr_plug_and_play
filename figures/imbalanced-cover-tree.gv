@@ -1,0 +1,25 @@
+digraph bct {
+  size="4,4";
+  node [color=black, fillcolor=lightgray, style=filled];
+
+  root[label="a"]
+
+  c4[label="e"]
+  c2[label="c"]
+  c10[label="k"]
+
+  c6[label="g"]
+  c7[label="h"]
+  c8[label="i"]
+
+
+  root -> c4;
+  root -> c2;
+  root -> c10;
+
+  c2 -> c6;
+  c2 -> c7;
+  c2 -> c8;
+
+  {rank=same; c4 c6 c7 c8 c10}
+}

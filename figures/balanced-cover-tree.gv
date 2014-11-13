@@ -1,0 +1,36 @@
+digraph bct {
+  size="4,4";
+  node [color=black, fillcolor=lightgray, style=filled];
+
+  subgraph l1 {
+    root[label="a"]
+  }
+
+  subgraph l2 {
+    c1[label="b"]
+    c2[label="c"]
+    c3[label="d"]
+  }
+
+  subgraph l3 {
+    c4[label="e"]
+    c5[label="f"]
+    c6[label="g"]
+    c7[label="h"]
+    c8[label="i"]
+    c9[label="j"]
+    c10[label="k"]
+  }
+
+  root -> c1;
+  root -> c2;
+  root -> c3;
+
+  c1 -> c4;
+  c1 -> c5;
+  c2 -> c6;
+  c2 -> c7;
+  c2 -> c8;
+  c3 -> c9;
+  c3 -> c10;
+}

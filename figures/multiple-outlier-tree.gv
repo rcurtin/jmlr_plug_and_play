@@ -1,0 +1,78 @@
+digraph bct {
+  ranksep="0.2 equally"
+  size="8,8";
+  node [color=black, fillcolor=lightgray, style=filled, shape=circle, width=0.05];
+
+  root[label="",group=root,pos="4,4!"]
+
+  c1[label=""]
+  c2[label=""]
+  c3[label=""]
+  c4[label=""]
+  c5[label=""]
+  c6[label=""]
+  c7[label=""]
+  c8[label=""]
+  c9[label=""]
+  c10[label=""]
+  c11[label=""]
+  c12[label=""]
+  c13[label=""]
+  c14[label=""]
+  c15[label=""]
+  c16[label=""]
+  c17[label=""]
+  c18[label=""]
+  c19[label=""]
+  c20[label=""]
+  c21[label=""]
+  c22[label=""]
+  c23[label=""]
+  c24[label=""]
+  c25[label=""]
+  c26[label=""]
+  c27[label=""]
+  c28[label=""]
+  c29[label=""]
+  c30[label=""]
+  c31[label=""]
+  c32[label=""]
+  c33[label=""]
+  c34[label=""]
+  c35[label=""]
+  c36[label=""]
+  c37[label=""]
+  c38[label=""]
+  c39[label=""]
+
+  // level 1
+  root -> {c1 c2};
+
+  c2 -> {c3 c4};
+
+  c4 -> {c5 c6};
+
+  c6 -> {c7 c8};
+
+  c8 -> {c9 c10};
+
+  c10 -> {c11 c12};
+
+  c12 -> {c13 c14};
+
+  c14 -> {c15 c16 c17};
+
+  c16 -> {c18 c19 c20};
+  c17 -> {c21 c22 c23 c24};
+
+  c18 -> {c25 c26};
+  c19 -> {c27};
+  c20 -> {c28 c29 c30};
+  c21 -> {c31 c32};
+  c22 -> {c33};
+  c23 -> {c34 c35 c36 c37};
+  c24 -> {c38 c39};
+
+  {rank=same; c1 c3 c5 c7 c9 c11 c13 c15 c25 c26 c27 c28 c29 c30 c31 c32 c33 c34
+c35 c36 c37 c38 c39};
+}
