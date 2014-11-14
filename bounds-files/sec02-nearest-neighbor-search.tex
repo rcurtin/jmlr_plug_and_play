@@ -1,21 +1,3 @@
-Consider nearest neighbor search, given as a \texttt{BaseCase()} function
-(Algorithm \ref{alg:nn_base_case}) and a \texttt{Score()} function (Algorithm
-\ref{alg:nn_score}).  The goal is, for every query point $p_q$, find the nearest
-neighbor $p_r$ in the reference set $S_r$.  This algorithm stores the current
-nearest neighbor candidates in the array $N$ and their distances in the array
-$D$.\footnote{See Curtin et.~al. \cite{curtin2013tree} for a more complete
-discussion of how this algorithm works and a proof of correctness.}  The
-\texttt{Score()} function depends on a bound function $B(\mathscr{N}_q)$ which
-represents the maximum distance that could possibly improve a nearest neighbor
-candidate for any descendant point of the query node $\mathscr{N}_q$.  The
-standard bound function $B(\mathscr{N}_q)$ used for cover trees is
-%\begin{equation}
-$B(\mathscr{N}_q) \le D[p_q] + 2^{s_q + 1}$ (this is adapted from
-Beygelzimer et.~al. \cite{langford2006}).
-%\end{equation}
-
-%\begin{figure}
-
 %\begin{minipage}{0.4\textwidth}
 \begin{algorithm}[tb]
 %\begin{subfigure}[b]{0.48\textwidth}
@@ -67,6 +49,32 @@ $\mathscr{N}_r$
 %\end{minipage}
 %\end{subfigure}
 %\end{figure}
+
+The standard task of nearest neighbor search can be simply described: given a
+query set $S_q$ and a reference set $S_r$, for each query point $p_q \in S_q$,
+find the nearest neighbor $p_r$ in the reference set $S_r$.  The task is
+well-studied and well-known, and there exist numerous approaches for both exact
+and approximate nearest neighbor search, including the cover tree nearest
+neighbor search algorithm due to \citet{langford2006}.  We will consider that
+algorithm, but in a tree-independent sense as given by \citet{curtin2013tree};
+this means that to describe the algorithm, we require only a \texttt{BaseCase()}
+and \texttt{Score()} function; these are given in Algorithms
+\ref{alg:nn_base_case} and \ref{alg:nn_score}, respectively.
+
+Given a type of tree and traversal, these two functions store the current
+nearest neighbor candidates in the array $N$ and their distances in the array
+$D$. \citep[see][for a more complete
+discussion of how this algorithm works and a proof of
+correctness.]{curtin2013tree}  The
+\texttt{Score()} function depends on a bound function $B(\mathscr{N}_q)$ which
+represents the maximum distance that could possibly improve a nearest neighbor
+candidate for any descendant point of the query node $\mathscr{N}_q$.  The
+standard bound function $B(\mathscr{N}_q)$ used for cover trees is
+%\begin{equation}
+$B(\mathscr{N}_q) \le D[p_q] + 2^{s_q + 1}$ \citep[this is adapted from][]{langford2006}.
+%\end{equation}
+
+%\begin{figure}
 
 %\begin{equation}
 %\begin{split}
