@@ -163,16 +163,16 @@ approximate kernel density estimation (Section \ref{sec:akde}), and range search
 / range count (Section \ref{sec:rs}), showing linear runtime bounds for each of
 those algorithms.  Each of these bounds is an improvement on the
 state-of-the-art, and in the case of range search, is the first such bound.  We
-then investigate the empirical performance of cover trees for these algorithms,
-with a focus on understanding the dataset-dependent constants that our bounds
-use.
+then investigate the empirical performance of cover trees for these algorithms
+in Section \ref{sec:emp}, with a focus on understanding the dataset-dependent
+constants that our bounds use.
 
 \section{Preliminaries}
 \label{sec:preliminaries}
 
 \input{bounds-files/sec01-supporting-lemmas.tex}
 
-\section{Tree Imbalance}
+\section{Tree imbalance}
 \label{sec:imbalance}
 
 \input{bounds-files/imbalance.tex}
@@ -192,7 +192,7 @@ use.
 
 \input{bounds-files/sec03-approx-kde.tex}
 
-\section{Range Search and Range Count}
+\section{Range search and range count}
 \label{sec:rs}
 
 \input{bounds-files/sec04-range-search.tex}
@@ -200,6 +200,11 @@ use.
 %\section{Range Search with Aspect Ratio}
 
 %\input{bounds-files/sec05-range-search-aspect-ratio.tex}
+
+\section{Empirical investigations}
+\label{sec:emp}
+
+\input{bounds-files/empirical.tex}
 
 \section{Conclusion}
 

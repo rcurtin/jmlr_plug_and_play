@@ -45,9 +45,10 @@ value approximation scheme and the relative value approximation scheme.
 \subsection{Absolute value approximation}
 
 A tree-independent algorithm for solving approximate kernel density estimation
+with absolute value approximation
 is given as a \texttt{BaseCase()} function in Algorithm \ref{alg:kde_base_case}
-and a \texttt{Score()} function in Algorithm \ref{alg:kde_score} (a correctness
-proof can be found in \cite{curtin2013tree}).  This function
+and a \texttt{Score()} function in Algorithm \ref{alg:kde_score}  \citep[a
+correctness proof can be found in][]{curtin2013tree}.  This function
 assumes a shift-invariant kernel $\mathcal{K}(p_i, p_j) = \mathcal{K}(d( p_i,
 p_j ))$.  The list $f_p$ holds partial kernel density estimates for
 each query point, and the list $f_n$ holds partial kernel density
@@ -62,10 +63,11 @@ f_n(\mathscr{N}_i)$, where $T$ is the set of nodes in $\mathscr{T}_q$ that
 have $p_q$ as a descendant.  %It is possible to implement this in a way where
 Each query node needs to be visited only once.
 
-Note that this version is far simpler than the algorithm proposed in,
-e.g., \cite{gray2003nonparametric}; however, it is sufficient for our runtime
-analysis.  Real-world implementations, such as the one found in \textbf{mlpack}
-\cite{mlpack2013}, tend to be far more complex.
+Note that this version is far simpler than other dual-tree algorithms that have
+been proposed for approximate kernel density estimation \citep[see, for
+instance][]{gray2003nonparametric}; however, this version is sufficient for our
+runtime analysis.  Real-world implementations, such as the one found in
+\textbf{mlpack} \citep{mlpack2013}, tend to be far more complex.
 
 \begin{algorithm}[tb]
   \begin{algorithmic}[1]
@@ -103,22 +105,55 @@ $\mathscr{N}_r$, list of node kernel estimates $\hat{f}_n$
 \mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r))$
   \end{algorithmic}
 
-  \caption{Approximate kernel density estimation \texttt{Score()}}
+  \caption{Absolute-value approximate kernel density estimation
+\texttt{Score()}}
   \label{alg:kde_score}
 \end{algorithm}
 
+\begin{algorithm}[tb]
+  \begin{algorithmic}[1]
+    \STATE {\bfseries Input:} query node $\mathscr{N}_q$, reference node
+$\mathscr{N}_r$, list of node kernel estimates $\hat{f}_n$
+    \STATE {\bfseries Output:} a score for the node combination $(\mathscr{N}_q,
+\mathscr{N}_r)$, or $\infty$ if the combination should be pruned
+
+    \medskip
+
+    \IF{$\mathcal{K}(d_{\min}(\mathscr{N}_q, \mathscr{N}_r)) -
+\mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r)) /
+\mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r)) < \epsilon$}
+      \STATE $f_n(\mathscr{N}_q) \gets f_n(\mathscr{N}_q) + |
+\mathscr{D}^p(\mathscr{N}_r) | \left(\mathcal{K}(d_{\min}(\mathscr{N}_q,
+\mathscr{N}_r)) + \mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r))\right) /\;2$
+      \RETURN $\infty$
+    \ENDIF
+
+    \RETURN $\mathcal{K}(d_{\min}(\mathscr{N}_q, \mathscr{N}_r)) -
+\mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r))$
+  \end{algorithmic}
+
+  \caption{Relative-value approximate kernel density estimation
+\texttt{Score()}}
+  \label{alg:kde_rva_score}
+\end{algorithm}
+
 \begin{thm}
-Assume that $\mathcal{K}(p_i, p_j) = \mathcal{K}\left(d(p_i, p_j)\right)$ is a shift-invariant kernel with some bandwidth $h > 0$, where $\mathcal{K}(x)$ is smooth, non-negative, monotonically decreasing, and concave for $x \in [0, h]$ and convex for $x \in (h, \infty)$. Then, given a query set $S_q$ and a reference set $S_r$ with
-expansion constant $c_r$, an inverse degree of bichromaticity $\nu$ and using the
+Assume that $\mathcal{K}(p_i, p_j) = \mathcal{K}\left(d(p_i, p_j)\right)$ is a
+shift-invariant kernel with some bandwidth $h > 0$, where $\mathcal{K}(x)$ is
+smooth, non-negative, monotonically decreasing, and concave for $x \in [0, h]$
+and convex for $x \in (h, \infty)$. Then, given a query set $S_q$ and a
+reference set $S_r$ with
+expansion constant $c_r$, and using the
 approximate kernel density estimation \texttt{BaseCase()} and \texttt{Score()}
 as given in Algorithms \ref{alg:kde_base_case} and \ref{alg:kde_score},
 respectively, with the traversal given in Algorithm \ref{alg:cover-tree-dual},
 the running time of approximate kernel density estimation for some $\epsilon$
 error parameter is bounded by
 %\begin{equation}
-$O(c_r^{8 + \log_2 \zeta} \nu N)$
+$O(c_r^{8 + \log_2 \zeta} (N + \theta))$
 %\end{equation}
-where $\zeta = -\mathcal{K}'(h) \mathcal{K}^{-1}(\epsilon) \epsilon^{-1}$.
+where $\zeta = -\mathcal{K}'(h) \mathcal{K}^{-1}(\epsilon) \epsilon^{-1}$ and
+$\theta$ as in Theorem \ref{thm:ct-runtime}.
 
 \label{thm:kde-bound}
 \end{thm}
@@ -126,10 +161,11 @@ where $\zeta = -\mathcal{K}'(h) \mathcal{K}^{-1}(\epsilon) \epsilon^{-1}$.
 \begin{proof}
 It is clear that \texttt{BaseCase()} and \texttt{Score()} both take $O(1)$ time,
 so Theorem \ref{thm:ct-runtime} implies the total runtime of the dual-tree
-algorithm is bounded by $O(c_r^4 \nu |R^*| N)$.  Thus, we will bound $|R^*|$
-using techniques related to those used in \cite{ram2009}.  The bounding of
-$|R^*|$ is split into two sections: first, show that when the scale $s_r^{\max}$
-is small enough, $R^*$ is empty.  Second, bound $R^*$ when $s_r^{\max}$ is larger.
+algorithm is bounded by $O(c_r^4 |R^*| (N + \theta))$.  Thus, we will bound
+$|R^*|$ using techniques related to those used by \citet{ram2009}.  The bounding
+of $|R^*|$ is split into two sections: first, show that when the scale
+$s_r^{\max}$ is small enough, $R^*$ is empty.  Second, bound $R^*$ when
+$s_r^{\max}$ is larger.
 
 The \texttt{Score()} function is such that any node in $|R^*|$ for a given query
 node $\mathscr{N}_q$ obeys
@@ -341,9 +377,9 @@ that for the Gaussian kernel, $\zeta = \sqrt{(-2 \ln \epsilon) / (e
 \epsilon^2)}$.  Again, as $\epsilon \to 0$, the
 runtime diverges; however, note that there is no dependence on the kernel
 bandwidth $\sigma$.  For a reasonably chosen $\epsilon = 0.05$, the runtime is
-approximately $O(c_r^{8.89} \nu N)$; for $\epsilon = 0.01$, the runtime is
-approximately $O(c_r^{11.52} \nu N)$.  For very small $\epsilon = 0.00001$, the
-runtime is approximately $O(c_r^{22.15} \nu N)$.
+approximately $O(c_r^{8.89} (N + \theta))$; for $\epsilon = 0.01$, the runtime
+is approximately $O(c_r^{11.52} (N + \theta))$.  For very small $\epsilon =
+0.00001$, the runtime is approximately $O(c_r^{22.15} (N + \theta))$.
 
 %Next, consider this sigmoidal kernel: $\mathcal{K}_s(d) = (1 + \exp(\alpha (d -
 %\beta)))^{-1}$; note that this is not the more common `sigmoid kernel', which is
@@ -383,3 +419,9 @@ runtime is approximately $O(c_r^{22.15} \nu N)$.
 %cannot account for a range $[l, h]$ with $l > 0$.  Therefore, in the next
 %section, we develop an alternate methodology for bounding the running time of
 %range search and range count.
+
+\subsection{Relative Value Approximation}
+
+Approximate kernel density estimation using relative-value approximation may be
+bounded in a similar manner.  A \texttt{Score()} function is given in Algorithm
+\ref{alg:kde_rva_score}.
