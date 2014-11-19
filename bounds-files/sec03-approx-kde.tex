@@ -184,10 +184,11 @@ $\mathcal{K}'(h)$; therefore, the maximum possible value of $\mathcal{K}(a) -
 $\mathcal{K}(a) - \mathcal{K}(b) \le \epsilon$ when $(b - a) \le (-\epsilon /
 \mathcal{K}'(h))$.  Note that
 
-\begin{equation}
+\begin{eqnarray}
 d_{\max}(\mathscr{N}_q, \mathscr{N}_r) - d_{\min}(\mathscr{N}_q, \mathscr{N}_r)
-= d(p_q, p_r) + 2^{s_r^{\max} + 1} - d(p_q, p_r) + 2^{s_r^{\max} + 1} = 2^{s_r^{\max} + 2}.
-\end{equation}
+&\le& d(p_q, p_r) + 2^{s_r^{\max} + 1} - d(p_q, p_r) + 2^{s_r^{\max} + 1} \\
+ &\le& 2^{s_r^{\max} + 2}.
+\end{eqnarray}
 
 Therefore, $|R^*| = \emptyset$ when
 %\begin{eqnarray}
@@ -198,7 +199,7 @@ $s_r^{\max} \le \log_2( -\epsilon / \mathcal{K}'(h) ) - 2$.
 %
 Consider, then, the case when $s_r^{\max} > \log_2( -\epsilon /
 \mathcal{K}'(h) ) - 2$.  It is trivial to see that for any $\mathscr{N}_r \in
-R^*$, $\mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r)) > \epsilon$;
+R^*$, $\mathcal{K}(d_{\min}(\mathscr{N}_q, \mathscr{N}_r)) > \epsilon$;
 alternately stated, this means that
 %\begin{equation}
 $d(p_q, p_r) < \mathcal{K}^{-1}(\epsilon) + 2^{s_r^{\max} + 1}$.
