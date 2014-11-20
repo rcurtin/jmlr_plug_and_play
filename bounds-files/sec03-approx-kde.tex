@@ -13,10 +13,12 @@ reference set $S_r$ of size $N$, and a kernel function $\mathcal{K}(\cdot,
 f^*(p_q) = \sum_{p_r \in S_r} \mathcal{K}(p_q, p_r).
 \end{equation}
 
-There are two simple ways to approximate $f^*(p_q)$: {\it absolute value
-approximation} and {\it relative value approximation}.  Absolute value
-approximation requires that each density estimate $f(p_q)$ is within $\epsilon$
-of the true estimate $f^*(p_q)$:
+In the case of an infinite-tailed kernel $\mathcal{K}(\cdot, \cdot)$, the
+computation cannot be accelerated; thus, attention has turned towards tractable
+approximation schemes.  Two simple schemes for the approximation of $f^*(p_q)$
+are well-known: {\it absolute value approximation} and {\it relative value
+approximation}.  Absolute value approximation requires that each density
+estimate $f(p_q)$ is within $\epsilon$ of the true estimate $f^*(p_q)$:
 
 \begin{equation}
 | f(p_q) - f^*(p_q) | < N \epsilon.
@@ -40,21 +42,35 @@ $S_q$ and $S_r$, and node combinations can be pruned when the nodes are far
 apart while still obeying the error bounds.
 
 In the following two subsections, we will separately consider both the absolute
-value approximation scheme and the relative value approximation scheme.
+value approximation scheme and the relative value approximation scheme, under
+the assumption of a shift-invariant kernel $\mathcal{K}(p_q, p_r) =
+\mathcal{K}(\| p_q - p_r \|)$ which is monotonically decreasing and
+non-negative.  In addition, we assume that there exists some bandwidth $h$ such
+that $\mathcal{K}(d)$ must be concave for $d \in [0, h]$ and convex for $d \in
+[h, \infty)$.  This assumption implies that the magnitude of the derivative
+$|\mathcal{K}'(d)|$ is maximized at $d = h$.  These are not restrictive
+assumptions; most standard kernels fall into this class, including the Gaussian,
+Laplacian and Epanechnikov kernels.
 
 \subsection{Absolute value approximation}
 
 A tree-independent algorithm for solving approximate kernel density estimation
-with absolute value approximation
+with absolute value approximation under the previous assumptions on th kernel
 is given as a \texttt{BaseCase()} function in Algorithm \ref{alg:kde_base_case}
 and a \texttt{Score()} function in Algorithm \ref{alg:kde_score}  \citep[a
-correctness proof can be found in][]{curtin2013tree}.  This function
-assumes a shift-invariant kernel $\mathcal{K}(p_i, p_j) = \mathcal{K}(d( p_i,
-p_j ))$.  The list $f_p$ holds partial kernel density estimates for
-each query point, and the list $f_n$ holds partial kernel density
-estimates for each query node.  At the beginning of the dual-tree traversal, the
-lists $f_p$ and $f_n$, which are both of size $O(N)$, are each
-initialized to 0.
+correctness proof can be found in][]{curtin2013tree}.  The list $f_p$ holds
+partial kernel density estimates for each query point, and the list $f_n$ holds
+partial kernel density estimates for each query node.  At the beginning of the
+dual-tree traversal, the lists $f_p$ and $f_n$, which are both of size $O(N)$,
+are each initialized to 0.  As the traversal proceeds, node combinations are
+pruned if the difference between the maximum kernel value
+$\mathcal{K}(d_{\min}(\mathscr{N}_q, \mathscr{N}_r))$ and the minimum kernel
+value $\mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r))$ is sufficiently
+small (line \ref{alg:ava-kde-prune}).  If the node combination can be pruned,
+then the partial node estimate is updated (line \ref{alg:ava-kde-update}).  When
+node combinations cannot be pruned, \texttt{BaseCase()} may be called, which
+simply updates the partial point estimate with the exact kernel evaluation (line
+\ref{alg:kde-bc-update}).
 
 After the dual-tree traversal, the actual kernel density estimates $f$
 must be extracted.  This can be done by traversing the query tree and
@@ -77,6 +93,7 @@ runtime analysis.  Real-world implementations, such as the one found in
 
     \medskip
     \STATE $f_p(p_q) \gets f_p(p_q) + \mathcal{K}(p_q, p_r)$
+\ref{alg:kde-bc-update}
     \RETURN $\mathcal{K}(p_q, p_r)$
   \end{algorithmic}
 
@@ -95,9 +112,11 @@ $\mathscr{N}_r$, list of node kernel estimates $\hat{f}_n$
 
     \IF{$\mathcal{K}(d_{\min}(\mathscr{N}_q, \mathscr{N}_r)) -
 \mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r)) < \epsilon$}
+\label{alg:ava-kde-prune}
       \STATE $f_n(\mathscr{N}_q) \gets f_n(\mathscr{N}_q) + |
 \mathscr{D}^p(\mathscr{N}_r) | \left(\mathcal{K}(d_{\min}(\mathscr{N}_q,
-\mathscr{N}_r)) + \mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r))\right) /\;2$
+\mathscr{N}_r)) + \mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r))\right)
+/\;2$ \label{alg:ava-kde-update}
       \RETURN $\infty$
     \ENDIF
 
@@ -138,17 +157,14 @@ $\mathscr{N}_r$, list of node kernel estimates $\hat{f}_n$
 \end{algorithm}
 
 \begin{thm}
-Assume that $\mathcal{K}(p_i, p_j) = \mathcal{K}\left(d(p_i, p_j)\right)$ is a
-shift-invariant kernel with some bandwidth $h > 0$, where $\mathcal{K}(x)$ is
-smooth, non-negative, monotonically decreasing, and concave for $x \in [0, h]$
-and convex for $x \in (h, \infty)$. Then, given a query set $S_q$ and a
-reference set $S_r$ with
-expansion constant $c_r$, and using the
-approximate kernel density estimation \texttt{BaseCase()} and \texttt{Score()}
-as given in Algorithms \ref{alg:kde_base_case} and \ref{alg:kde_score},
-respectively, with the traversal given in Algorithm \ref{alg:cover-tree-dual},
-the running time of approximate kernel density estimation for some $\epsilon$
-error parameter is bounded by
+Assume that $\mathcal{K}(\cdot, \cdot)$ is a kernel satisfying the assumptions
+of the previous section.  Then, given a query set $S_q$ and a reference set
+$S_r$ with expansion constant $c_r$, and using the approximate kernel density
+estimation \texttt{BaseCase()} and \texttt{Score()} as given in Algorithms
+\ref{alg:kde_base_case} and \ref{alg:kde_score}, respectively, with the
+traversal given in Algorithm \ref{alg:cover-tree-dual}, the running time of
+approximate kernel density estimation for some $\epsilon$ error parameter is
+bounded by
 %\begin{equation}
 $O(c_r^{8 + \log_2 \zeta} (N + \theta))$
 %\end{equation}
@@ -177,8 +193,8 @@ node $\mathscr{N}_q$ obeys
 \end{equation}
 
 Thus, we are interested in the maximum possible value $\mathcal{K}(a) -
-\mathcal{K}(b)$ for a fixed value of $b - a > 0$.  Due to the nature of
-$\mathcal{K}(\cdot)$, the maximum value of $\mathcal{K}'(\cdot)$ is
+\mathcal{K}(b)$ for a fixed value of $b - a > 0$.  Due to our assumptions, the
+maximum value of $\mathcal{K}'(\cdot)$ is
 $\mathcal{K}'(h)$; therefore, the maximum possible value of $\mathcal{K}(a) -
 \mathcal{K}(b)$ is when the interval $[a, b]$ is centered on $h$.  Further,
 $\mathcal{K}(a) - \mathcal{K}(b) \le \epsilon$ when $(b - a) \le (-\epsilon /
@@ -190,7 +206,7 @@ d_{\max}(\mathscr{N}_q, \mathscr{N}_r) - d_{\min}(\mathscr{N}_q, \mathscr{N}_r)
  &\le& 2^{s_r^{\max} + 2}.
 \end{eqnarray}
 
-Therefore, $|R^*| = \emptyset$ when
+Therefore, $R^* = \emptyset$ when
 %\begin{eqnarray}
 $2^{s_r^{\max} + 2} \le -\epsilon / \mathcal{K}'(h)$, or when
 %\begin{equation}
@@ -381,6 +397,15 @@ bandwidth $\sigma$.  For a reasonably chosen $\epsilon = 0.05$, the runtime is
 approximately $O(c_r^{8.89} (N + \theta))$; for $\epsilon = 0.01$, the runtime
 is approximately $O(c_r^{11.52} (N + \theta))$.  For very small $\epsilon =
 0.00001$, the runtime is approximately $O(c_r^{22.15} (N + \theta))$.
+
+To understand the lack of dependence on kernel bandwidth more intuitively,
+consider that as the kernel bandwidth increases, two things happen: {\it (a)}
+the reference set $R$ becomes empty at larger scales, and {\it (b)}
+$\mathcal{K}^{-1}(\epsilon)$ grows, allowing less pruning at higher levels.
+These effects are opposite, and for the Gaussian kernel they cancel each other
+out, giving the same bound regardless of bandwidth.
+
+Other kernels do not exhibit this effect.  Consider the Laplacian kernel:
 
 %Next, consider this sigmoidal kernel: $\mathcal{K}_s(d) = (1 + \exp(\alpha (d -
 %\beta)))^{-1}$; note that this is not the more common `sigmoid kernel', which is
