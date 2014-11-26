@@ -1,8 +1,8 @@
 It is well-known that imbalance in trees leads to degradation in performance;
 for instance, a $kd$-tree node with every descendant except one in its left
 child is effectively useless.  A $kd$-tree full of nodes like this will perform
-abysmally for nearest neighbor search, and it is not hard to generate a dataset
-that will cause a $kd$-tree of this sort.
+abysmally for nearest neighbor search, and it is not hard to generate a
+pathological dataset that will cause a $kd$-tree of this sort.
 
 This sort of imbalance applies to all types of trees, not just $kd$-trees.  In
 our situation, we are interested in a better understanding of this imbalance for
@@ -61,8 +61,8 @@ too, especially in higher dimensions.}.
 \begin{center}
   \input{figures/single-outlier-tree.tex}
 \end{center}
-\label{fig:outlier}
 \caption{Single-outlier cover tree.}
+\label{fig:outlier}
 \end{figure}
 
 \begin{figure}
@@ -119,10 +119,32 @@ s_{\min})$.  Because of this chain-like structure, each level has only one node
 and thus there are at least $N$ levels; or, $s_{\max} - s_{\min} \ge N$, meaning
 that the imbalance is actually quadratic in $N$!
 
-As we will see later empirically, the notion of cover tree imbalance does a good
-job of capturing the `goodness' of a tree.  We will use this notion in order to
-quantify the worst-case performance of dual-tree algorithms using the cover
-tree.
+For most real-world datasets, the tree imbalance is sublinear in the number of
+points.  To demonstrate this, Table \ref{tab:emp_imbalance} shows empirically
+calculated cover tree imbalance for cover trees on a number of datasets built
+with both the cover tree implementation in {\bf mlpack} \citep{mlpack2013} and
+the original reference implementation \citep{langford2006}.
+
+\begin{table}[tb]
+\begin{center}
+\begin{tabular}{|c|c|c|r|r|}
+\hline
+Dataset & $N$ & $d$ & reference & mlpack \\
+\hline
+wine & & & & \\
+isolet & & & & \\
+corel & & & & \\
+mnist & 70000 & 784 & & \\
+bio & & & & \\
+phy & & & & \\
+covertype & & & & \\
+LCDM & & & & \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Empirical tree imbalance calculations.}
+\label{tab:emp_imbalance}
+\end{table}
 
 {\bf TODO: Can any bound be proven on $i_t(\mathscr{T})$?  I haven't thought of
 anything successfully yet.}
