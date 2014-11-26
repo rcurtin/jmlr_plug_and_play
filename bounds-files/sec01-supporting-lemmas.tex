@@ -29,48 +29,66 @@ $\lambda_i$ & Furthest descendant distance \\ \hline
 \label{tab:notation}
 \end{table}
 
+\subsection{The cover tree}
+
 The cover tree is a leveled hierarchical data structure originally proposed for
-the task of nearest neighbor search.  The original description of the tree
-describes both an {\it implicit} and {\it explicit} representation, where the
-explicit representation is the actual structure that would be implemented in
-practice.  Thus, we will consider only the explicit representation in this
-paper.
+the task of nearest neighbor search by \citet{langford2006}.  Each node
+$\mathscr{N}_i$ in the cover tree is associated with a single point $p_i$.  An
+adequate description is given in their work (we have adapted notation slightly):
 
-Each node $\mathscr{N}_i$ in the cover tree is indexed by an integer scale $s_i$
-and holds one point $p_i$ which is also the center of the node ($p_i = \mu_i$).
-The cover tree node may have a number of child nodes; if the cover tree node
-does have children, then one child will be the self-child, which holds the same
-point $p_i$ with a smaller scale $s_i$.  Each child of $\mathscr{N}_i$ will have
-scale less than $s_i$, and every descendant point of a node $\mathscr{N}_i$
-(that is, the set $\mathscr{D}_i^p$) has a maximum distance of $2^{s_i + 1}$
-from the point $p_i$.
-
-Assuming a cover tree $\mathscr{T}$ is built on a dataset $S_r$, let $C_{s_i}$
-denote the set of points held in all nodes in $\mathscr{T}$ with scale $s_i$.
-Then, the cover tree satisfies the following invariants for all scales $s_i$:
+\begin{quote}
+A {\it cover tree} $\mathscr{T}$ on a dataset $S$ is a leveled tree where each
+level is a ``cover'' for the level beneath it.  Each level is indexed by an
+integer scale $s_i$ which decreases as the tree is descended.  Every {\it node}
+in the tree is associated with a point in $S$.  Each {\it point} in $S$ may be
+associated with multiple nodes in the tree; however, we require that any point
+appears at most once in every level.  Let $C_{s_i}$ denote the set of points in
+$S$ associated with the nodes at level $s_i$.  The cover tree obeys the
+following invariants for all $s_i$:
 
 \begin{itemize}
+  \item {\em (Nesting)}. $C_{s_i} \subset C_{s_i - 1}$.  This implies that once a
+point $p \in S$ appears in $C_{s_i}$ then {\it every} lower level in the tree
+has a node associated with $p$.
 
-\item {\em (Nesting)}.  $C_{s_i} \subset C_{s_i - 1}$.  This means that when a
-point $p_i \in S_r$ is held in a node at some scale $s_i$, then each smaller
-scale will also have a node containing $p_i$.
+  \item {\em (Covering tree)}. For every $p_i \in C_{s_i - 1}$, there exists a
+$p_j \in C_{s_i}$ such that $d(p_i, p_j) < 2^{s_i}$ and the node in level $s_i$
+associated with $p_j$ is a parent of the node in level $s_i - 1$ associated with
+$p_i$.
 
-\item {\em (Covering tree)}.  For every point $p_i \in C_{s_i - 1}$, there
-exists a point $p_j \in C_{s_i}$ such that $d(p_i, p_j) < 2^{s_i}$, and the node
-holding $p_j$ with scale $s_i$ is the parent node of the node holding $p_i$ with
-scale $s_i - 1$.
-
-\item {\em (Separation)}.  For all distinct points $p_i, p_j \in C_{s_i}$,
-$d(p_i, p_j) > 2^{s_i}$.
-
+  \item {\em (Separation)}.  For all distinct $p_i, p_j \in C_{s_i}$, $d(p_i,
+p_j) > 2^{s_i}$.
 \end{itemize}
+\end{quote}
 
-A batch construction algorithm is given by \citet{langford2006}, called
-\texttt{Construct}; but the details of construction are not relevant to our
-work, so we only mention this as a reference.  More relevant to our work is the
-number of useful and unique theoretical properties the cover tree possesses,
-based on the expansion constant \citep{karger2002finding}; we restate the
-definition below.
+A consequence of this definition is if there exists a node $\mathscr{N}_i$,
+containing the point $p_i$ at some scale $s_i$, then there will also exist a
+self-child node $\mathscr{N}_{ic}$ containing the point $p_i$ at scale $s_i - 1$
+which is a child of $\mathscr{N}_i$.  In addition, every descendant point of the
+node $\mathscr{N}_i$ is contained within a ball of radius $2^{s_i + 1}$ centered
+at the point $p_i$; therefore, $\lambda_i = 2^{s_i + 1}$ and $\mu_i = p_i$
+(Table \ref{tab:notation}).
+
+Note that the cover tree may be interpreted as an infinite-leveled tree, with
+$C_{\infty}$ containing only the root point, $C_{-\infty} = S$, and all levels
+between defined according to the definitions above.  \citep{langford2006} find
+this representation (which they call the {\it implicit} representation) easier
+for description of their algorithms and some of their proofs.  But naturally,
+this is not suitable for implementation; hence, there is an {\it explicit}
+representation in which all nodes that have only a self-child are coalesced.
+Figure \ref{fig:implicit-explicit} shows an example cover tree and highlights
+implicit and explicit nodes.
+
+In our work here, we consider only the explicit representation of a cover tree,
+and do not concern ourselves with the construction of the tree\footnote{A batch
+construction algorithm is given by \citet{langford2006}, called
+\texttt{Construct}.}.
+
+\subsection{Expansion constant}
+
+The explicit representation of a cover tree has a number of useful theoretical
+properties based on the expansion constant \citep{karger2002finding}; we restate
+its definition below.
 
 \begin{defn}
 \label{def:int_dim}
@@ -89,10 +107,74 @@ smallest $c \ge 2$ such that
 
 \end{defn}
 
-The expansion constant is used heavily in the cover tree literature.  It is
-related to a notion of instrinic dimensionality, and previous work has shown
+The expansion constant is used heavily in the cover tree literature.  It is,
+in some sense, a notion of instrinic dimensionality, and previous work has shown
 that there are many scenarios where $c$ is independent of the number of points
-in the dataset.
+in the dataset \citep{karger2002finding, langford2006,
+krauthgamer2004navigating, ram2009}.  Note also that if points in $S \subset
+\mathcal{H}$ are being drawn according to a stationary distribution $f(x)$, then
+$c$ will converge to some finite value $c_f$ as $|S| \to \infty$.  To see this,
+define $c_f$ as a generalization of the expansion constant for distributions.
+$c_f \ge 2$ is the smallest value such that
+
+\begin{equation}
+\int_{\mathcal{B}_{\mathcal{H}}(p, 2 \Delta)} f(x) dx \le c_{f}
+\int_{\mathcal{B}_{\mathcal{H}}(p, \Delta)} f(x)
+dx
+\end{equation}
+
+\noindent for all $p \in \mathcal{H}$ and $\Delta > 0$ such that
+$\int_{\mathcal{B}_{\mathcal{H}}(p, \Delta)} f(x) dx > 0$, and with
+$\mathcal{B}_{\mathcal{H}}(p, \Delta)$ defined as the closed ball of radius
+$\Delta$ in the space $\mathcal{H}$.
+
+Take $f(x)$ as a uniform spherical distribution in $\mathcal{R}^d$: for any $|x|
+\le 1$, $f(x)$ is a constant; for $|x| > 1$, $f(x) = 0$.  It is easy to see that
+$c_f$ in this situation is $2^d$.  To demonstrate this convergence, Table
+\ref{tab:ec_scaling} shows results for 10 trials of empirically calculated
+expansion constants for datasets drawn from this distribution, for varying $d$.
+
+\begin{table}[htb]
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+$|S|$ & $d = 2$ & $d = 5$ & $d = 10$ & $d = 20$ \\
+\hline
+10      & 6     & 10    & 10    &         \\
+31      & 12    & 31    & 31    &         \\
+100     & 13    & 64    & 100   &         \\
+316     & 23    & 96    & 286   &         \\
+1000    & 26    & 126   & 673   &         \\
+3162    & 29    & 189   & 1348  &         \\
+10000   & 30    & 259   & 2646  &         \\
+31622   & 39    & 309   & 3858  &         \\
+100000  & 40    & 360   & 7162  &         \\
+316227  & 46    & 385   & 8297  &         \\
+1000000 &       &       &       &         \\
+$\infty$ ($c_f$)   & 4     & 32    & 1024  & 1048576 \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Calculated $c$ for uniform hypersphere distribution as
+$|S|$ scales.}
+\label{tab:ec_scaling}
+\end{table}
+
+We are somewhat limited in the sizes of $|S|$ we can scale to, because
+calculating the expansion constant of a dataset is a computationally intensive
+task.  Nonetheless, we can see that the expansion constant moves towards the
+final value of $c_f$.  We postulate that the behavior of more complex real-world
+datasets is similar.
+
+There are some other important observations about the behavior of $c$.  Adding a
+single point to $S$ may increase $c$ arbitrarily: consider a set $S$ distributed
+entirely on the surface of a unit hypersphere.  If one adds a single point at
+the origin, producing the set $S'$, then $c$ explodes to $|S'|$ whereas before
+it may have been much smaller than $|S|$.  Adding a single point may also
+decrease $c$ significantly.  Suppose one adds a point arbitrarily close to the
+origin to $S'$; now, the expansion constant will be $|S'| / 2$.  So, although we
+can bound the behavior of $c$ as $|S| \to \infty$ for $S$ from a stationary
+distribution, we are not able to easily say much about its convergence behavior.
 
 The expansion constant can be used to show a few useful bounds on various
 properties of the cover tree; we restate these results below, given some cover
