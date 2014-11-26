@@ -93,7 +93,7 @@ runtime analysis.  Real-world implementations, such as the one found in
 
     \medskip
     \STATE $f_p(p_q) \gets f_p(p_q) + \mathcal{K}(p_q, p_r)$
-\ref{alg:kde-bc-update}
+\label{alg:kde-bc-update}
     \RETURN $\mathcal{K}(p_q, p_r)$
   \end{algorithmic}
 
@@ -405,7 +405,13 @@ $\mathcal{K}^{-1}(\epsilon)$ grows, allowing less pruning at higher levels.
 These effects are opposite, and for the Gaussian kernel they cancel each other
 out, giving the same bound regardless of bandwidth.
 
-Other kernels do not exhibit this effect.  Consider the Laplacian kernel:
+Next, consider the Laplacian kernel:
+$\mathcal{K}_l(d) = \exp(-d / \sigma)$.  For this kernel, $h = 0$ (that is, the
+kernel is always convex), so then $\mathcal{K}'_l(h) = \sigma^{-1}$.  Simple
+algebraic manipulation gives $\mathcal{K}^{-1}_l(\epsilon) = -\sigma \ln
+\epsilon$, resulting in $\zeta = -\mathcal{K}'_l(h) \mathcal{K}^{-1}_l(\epsilon)
+\epsilon^{-1} = \epsilon^{-1} \ln \epsilon$.  So both the Laplacian and Gaussian
+kernels do not exhibit dependence on the bandwidth.
 
 %Next, consider this sigmoidal kernel: $\mathcal{K}_s(d) = (1 + \exp(\alpha (d -
 %\beta)))^{-1}$; note that this is not the more common `sigmoid kernel', which is

@@ -10,7 +10,7 @@ sets $N[p_q]$ and range $[l, u]$
 %    \medskip
 
     \IF{$d(p_q, p_r) \in [r_{\min}, r_{\max}]$ \AND \texttt{BaseCase($p_q$, $p_r$)} not yet called}
-    \STATE  $N[p_q] \gets N[p_q] \cup \{ p_r \}$
+    \STATE  $S[p_q] \gets S[p_q] \cup \{ p_r \}$
     \ENDIF
 
     \RETURN $d$
@@ -41,17 +41,52 @@ $d_{\max}(\mathscr{N}_q, \mathscr{N}_r) \in [l, u]$}
 
 In the range search problem, the task is to find the set of reference points
 %\begin{equation}
-$N[p_q] = \{ p_r \in S_r : d(p_q, p_r) \in [l, u] \}$
+$S[p_q] = \{ p_r \in S_r : d(p_q, p_r) \in [l, u] \}$
 %\end{equation}
 for each query point $p_q$, where $[l, u]$ is the given
 range.  The range count problem is practically identical, but only the size of
-the set, $|N[p_q]|$, is desired.
+the set, $|S[p_q]|$, is desired.
 Our proof works for both of these algorithms
 identically, but we will focus on range search.  A \texttt{BaseCase()} and
 \texttt{Score()} function are given in Algorithms \ref{alg:rs_bc} and
 \ref{alg:rs_sc}, respectively \citep[a correctness proof can be found
 in][]{curtin2013tree}.  The sets $N[p_q]$ (for each $p_q$) are
 initialized to $\emptyset$ at the beginning of the traversal.
+
+In order to bound the running time of dual-tree range search, we require better
+notions for understanding the difficulty of the problem.  Observe that if the
+range is sufficiently large, then for every query point $p_q$, $S[p_q] = S_r$.
+Clearly, for $S_q \sim S_r \sim O(N)$, this cannot be solved in anything less
+than quadratic time simply due to the time required to fill each output array
+$S[p_q]$.  Define the maximum result size for a given query set $S_q$, reference
+set $S_r$, and range $[l, u]$ as
+
+\begin{equation}
+| S_{\max} | = \max_{p_q \in S_q} | S[p_q] |.
+\label{eqn:smax}
+\end{equation}
+
+Small $| S_{\max} |$ implies an easy problem; large $| S_{\max} |$ implies a
+difficult problem.  For bounding the running time of range search, we require
+one more definition.
+
+\begin{defn}
+For a range search problem with query set $S_q$, reference set $S_r$, range $[l,
+u]$, and results $S[p_q]$ for each query point $p_q$ given as
+
+\begin{equation}
+S[p_q] = \{ p_r : p_r \in S_r, l \le d(p_q, p_r) \le u \},
+\end{equation}
+
+\noindent define the {\it $\alpha$-expansion} of the range set $S[p_q]$ as the slightly larger set
+
+\begin{equation}
+S^{\alpha}[p_q] = \{ p_r : p_r \in S_r, (1 - \alpha) l \le d(p_q, p_r) \le (1 +
+\alpha) u \}.
+\end{equation}
+\end{defn}
+
+Using these notions, we may now bound the running time of range search.
 
 \begin{thm}
 Given a reference set $S_r$ of size $N$ with expansion constant $c_r$, and a
@@ -62,15 +97,25 @@ pruning dual-tree traversal as given in Algorithm \ref{alg:cover-tree-dual}, and
 also assuming that for some $\alpha > 0$,
 
 \begin{equation}
-\left| \{ p_r: p_r \in S_r, (1 - \alpha) l \le d(p_q, p_r) \le (1 + \alpha) u \}
-\right| = O(1),
+| S^{\alpha}[p_q] \setminus S[p_q] | \le C \; \; \forall \; p_q \in S_q,
 \end{equation}
 
-\noindent the running time of range search or range count is bounded by
-$O(c_r^{8 + \beta} (N + \theta))$ with $\theta$ defined as in Theorem
-\ref{thm:ct-runtime} and
 %\begin{equation}
-$\beta = \log_2 (1 + \alpha^{-1})$.
+%\left| \{ p_r: p_r \in S_r, (1 - \alpha) l \le d(p_q, p_r) \le (1 + \alpha) u \}
+%\right| = O(1),
+%\end{equation}
+
+\noindent the running time of range search or range count is bounded by
+
+\begin{equation}
+O\left(c_r^{4} \max\left(c_r^{4 + \beta}, |S_{\max}| + C\right) (N + \theta)
+\right)
+\end{equation}
+
+with $\theta$ defined as in Theorem
+\ref{thm:ct-runtime},
+$\beta = \log_2 (1 + \alpha^{-1})$, and $S_{\max}$ as defined in Equation
+\ref{eqn:smax}.
 %\end{equation}
 \label{thm:rs}
 \end{thm}
@@ -79,10 +124,10 @@ $\beta = \log_2 (1 + \alpha^{-1})$.
 Both \texttt{BaseCase()} (Algorithm \ref{alg:rs_bc}) and \texttt{Score()}
 (Algorithm \ref{alg:rs_sc}) take $O(1)$ time.  Therefore, using Lemma
 \ref{thm:ct-runtime} we know that the runtime of the algorithm is bounded by
-$O(c_r^4 |R^*| (N + \theta))$. %  Thus, our only task is to bound the maximum size of the
-%reference set, $|R^*|$.
-By the pruning rule, for a query node
-$\mathscr{N}_q$, the reference set $R^*$
+$O(c_r^4 |R^*| (N + \theta))$.  As with the previous proofs, then, our only task
+is to bound the maximum size of the reference set, $|R^*|$.
+
+By the pruning rule, for a query node $\mathscr{N}_q$, the reference set $R^*$
 is made up of reference nodes $\mathscr{N}_r$ that are within a margin of
 $2^{s_q + 1} + 2^{s_r + 1} \le 2^{s_r^{\max} + 2}$ of the range $[l, u]$.  Given
 that $p_r$ is the point in $\mathscr{N}_r$,
@@ -173,13 +218,32 @@ This means
 \begin{equation}
 B_{S_r}(p_q, u + 2^{s_r^{\max} + 1}) \setminus B_{S_r}(p_q, l - 2^{s_r^{\max} +
 1}) \subseteq B_{S_r}(p_q, (1 + \alpha) u) \setminus B_{S_r}(p_q, (1 - \alpha)
-l)
+l).
 \end{equation}
 
-\noindent and, due to the assumptions, $| B_{S_r}(p_q, (1 + \alpha) u) | - |
-B_{S_r}(p_q, (1 - \alpha) l) | = O(1)$, $|R^*| = O(1)$.  Thus, the theorem
-holds.
+This set is necessarily a subset of $S^{\alpha}[p_q]$; by
+definition, the number of points in this set is bounded above by $|S_{\max}| +
+C$.  We may then conclude that $|R^*| \le |S_{\max}| + C$.  By taking the
+maximum of the sizes of $|R^*|$ in both cases above, we obtain the statement of
+the theorem.
 \end{proof}
+
+This bound displays both the expected dependence on $c_r$ and $|S_{\max}|$.  As
+the largest range set $S_{\max}$ increases in size (with the worst case being
+$S_{\max} \sim N$), the runtime degenerates to quadratic.  But for adequately
+small $S_{\max}$ the runtime is instead dependent on $c_r$ and the parameter $C$
+of the $\alpha$-expansion of $S_{\max}$.  This situation leads to a
+simplification.
+
+\begin{cor}
+For sufficiently small $|S_{\max}|$ and sufficiently small $C$, the runtime of
+range search under the conditions of Theorem \ref{thm:rs} simplifies to
+
+\begin{equation}
+O(c_r^{8 + \beta} (N + \theta)).
+\end{equation}
+\label{cor:rs}
+\end{cor}
 
 %\begin{figure}
 %\begin{centering}
@@ -247,30 +311,37 @@ holds.
 %running time of range search or range count is bounded by $O(c^{8 + \beta} N)$.
 %\end{cor}
 
-To understand the relation of the running time to the bounding quantity
-$\alpha$, consider $\alpha =
-(1 / 3)$; this yields a running time of $O(c^8 (N + \theta))$.  $\alpha = (1 /
-7)$ yields $O(c^9 (N + \theta))$, $\alpha = (1 / 15)$ yields $O(c^{10} (N +
-\theta))$, and so forth.  As $\alpha$ gets smaller, the exponent on $c$ gets
-larger, and diverges as $\alpha \to 0$.
+In this setting we can more easily consider the relation of the running time to
+$\alpha$.  Consider $\alpha = (1 / 3)$; this yields a running time of $O(c^8 (N
++ \theta))$.  $\alpha = (1 / 7)$ yields $O(c^9 (N + \theta))$, $\alpha = (1 /
+15)$ yields $O(c^{10} (N + \theta))$, and so forth.  As $\alpha$ gets smaller,
+the exponent on $c$ gets larger, and diverges as $\alpha \to 0$.
 
-The assumption that on number of points in the range of $[(1 - \alpha)l, (1 +
-\alpha)u]$ for a single query is not too restrictive, but must be satisfied for
-the result to be meaningful.  After all, if that assumption is not satisfied,
-then it is not possible to perform range search in $O(1)$ time for each query
-point, making an $O(N)$ bound for the whole query set impossible.
+For reasonable runtime it is necessary that the $\alpha$-expansion of $S_{\max}$
+be bounded.  This is because the dual-tree recursion must retain reference nodes
+which may contain descendants in the range set $S[p_q]$ for some query $p_q$.
+The parameter $C$ of the $\alpha$-expansion allows us to bound the number of
+reference nodes of this type, and if $\alpha$ increases but $C$ remains small
+enough that Corollary \ref{cor:rs} applies, then we are able to obtain tighter
+running bounds.
 
-To show where the assumption is valid, consider that when presented with a very
-large dataset, a practitioner may perform monochromatic range search on a range
-$[l, u]$ for a geometric subset of their data; for instance, a hypersquare
-with side length $2u$.  This might be done in order to find a range $[l, u]$
-that produces a manageable number of results (if the range is too large, the
-number of results returned for each query point may be enormous).  Then, that
-practitioner may scale to a larger dataset by simply increasing the size of
-their hypersquare.  In this setting, the number of points in the range of
-$[(1 - \alpha)l, (1 + \alpha)u]$ for a single query remains $O(1)$ with respect
-to $N$.  Alternately, it should be possible to tighten the range $[l, u]$ as $N$
-increases in such a way that the number of points in the range remains constant.
+%The assumption that on number of points in the range of $[(1 - \alpha)l, (1 +
+%\alpha)u]$ for a single query is not too restrictive, but must be satisfied for
+%the result to be meaningful.  After all, if that assumption is not satisfied,
+%then it is not possible to perform range search in $O(1)$ time for each query
+%point, making an $O(N)$ bound for the whole query set impossible.
+
+%To show where the assumption is valid, consider that when presented with a very
+%large dataset, a practitioner may perform monochromatic range search on a range
+%$[l, u]$ for a geometric subset of their data; for instance, a hypersquare
+%with side length $2u$.  This might be done in order to find a range $[l, u]$
+%that produces a manageable number of results (if the range is too large, the
+%number of results returned for each query point may be enormous).  Then, that
+%practitioner may scale to a larger dataset by simply increasing the size of
+%their hypersquare.  In this setting, the number of points in the range of
+%$[(1 - \alpha)l, (1 + \alpha)u]$ for a single query remains $O(1)$ with respect
+%to $N$.  Alternately, it should be possible to tighten the range $[l, u]$ as $N$
+%increases in such a way that the number of points in the range remains constant.
 
 %In cases where this assumption is not thought to be valid, it is straightforward
 %to prove a bound on the running time of range search or range count by using the
@@ -278,10 +349,10 @@ increases in such a way that the number of points in the range remains constant.
 %ratio is particularly sensitive to datasets that have arbitrarily close points,
 %and it is difficult to make assumptions about the aspect ratio.
 
-Alternately, if the assumption is not valid but it can be shown that the number
-of points in the range $[(1 - \alpha)l, (1 + \alpha)u]$ is $O(k)$ where $k$ has
-some dependence on $N$, then the running time can be easily bounded as $O(c^{4 +
-\beta} k(N + \theta))$.
+%Alternately, if the assumption is not valid but it can be shown that the number
+%of points in the range $[(1 - \alpha)l, (1 + \alpha)u]$ is $O(k)$ where $k$ has
+%some dependence on $N$, then the running time can be easily bounded as $O(c^{4 +
+%\beta} k(N + \theta))$.
 
 %Also, note that the proof considers points with distance from $p_q$ in
 %the range $[l + \lambda_q + \lambda_r, u - \lambda_q - \lambda_r]$; however, the
