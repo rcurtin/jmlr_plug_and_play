@@ -213,20 +213,24 @@ version of their argument.
 
 \begin{lemma}
 Consider a dataset $S$ with expansion constant $c$ and a subset $C \subseteq S$
-such that every point in $C$ is separated by $\delta$.  Then, given any query
-point $p \not\in S$ and some radius $\rho \delta$,
-
+such that every point in $C$ is separated by $\delta$.  Then, for any point 
+$p \not\in S$ and any radius $\rho \delta > 0$:
 \begin{equation}
-| B_S(p, \rho \delta) \cap C | \le c^{2 + \log_2 \rho}.
+| B_S(p, \rho \delta) \cap C | \le c^{2 + \lceil \log_2 \rho \rceil}.
 \end{equation}
 \label{lem:packing}
 \end{lemma}
 
 \begin{proof}
-This is based on the packing argument from Lemma 4.1 in \cite{langford2006}.
-Observe that $B_S(p, \rho \delta) \subseteq B_S(p_i, 2 \rho \delta)$ for any
-$p_i \in S$, and that $| B_S(p, 2 \rho \delta) | = c^{2 + \log_2 \rho} |
-B_S(p, \delta / 2) |$.  Because each point in $C$ is separated by $\delta$, the
+The proof is based on the packing argument from Lemma 4.1 in 
+\cite{langford2006}. Consider two cases: first, let $d(p, p_i) > \rho \delta$ 
+for any $p_i \in S$. In this case, $B_S(p, \rho \delta) = \emptyset$ and the 
+lemma holds trivially. 
+Otherwise, let $p_i \in S$ be a point such that $d(p, p_i) \leq \rho \delta$.
+Observe that $B_S(p, \rho \delta) \subseteq B_S(p_i, 2 \rho \delta)$. 
+Also, $| B_S(p_i, 2 \rho \delta) | = c^{2 + \lceil \log_2 \rho 
+\rceil} | B_S(p_i, \delta / 2) |$ by the definition of the expansion constant.
+Because each point in $C$ is separated by $\delta$, the
 number of points in $B_S(p, \rho \delta) \cap C$ is
 bounded by the number of disjoint balls of radius $\delta / 2$ that can be
 packed into $B_S(p, \rho \delta)$.  In the worst case, this packing is
@@ -234,6 +238,6 @@ perfect, and
 
 \begin{equation}
 |B_S(p, \rho \delta)| \le \frac{|B_S(p_i, 2 \rho \delta)|}{|B_S(p_i, \delta
-/ 2)|} \le c^{2 + \log_2 \rho}.
+/ 2)|} \le c^{2 + \lceil \log_2 \rho \rceil}.
 \end{equation}
 \end{proof}
