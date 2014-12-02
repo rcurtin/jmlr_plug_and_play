@@ -114,8 +114,8 @@ O\left(c_r^{4} \max\left(c_r^{4 + \beta}, |S_{\max}| + C\right) (N + \theta)
 
 with $\theta$ defined as in Theorem
 \ref{thm:ct-runtime},
-$\beta = \log_2 (1 + \alpha^{-1})$, and $S_{\max}$ as defined in Equation
-\ref{eqn:smax}.
+$\beta = \lceil \log_2 (1 + \alpha^{-1}) \rceil$, and $S_{\max}$ as defined in
+Equation \ref{eqn:smax}.
 %\end{equation}
 \label{thm:rs}
 \end{thm}
@@ -156,7 +156,7 @@ the smaller ball, take $\delta = 2^{s_r^{\max}}$ and $\rho = 4 (1 +
 \alpha^{-1})$ and apply Lemma \ref{lem:packing} to produce the bound
 
 \begin{equation}
-|R^*| \le c_r^{4 + \log_2(1 + \alpha^{-1})}.
+|R^*| \le c_r^{4 + \lceil \log_2(1 + \alpha^{-1}) \rceil}.
 \end{equation}
 
 % , and ignoring
