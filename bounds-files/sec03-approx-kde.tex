@@ -166,7 +166,7 @@ traversal given in Algorithm \ref{alg:cover-tree-dual}, the running time of
 approximate kernel density estimation for some $\epsilon$ error parameter is
 bounded by
 %\begin{equation}
-$O(c_r^{8 + \log_2 \zeta} (N + \theta))$
+$O(c_r^{8 + \lceil \log_2 \zeta \rceil} (N + \theta))$
 %\end{equation}
 where $\zeta = -\mathcal{K}'(h) \mathcal{K}^{-1}(\epsilon) \epsilon^{-1}$ and
 $\theta$ as in Theorem \ref{thm:ct-runtime}.
@@ -227,7 +227,8 @@ C_{s_r^{\max}}$
 %\end{equation}
 is sufficient to bound $|R^*|$.  For notational convenience, define $\omega = \mathcal{K}^{-1}(\epsilon) /
 2^{s_r^{\max} + 1} + 1$.  Using Lemma \ref{lem:packing} with $\delta =
-2^{s_r^{\max}}$ and $\rho = 2 \omega$ gives $|R^*| = c_r^{3 + \log_2 \omega}$.
+2^{s_r^{\max}}$ and $\rho = 2 \omega$ gives $|R^*| = c_r^{3 + \lceil \log_2
+\omega \rceil}$.
 
 %The procedure to bound this will be the same as
 %for the nearest neighbor search proof---a packing bound.  See that
@@ -271,9 +272,10 @@ bound on $s_r^{\max}$, $\omega$ is bounded as
 $\omega = -2 \mathcal{K}'(h) \mathcal{K}^{-1}(\epsilon) \epsilon^{-1}$.
 %
 Finally, with $\zeta = -\mathcal{K}'(h) \mathcal{K}^{-1}(\epsilon)
-\epsilon^{-1}$, we are able to conclude that $|R^*| \le c_r^{3 + \log_2 (2
-\zeta)} = c_r^{4 + \log_2 \zeta}$.  Therefore, the entire dual-tree traversal
-takes $O(c_r^{8 + \log_2 \zeta} (N + \theta))$ time.
+\epsilon^{-1}$, we are able to conclude that $|R^*| \le c_r^{3 + \lceil \log_2
+(2 \zeta ) \rceil} = c_r^{4 + \lceil \log_2 \zeta \rceil}$.  Therefore, the
+entire dual-tree traversal takes $O(c_r^{8 + \lceil \log_2 \zeta \rceil} (N +
+\theta))$ time.
 
 The postprocessing step to extract the estimates $f(\cdot)$ requires one
 traversal of the tree $\mathscr{T}_r$; the tree has $O(N)$ nodes, so this takes
