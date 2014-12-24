@@ -76,8 +76,6 @@ this representation (which they call the {\it implicit} representation) easier
 for description of their algorithms and some of their proofs.  But naturally,
 this is not suitable for implementation; hence, there is an {\it explicit}
 representation in which all nodes that have only a self-child are coalesced.
-Figure \ref{fig:implicit-explicit} shows an example cover tree and highlights
-implicit and explicit nodes.
 
 In our work here, we consider only the explicit representation of a cover tree,
 and do not concern ourselves with the construction of the tree\footnote{A batch
@@ -130,43 +128,43 @@ $\Delta$ in the space $\mathcal{H}$.
 
 Take $f(x)$ as a uniform spherical distribution in $\mathcal{R}^d$: for any $|x|
 \le 1$, $f(x)$ is a constant; for $|x| > 1$, $f(x) = 0$.  It is easy to see that
-$c_f$ in this situation is $2^d$.  To demonstrate this convergence, Table
-\ref{tab:ec_scaling} shows results for 10 trials of empirically calculated
-expansion constants for datasets drawn from this distribution, for varying $d$.
+$c_f$ in this situation is $2^d$. % To demonstrate this convergence, Table
+%\ref{tab:ec_scaling} shows results for 10 trials of empirically calculated
+%expansion constants for datasets drawn from this distribution, for varying $d$.
 
-\begin{table}[htb]
-\begin{center}
-\begin{tabular}{|l|c|c|c|c|}
-\hline
-$|S|$ & $d = 2$ & $d = 5$ & $d = 10$ & $d = 20$ \\
-\hline
-10      & 6     & 10    & 10    &         \\
-31      & 12    & 31    & 31    &         \\
-100     & 13    & 64    & 100   &         \\
-316     & 23    & 96    & 286   &         \\
-1000    & 26    & 126   & 673   &         \\
-3162    & 29    & 189   & 1348  &         \\
-10000   & 30    & 259   & 2646  &         \\
-31622   & 39    & 309   & 3858  &         \\
-100000  & 40    & 360   & 7162  &         \\
-316227  & 46    & 385   & 8297  &         \\
-1000000 &       &       &       &         \\
-$\infty$ ($c_f$)   & 4     & 32    & 1024  & 1048576 \\
-\hline
-\end{tabular}
-\end{center}
-\caption{Calculated $c$ for uniform hypersphere distribution as
-$|S|$ scales.}
-\label{tab:ec_scaling}
-\end{table}
+%\begin{table}[htb]
+%\begin{center}
+%\begin{tabular}{|l|c|c|c|c|}
+%\hline
+%$|S|$ & $d = 2$ & $d = 5$ & $d = 10$ & $d = 20$ \\
+%\hline
+%10      & 6     & 10    & 10    &         \\
+%31      & 12    & 31    & 31    &         \\
+%100     & 13    & 64    & 100   &         \\
+%316     & 23    & 96    & 286   &         \\
+%1000    & 26    & 126   & 673   &         \\
+%3162    & 29    & 189   & 1348  &         \\
+%10000   & 30    & 259   & 2646  &         \\
+%31622   & 39    & 309   & 3858  &         \\
+%100000  & 40    & 360   & 7162  &         \\
+%316227  & 46    & 385   & 8297  &         \\
+%1000000 &       &       &       &         \\
+%$\infty$ ($c_f$)   & 4     & 32    & 1024  & 1048576 \\
+%\hline
+%\end{tabular}
+%\end{center}
+%\caption{Calculated $c$ for uniform hypersphere distribution as
+%$|S|$ scales.}
+%\label{tab:ec_scaling}
+%\end{table}
 
-We are somewhat limited in the sizes of $|S|$ we can scale to, because
-calculating the expansion constant of a dataset is a computationally intensive
-task.  Nonetheless, we can see that the expansion constant moves towards the
-final value of $c_f$, though potentially from above ({\it The results are not
-done yet.  This paragraph may need rewriting.  But I strongly suspect the
-results will show what I've said.}).  We postulate that the behavior of more
-complex real-world datasets is similar.
+%We are somewhat limited in the sizes of $|S|$ we can scale to, because
+%calculating the expansion constant of a dataset is a computationally intensive
+%task.  Nonetheless, we can see that the expansion constant moves towards the
+%final value of $c_f$, though potentially from above ({\it The results are not
+%done yet.  This paragraph may need rewriting.  But I strongly suspect the
+%results will show what I've said.}).  We postulate that the behavior of more
+%complex real-world datasets is similar.
 
 There are some other important observations about the behavior of $c$.  Adding a
 single point to $S$ may increase $c$ arbitrarily: consider a set $S$ distributed
@@ -213,7 +211,7 @@ version of their argument.
 
 \begin{lemma}
 Consider a dataset $S$ with expansion constant $c$ and a subset $C \subseteq S$
-such that every point in $C$ is separated by $\delta$.  Then, for any point 
+such that every point in $C$ is separated by $\delta$.  Then, for any point
 $p \not\in S$ and any radius $\rho \delta > 0$:
 \begin{equation}
 | B_S(p, \rho \delta) \cap C | \le c^{2 + \lceil \log_2 \rho \rceil}.
@@ -222,13 +220,13 @@ $p \not\in S$ and any radius $\rho \delta > 0$:
 \end{lemma}
 
 \begin{proof}
-The proof is based on the packing argument from Lemma 4.1 in 
-\cite{langford2006}. Consider two cases: first, let $d(p, p_i) > \rho \delta$ 
-for any $p_i \in S$. In this case, $B_S(p, \rho \delta) = \emptyset$ and the 
-lemma holds trivially. 
+The proof is based on the packing argument from Lemma 4.1 in
+\cite{langford2006}. Consider two cases: first, let $d(p, p_i) > \rho \delta$
+for any $p_i \in S$. In this case, $B_S(p, \rho \delta) = \emptyset$ and the
+lemma holds trivially.
 Otherwise, let $p_i \in S$ be a point such that $d(p, p_i) \leq \rho \delta$.
-Observe that $B_S(p, \rho \delta) \subseteq B_S(p_i, 2 \rho \delta)$. 
-Also, $| B_S(p_i, 2 \rho \delta) | = c^{2 + \lceil \log_2 \rho 
+Observe that $B_S(p, \rho \delta) \subseteq B_S(p_i, 2 \rho \delta)$.
+Also, $| B_S(p_i, 2 \rho \delta) | = c^{2 + \lceil \log_2 \rho
 \rceil} | B_S(p_i, \delta / 2) |$ by the definition of the expansion constant.
 Because each point in $C$ is separated by $\delta$, the
 number of points in $B_S(p, \rho \delta) \cap C$ is

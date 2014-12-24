@@ -124,16 +124,18 @@ Using cover trees, the standard cover tree pruning dual-tree traversal, and the
 nearest neighbor search \texttt{BaseCase()} and \texttt{Score()} as given in
 Algorithms \ref{alg:nn_base_case} and \ref{alg:nn_score}, respectively, and also
 given a reference set $S_r$ with expansion constant $c_r$, a query set $S_q$,
-the running time of the algorithm is bounded by $O(c_r^4 c_{qr}^5 (N + \theta))$
-with $\theta$ defined as in Theorem \ref{thm:ct-runtime}.
+the running time of the algorithm is bounded by $O(c_r^4 c_{qr}^5 (N +
+i_t(\mathscr{T}_q) + \theta))$ with $i_t(\mathscr{T}_q$ and $\theta$ defined as
+in Definition \ref{def:imbalance} and Lemma \ref{lem:extcase3}, respectively.
 \label{thm:nns}
 \end{thm}
 
 \begin{proof}
 The running time of \texttt{BaseCase()} and \texttt{Score()} are clearly $O(1)$.
 Due to Theorem \ref{thm:ct-runtime}, we therefore know that the runtime of the
-algorithm is bounded by $O(c_r^4 |R^*| (N + \theta))$.  Thus, the only thing
-that remains is to bound the maximum size of the reference set, $|R^*|$.
+algorithm is bounded by $O(c_r^4 |R^*| (N + i_t(\mathscr{T}_q) + \theta))$.
+Thus, the only thing that remains is to bound the maximum size of the reference
+set, $|R^*|$.
 
 Assume that when $R^*$ is encountered, the maximum reference scale is
 $s_r^{\max}$ and the query node is $\mathscr{N}_q$.  Every node $\mathscr{N}_r
@@ -308,5 +310,7 @@ c_{qr}^5$.
 %\noindent which gives the result because $c_r^5 \le c_{qr}^5$.
 
 In the monochromatic case where $S_q = S_r$, the bound is $O(c^9 (N +
-i_t(\mathscr{T}))$ because $c = c_r = c_{qr}$ and $\theta = i_t(\mathscr{T})$.
-This represents the best worst-case runtime bound for nearest neighbor search.
+i_t(\mathscr{T}))$ because $c = c_r = c_{qr}$ and $\theta = 0$.  For
+well-behaved trees where $i_t(\mathscr{T}_q)$ is linear or sublinear in $N$,
+this represents the current best worse-case runtime bound for nearest neighbor
+search.

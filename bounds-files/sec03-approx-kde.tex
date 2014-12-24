@@ -21,6 +21,7 @@ approximation}.  Absolute value approximation requires that each density
 estimate $f(p_q)$ is within $\epsilon$ of the true estimate $f^*(p_q)$:
 
 \begin{equation}
+\label{eqn:ava}
 | f(p_q) - f^*(p_q) | < N \epsilon.
 \end{equation}
 
@@ -29,6 +30,7 @@ parameter $\epsilon$, the requirement is that each density estimate is within a
 relative tolerance of $f^*(p_q):$
 
 \begin{equation}
+\label{eqn:rva}
 \frac{| f(p_q) - f^*(p_q) |}{| f^*(p_q) |} < N \epsilon.
 \end{equation}
 
@@ -129,33 +131,6 @@ $\mathscr{N}_r$, list of node kernel estimates $\hat{f}_n$
   \label{alg:kde_score}
 \end{algorithm}
 
-\begin{algorithm}[tb]
-  \begin{algorithmic}[1]
-    \STATE {\bfseries Input:} query node $\mathscr{N}_q$, reference node
-$\mathscr{N}_r$, list of node kernel estimates $\hat{f}_n$
-    \STATE {\bfseries Output:} a score for the node combination $(\mathscr{N}_q,
-\mathscr{N}_r)$, or $\infty$ if the combination should be pruned
-
-    \medskip
-
-    \IF{$\mathcal{K}(d_{\min}(\mathscr{N}_q, \mathscr{N}_r)) -
-\mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r)) /
-\mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r)) < \epsilon$}
-      \STATE $f_n(\mathscr{N}_q) \gets f_n(\mathscr{N}_q) + |
-\mathscr{D}^p(\mathscr{N}_r) | \left(\mathcal{K}(d_{\min}(\mathscr{N}_q,
-\mathscr{N}_r)) + \mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r))\right) /\;2$
-      \RETURN $\infty$
-    \ENDIF
-
-    \RETURN $\mathcal{K}(d_{\min}(\mathscr{N}_q, \mathscr{N}_r)) -
-\mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r))$
-  \end{algorithmic}
-
-  \caption{Relative-value approximate kernel density estimation
-\texttt{Score()}}
-  \label{alg:kde_rva_score}
-\end{algorithm}
-
 \begin{thm}
 Assume that $\mathcal{K}(\cdot, \cdot)$ is a kernel satisfying the assumptions
 of the previous section.  Then, given a query set $S_q$ and a reference set
@@ -166,10 +141,11 @@ traversal given in Algorithm \ref{alg:cover-tree-dual}, the running time of
 approximate kernel density estimation for some $\epsilon$ error parameter is
 bounded by
 %\begin{equation}
-$O(c_r^{8 + \lceil \log_2 \zeta \rceil} (N + \theta))$
+$O(c_r^{8 + \lceil \log_2 \zeta \rceil} (N + i_t(\mathscr{T}_q) + \theta))$
 %\end{equation}
-where $\zeta = -\mathcal{K}'(h) \mathcal{K}^{-1}(\epsilon) \epsilon^{-1}$ and
-$\theta$ as in Theorem \ref{thm:ct-runtime}.
+where $\zeta = -\mathcal{K}'(h) \mathcal{K}^{-1}(\epsilon) \epsilon^{-1}$,
+$i_t(\mathscr{T}_q)$ defined as in Definition \ref{def:imbalance}, and $\theta$
+defined as in Lemma \ref{lem:extcase3}.
 
 \label{thm:kde-bound}
 \end{thm}
@@ -177,11 +153,11 @@ $\theta$ as in Theorem \ref{thm:ct-runtime}.
 \begin{proof}
 It is clear that \texttt{BaseCase()} and \texttt{Score()} both take $O(1)$ time,
 so Theorem \ref{thm:ct-runtime} implies the total runtime of the dual-tree
-algorithm is bounded by $O(c_r^4 |R^*| (N + \theta))$.  Thus, we will bound
-$|R^*|$ using techniques related to those used by \citet{ram2009}.  The bounding
-of $|R^*|$ is split into two sections: first, show that when the scale
-$s_r^{\max}$ is small enough, $R^*$ is empty.  Second, bound $R^*$ when
-$s_r^{\max}$ is larger.
+algorithm is bounded by $O(c_r^4 |R^*| (N + i_t(\mathscr{T}_q) + \theta))$.
+Thus, we will bound $|R^*|$ using techniques related to those used by
+\citet{ram2009}.  The bounding of $|R^*|$ is split into two sections: first,
+show that when the scale $s_r^{\max}$ is small enough, $R^*$ is empty.  Second,
+bound $R^*$ when $s_r^{\max}$ is larger.
 
 The \texttt{Score()} function is such that any node in $|R^*|$ for a given query
 node $\mathscr{N}_q$ obeys
@@ -457,5 +433,93 @@ kernels do not exhibit dependence on the bandwidth.
 \subsection{Relative Value Approximation}
 
 Approximate kernel density estimation using relative-value approximation may be
-bounded in a similar manner.  A \texttt{Score()} function is given in Algorithm
-\ref{alg:kde_rva_score}.
+bounded by reducing the absolute-value approximation algorithm (in linear time
+or less) to relative-value approximation.  This is the same strategy as
+performed by \citet{ram2009}.
+
+First, we must establish a \texttt{Score()} function for relative value
+approximation.  The difference between Equations \ref{eqn:ava} and \ref{eqn:rva}
+is the division by the term $|f^*(p_q)|$.  But we can quickly bound
+$|f^*(p_q)|$:
+
+\begin{equation}
+f^*(p_q) \ge N \mathcal{K}\left(\max_{p_r \in S_r} d(p_q, p_r)\right).
+\end{equation}
+
+This is clearly true, because each point in $S_r$ must contribute more than
+$\mathcal{K}(\max_{p_r \in S_r} d(p_q, p_r))$ to $f^*(p_q)$.  Now, we may revise
+the relative approximation condition in Equation \ref{eqn:rva}:
+
+\begin{equation}
+| f(p_q) - f^*(p_q) | \le \epsilon \mathcal{K}^{\max}
+\end{equation}
+
+\noindent where $\mathcal{K}^{\max}$ is lower bounded by $\mathcal{K}(\max_{p_r
+\in S_r} d(p_q, p_r))$.  This allows us to create a \texttt{Score()} algorithm,
+given in Algorithm \ref{alg:kde_rva_score}.
+
+\begin{algorithm}[tb]
+  \begin{algorithmic}[1]
+    \STATE {\bfseries Input:} query node $\mathscr{N}_q$, reference node
+$\mathscr{N}_r$, list of node kernel estimates $\hat{f}_n$
+    \STATE {\bfseries Output:} a score for the node combination $(\mathscr{N}_q,
+\mathscr{N}_r)$, or $\infty$ if the combination should be pruned
+
+    \medskip
+
+    \IF{$\mathcal{K}(d_{\min}(\mathscr{N}_q, \mathscr{N}_r)) -
+\mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r)) < \epsilon
+\mathcal{K}^{\max}$}
+\label{alg:rva-kde-prune}
+      \STATE $f_n(\mathscr{N}_q) \gets f_n(\mathscr{N}_q) + |
+\mathscr{D}^p(\mathscr{N}_r) | \left(\mathcal{K}(d_{\min}(\mathscr{N}_q,
+\mathscr{N}_r)) + \mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r))\right)
+/\;2$ \label{alg:rva-kde-update}
+      \RETURN $\infty$
+    \ENDIF
+
+    \RETURN $\mathcal{K}(d_{\min}(\mathscr{N}_q, \mathscr{N}_r)) -
+\mathcal{K}(d_{\max}(\mathscr{N}_q, \mathscr{N}_r))$
+  \end{algorithmic}
+
+  \caption{Relative-value approximate kernel density estimation
+\texttt{Score()}}
+  \label{alg:kde_rva_score}
+\end{algorithm}
+
+Using this, we may prove linear runtime bounds for relative value approximate
+kernel density estimation.
+
+\begin{thm}
+Assume that $\mathcal{K}(\cdot, \cdot)$ is a kernel satisfying the assumptions
+of the previous section.  Then, given a query set $S_q$ and a reference set
+$S_r$ both of size $O(N)$, it is possible to perform relative value
+approximate kernel density estimation (satisfying the condition of Equation
+\ref{eqn:rva}) in $O(N)$ time, assuming that the expansion constant $c_r$ of
+$S_r$ is not dependent on $N$.
+\end{thm}
+
+\begin{proof}
+It is easy to see that Theorem \ref{thm:kde-bound} may be adapted to the very
+slightly different \texttt{Score()} rule of Algorithm \ref{alg:kde_rva_score}
+while still providing an $O(N)$ bound.  With that \texttt{Score()} function, the
+dual-tree algorithm will return relative-value approximate kernel density
+estimates satisfying Equation \ref{eqn:rva}.
+
+We now turn to the calculation of $\mathcal{K}^{\max}$.  Given the cover trees
+$\mathscr{T}_q$ and $\mathscr{T}_r$ with root nodes $\mathscr{N}_{r}^{R}$ and
+$\mathscr{N}_{r}^{R}$, respectively, we may calculate a suitable
+$\mathcal{K}^{\max}$ value in constant time:
+
+\begin{equation}
+\mathcal{K}^{\max} = d_{\max}(\mathscr{N}_q^R, \mathscr{N}_r^R) = d(p_q^R,
+p_r^R) + 2^{s_q^{\max} + 1} + 2^{s_r^{\max} + 1}.
+\end{equation}
+
+This proves the statement of the theorem.
+\end{proof}
+
+In this case, we have not shown tighter bounds because the algorithm we have
+proposed is not useful in practice.  For an example of a better relative-value
+approximate kernel density estimation dual-tree algorithm, see the work of
+\citet{gray2003nonparametric}.

@@ -44,18 +44,18 @@ descendants in each child branch but instead only missing levels.
 \label{fig:imbalance}
 \end{figure}
 
-An imbalanced cover tree can---and often does---happen in practice, and the
+An imbalanced cover tree can happen in practice, and in the worst cases, the
 imbalance may be far worse than the simple graphs of Figure \ref{fig:imbalance}.
 Consider a dataset with a single outlier which is very far away from all of the
 other points\footnote{Note also that for an outlier sufficiently far away, the
 expansion constant is $N - 1$.}.  Figure \ref{fig:outlier} shows what happens in
 this situation: the root node has two children; one of these children has only
 the outlier as a descendant, and the other child has the rest of the points in
-the dataset as a descendant.  In fact, it is easy to find datasets with multiple
-outliers which give rise to a chain-like structure at the top of the tree: see
-Figure \ref{fig:outliers} for an illustration\footnote{As a side note, this
-behavior is not limited to cover trees, and can happen to mean-split $kd$-trees
-too, especially in higher dimensions.}.
+the dataset as a descendant.  In fact, it is easy to find datasets with a
+handful of outliers that give rise to a chain-like structure at the top of the
+tree: see Figure \ref{fig:outliers} for an illustration\footnote{As a side note,
+this behavior is not limited to cover trees, and can happen to mean-split
+$kd$-trees too, especially in higher dimensions.}.
 
 \begin{figure}
 \begin{center}
@@ -101,6 +101,7 @@ This simple definition of cover node imbalance is easy to calculate, and using
 it, we can generalize to a measure of imbalance for the full tree.
 
 \begin{defn}
+\label{def:imbalance}
 The {\it cover tree imbalance} $i_t(\mathscr{T})$ for a cover tree $\mathscr{T}$
 is defined as the cumulative number of missing levels in the tree.  This can be
 expressed as a function of cover node imbalances easily:
@@ -117,34 +118,40 @@ entirely a chain-like structure with maximum scale $s_{\max}$ and minimum scale
 $s_{\min}$ will have imbalance $i_t(\mathscr{T}_w) \sim N (s_{\max} -
 s_{\min})$.  Because of this chain-like structure, each level has only one node
 and thus there are at least $N$ levels; or, $s_{\max} - s_{\min} \ge N$, meaning
-that the imbalance is actually quadratic in $N$!
+that in the worst case the imbalance is quadratic in $N$.
 
-For most real-world datasets, the tree imbalance is sublinear in the number of
-points.  To demonstrate this, Table \ref{tab:emp_imbalance} shows empirically
-calculated cover tree imbalance for cover trees on a number of datasets built
-with both the cover tree implementation in {\bf mlpack} \citep{mlpack2013} and
-the original reference implementation \citep{langford2006}.
+However, for most real-world datasets with the cover tree implementation in {\bf
+mlpack} \citep{mlpack2013} and the reference implementation
+\citep{langford2006}, the tree imbalance is near-linear with the number of
+points.  Most of the cover tree imbalance is contributed by leaf nodes whose
+parent has scale greater than $s_{\min}$.  At this time, no cover tree
+construction algorithm specifically aims to minimize imbalance.
 
-\begin{table}[tb]
-\begin{center}
-\begin{tabular}{|c|c|c|r|r|}
-\hline
-Dataset & $N$ & $d$ & reference & mlpack \\
-\hline
-wine & & & & \\
-isolet & & & & \\
-corel & & & & \\
-mnist & 70000 & 784 & & \\
-bio & & & & \\
-phy & & & & \\
-covertype & & & & \\
-LCDM & & & & \\
-\hline
-\end{tabular}
-\end{center}
-\caption{Empirical tree imbalance calculations.}
-\label{tab:emp_imbalance}
-\end{table}
+%To demonstrate this, Table \ref{tab:emp_imbalance} shows empirically
+%calculated cover tree imbalance for cover trees on a number of datasets built
+%with both the cover tree implementation in {\bf mlpack} \citep{mlpack2013} and
+%the original reference implementation \citep{langford2006}.
 
-{\bf TODO: Can any bound be proven on $i_t(\mathscr{T})$?  I haven't thought of
-anything successfully yet.}
+%\begin{table}[tb]
+%\begin{center}
+%\begin{tabular}{|c|c|c|r|r|}
+%\hline
+%Dataset & $N$ & $d$ & reference & mlpack \\
+%\hline
+%wine & & & & \\
+%isolet & & & & \\
+%corel & & & & \\
+%mnist & 70000 & 784 & & \\
+%bio & & & & \\
+%phy & & & & \\
+%covertype & & & & \\
+%LCDM & & & & \\
+%\hline
+%\end{tabular}
+%\end{center}
+%\caption{Empirical tree imbalance calculations.}
+%\label{tab:emp_imbalance}
+%\end{table}
+
+%{\bf TODO: Can any bound be proven on $i_t(\mathscr{T})$?  I haven't thought of
+%anything successfully yet.}
