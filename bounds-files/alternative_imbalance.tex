@@ -1,0 +1,63 @@
+
+The purpose of this section is to explore an alternative to the current 
+definition of the tree imbalance. I'll start with some intuition, then provide
+an alternative definition. Finally, I'll try to re-write the proof of Theorem
+1 using this definition. 
+
+
+I started by wondering if the tree imbalance Equation~\ref{eqn_node_imbalance}
+can be bounded in terms of the expansion constant. I tried to construct 
+examples where the expansion constant is small, but the tree imbalance is 
+large. 
+
+The only one I could come up with is this: construct a set of $N/2$ points with
+a small expansion constant (i.e. points on a lattice in low dimensions). Make a 
+copy of this set, then place it arbitrarily far away from the first set.  The 
+expansion constant of the combined set is no larger than for one of the small
+sets. However, the gap in level between the root and its children is as 
+large as we want. 
+
+The problem is that a dual-tree algorithm on this set will generally still be 
+efficient. The key is that all of the levels between the root and second level 
+of the tree don't matter. The algorithm can skip over all of them in one 
+recursion. 
+
+So, the idea is to see if we can bound the runtime in terms of the number of 
+missing levels \emph{which actually exist} somewhere in the tree. In the 
+bichromatic case, we will need to take into account the levels of the other
+tree. 
+
+Let $T_q$ and $T_r$ be a query and reference tree. Let $s_1$ and $s_2$ be two 
+scales such that $s_1 > s_2$. 
+Define $\mathcal{M}(s_1, s_2, T_q, T_r)$ to be the number of levels between 
+$s_1$ and $s_2$ (inclusive) which one (or both) trees have a node at. 
+
+We provide the following definition of the imbalance of a node: 
+\begin{definition}
+  Let $T_r$ and $T_q$ be two cover trees. 
+  Let $N$ be a node in either tree at scale $s$ with parent at scale $s_p$. 
+  Then, define the imbalance of the node to be
+  \begin{equation}
+    \mathcal{I}(N) = \mathcal{M}(s_p, s, T_r, T_q)
+  \end{equation}
+  The imbalance of the root is defined to be $0$ and the level of a leaf is 
+  defined to be $s_{\textrm{min}} - 1$ where $s_{\textrm{min}}$ is the minimum
+  level of any non-leaf in either tree. 
+  
+  The imbalance of a tree is the sum of the imbalances of all nodes.
+\end{definition}
+
+Note that the imbalance of a tree is $\bigO(N)$, since in the worst case 
+each node has a different level from all of the others. 
+
+Is this really true, though? If we're counting for query nodes, then we might
+count each reference node many times. This is where my thinking starts to break 
+down. . . 
+
+
+
+
+
+
+
+

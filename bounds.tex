@@ -81,17 +81,31 @@
 %approximate kernel density estimation and exact range count/search under some
 %mild assumptions.  These are the first linear runtime bounds we are aware of for
 %range count/search.
+%Numerous machine learning algorithms contain pairwise statistical problems at
+%their core. Often, tree structures are used to solve these problems efficiently.
+%Dual-tree algorithms using cover trees have rigorous worst-case runtime
+%guarantees for some of these problems. In this paper, we present a {\em
+%problem-independent} runtime guarantee for {\em any} dual-tree algorithm using
+%the cover tree, separating out the problem-dependent and the problem-independent
+%elements. This allows us to just plug in bounds for the problem-dependent
+%elements to get runtime guarantees for dual-tree algorithms for any pairwise
+%statistical problem. We demonstrate this plug-and-play procedure for
+%nearest-neighbor search and approximate kernel density estimation to get
+%improved runtime guarantees.  Under some assumptions, we also present the first
+%linear runtime guarantee for dual-tree based range search.
 Numerous machine learning algorithms contain pairwise statistical problems at
-their core. Often, tree structures are used to solve these problems efficiently.
-Dual-tree algorithms using cover trees have rigorous worst-case runtime
-guarantees for some of these problems. In this paper, we present a {\em
+their core -- i.e. tasks that require computations over all pairs of input points if implemented directly. 
+Often, tree structures are used to solve these problems efficiently. Dual-tree algorithms 
+can efficiently solve or approximate many of these problems.
+Using cover trees, rigorous worst-case runtime
+guarantees have been proven for some of these algorithms. In this paper, we present a {\em
 problem-independent} runtime guarantee for {\em any} dual-tree algorithm using
 the cover tree, separating out the problem-dependent and the problem-independent
-elements. This allows us to just plug in bounds for the problem-dependent
+elements. This allows us to plug in bounds for the problem-dependent
 elements to get runtime guarantees for dual-tree algorithms for any pairwise
-statistical problem. We demonstrate this plug-and-play procedure for
+statistical problem without re-deriving the entire proof. We demonstrate this plug-and-play procedure for
 nearest-neighbor search and approximate kernel density estimation to get
-improved runtime guarantees.  Under some assumptions, we also present the first
+improved runtime guarantees.  Under mild assumptions, we also present the first
 linear runtime guarantee for dual-tree based range search.
 \end{abstract}
 
@@ -99,12 +113,19 @@ linear runtime guarantee for dual-tree based range search.
 \section{Dual-tree algorithms}
 
 A surprising number of machine learning algorithms have computational
-bottlenecks that can be expressed as pairwise statistical problems.
-Nearest neighbor search is one such problem, naively requiring $O(N)$ time
+bottlenecks that can be expressed as pairwise statistical problems. 
+By this, we mean computational tasks that can be evaluated directly by iterating over all 
+pairs of input points. 
+Nearest neighbor search is one such problem, since for every query point, we can 
+evaluate its distance to every reference point and keep the closest one. 
+This naively requires $O(N)$ time
 to answer in single query in a reference set of size $N$; answering $O(N)$
 queries subsequently requires prohibitive $O(N^2)$ time. Kernel density
-estimation is also a pairwise statistical problem, naively requiring $O(N^2)$
-time to answer $O(N)$ queries. The reference set is typically indexed with
+estimation is also a pairwise statistical problem, since we compute a sum over all 
+reference points for each query point.
+This again requires $O(N^2)$
+time to answer $O(N)$ queries if done directly. 
+The reference set is typically indexed with
 spatial data structures to accelerate this type of computation
 \citep{finkel1974quad, langford2006}; these result in $O(\log N)$ runtime per
 query under favorable conditions.
@@ -126,7 +147,7 @@ consisting of a query node and a reference node), calling a problem-specific
 If not, then a problem-specific \texttt{BaseCase()} function is called for each
 combination of points held in the query node and reference node.  This has
 significant similarity to the more common single-tree branch-and-bound
-algorithms, except that the algroithm must recurse into child nodes of {\it
+algorithms, except that the algorithm must recurse into child nodes of {\it
 both} the query tree and reference tree.
 
 There exist numerous dual-tree algorithms for problems as diverse as kernel
@@ -154,7 +175,8 @@ Section \ref{sec:preliminaries} lays out the required background, notation, and
 introduces the cover tree and its associated theoretical properties.  Readers
 familiar with the cover tree literature and dual-tree algorithms
 \citep[especially][]{curtin2013tree} may find that section to be review.
-Following that, we introduce an intuitive measure of cover tree imbalance in
+Following that, we introduce an intuitive measure of cover tree imbalance, an 
+important property for understanding the runtime of dual-tree algorithms, in
 Section \ref{sec:imbalance}.  This measure of imbalance is then used to prove
 the main result of the paper in Section \ref{sec:bound}, which is a worst-case
 runtime bound for generalized dual-tree algorithms.  We apply this result to

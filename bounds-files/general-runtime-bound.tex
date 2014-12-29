@@ -142,13 +142,13 @@ always a subset of $C_{s_r^{\max}}$.  This fact will be useful in our later
 runtime proofs.
 
 Next, we develop notions with which to understand the behavior of the cover tree
-dual-tree traversla when the datasets are of significantly different scale
+dual-tree traversal when the datasets are of significantly different scale
 distributions.
 
 If the datasets are similar in scale distribution (that is, inter-point distances
 tend to follow the same distribution), then the recursion will alternate between
 query recursions and reference recursions.  But if the query set contains points
-which are, in general, much further apart than the reference set, then the
+which are, in general, much farther apart than the reference set, then the
 recursion will start with many query recursions before reaching a reference
 recursion.  The converse case also holds.  We are interested in formalizing
 this notion of scale distribution; therefore, define the following
@@ -219,8 +219,8 @@ the traversal given in Algorithm \ref{alg:cover-tree-dual}, the number of extra
 reference recursions that happen after the last query recursion is bounded by
 
 \begin{equation}
-\theta = \max\left(\min\left(O(N \lceil \log_2(\delta_q / \delta_r) \rceil),
-O(N^2)\right), \; 0\right).
+\theta = \max\left\{\min\left[O(N \lceil \log_2(\delta_q / \delta_r) \rceil),
+O(N^2)\right], \; 0\right\}.
 \end{equation}
 \end{lemma}
 
