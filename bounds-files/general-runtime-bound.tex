@@ -26,8 +26,8 @@ $R$ \label{alg:line:ct-dual-input}
     \medskip
     \STATE $s^{\max}_r \gets \max_{\mathscr{N}_r \in R} s_r$
 \label{alg:line:ct-dual-srmax}
-    \IF{$(s_q < s^{\max}_r)$}
-\label{alg:line:ct-dual-ref-recursion-start}
+    \IF{$(s_q < s^{\max}_r)$} \label{alg:line:ct-dual-ref-recursion-start}
+      \STATE \COMMENT{Perform a reference recursion.}
       \FORALL{$\mathscr{N}_r \in R$} \label{alg:line:ct-dual-base-case-start}
         \STATE \texttt{BaseCase($p_q$, $p_r$)}
       \ENDFOR \label{alg:line:ct-dual-base-case-end}
@@ -41,6 +41,7 @@ R_r \} \cup (R \setminus R_r)$ \label{alg:line:ct-dual-ref-children}
       \STATE recurse with $\mathscr{N}_q$ and $R'_{r - 1}$
 \label{alg:line:ct-dual-ref-recursion-end}
     \ELSE \label{alg:line:ct-dual-query-recursion-start}
+      \STATE \COMMENT{Perform a query recursion.}
       \FORALL{$\mathscr{N}_{qc} \in \mathscr{C}(\mathscr{N}_q)$}
         \STATE $R' \gets \{ \mathscr{N}_r \in R :
 \texttt{Score(}\mathscr{N}_q\texttt{,} \mathscr{N}_r\texttt{)} \ne \infty \}$
@@ -442,8 +443,19 @@ which suffers from the same problem as $\kappa$.  Although the dependence on
 $\nu$ is linear (that is, $O(\nu N)$), bounding $\nu$ is difficult and it is not
 true that $\nu = 1$ in the monochromatic case.
 
-Both $\nu$ and $\kappa$ are difficult to empirically calculate and require an
-entire run of the dual-tree algorithm.  On the other hand, bounding
+$\nu$ corresponds to the maximum number of reference recursions between a single
+query recursion, and $\kappa$ corresponds to the maximum number of query
+recursions between a single reference recursion.  The respective proofs that use
+these constants then apply them as a worst-case measure for the whole algorithm:
+when using $\kappa$, \citet{ram2009} assume that {\it every} reference recursion
+may be followed by $\kappa$ query recursions; similarly, \citet{curtin2014dual}
+assume that {\it every} query recursion may be followed by $\nu$ reference
+recursions.  Here, we have simply used $i_t(\mathscr{T}_q)$ and $\theta$ as an
+exact summation of the total extra reference recursions, which gives us a much
+tighter bound than $\nu$ or $\kappa$ on the running time of the whole algorithm.
+
+Further, both $\nu$ and $\kappa$ are difficult to empirically calculate and
+require an entire run of the dual-tree algorithm.  On the other hand, bounding
 $i_t(\mathscr{T}_q)$ (and $\theta$) can be done in one pass of the tree
 (assuming the tree is already built).  Thus, not only is our bound tighter when
 the cover tree imbalance is sublinear in $N$, it more closely reflects the
