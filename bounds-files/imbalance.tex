@@ -1,6 +1,6 @@
 It is well-known that imbalance in trees leads to degradation in performance;
-for instance, a $kd$-tree node with every descendant except one in its left
-child is effectively useless.  A $kd$-tree full of nodes like this will perform
+for instance, a $kd$-tree node with every descendant in its left child except
+one is effectively useless.  A $kd$-tree full of nodes like this will perform
 abysmally for nearest neighbor search, and it is not hard to generate a
 pathological dataset that will cause a $kd$-tree of this sort.
 
@@ -48,7 +48,8 @@ An imbalanced cover tree can happen in practice, and in the worst cases, the
 imbalance may be far worse than the simple graphs of Figure \ref{fig:imbalance}.
 Consider a dataset with a single outlier which is very far away from all of the
 other points\footnote{Note also that for an outlier sufficiently far away, the
-expansion constant is $N - 1$.}.  Figure \ref{fig:outlier} shows what happens in
+expansion constant is $N - 1$, so we should expect poor performance with the
+cover tree anyway.}.  Figure \ref{fig:outlier} shows what happens in
 this situation: the root node has two children; one of these children has only
 the outlier as a descendant, and the other child has the rest of the points in
 the dataset as a descendant.  In fact, it is easy to find datasets with a
@@ -73,7 +74,8 @@ $kd$-trees too, especially in higher dimensions.}.
 \label{fig:outliers}
 \end{figure}
 
-A tree that has this chain-like structure all the way down is going to perform
+A tree that has this chain-like structure all the way down, which is similar to
+the $kd$-tree example at the beginning of this section, is going to perform
 horrendously; motivated by this observation, we define a measure of tree
 imbalance.
 
@@ -119,14 +121,15 @@ entirely a chain-like structure with maximum scale $s_{\max}$ and minimum scale
 $s_{\min}$ will have imbalance $i_t(\mathscr{T}_w) \sim N (s_{\max} -
 s_{\min})$.  Because of this chain-like structure, each level has only one node
 and thus there are at least $N$ levels; or, $s_{\max} - s_{\min} \ge N$, meaning
-that in the worst case the imbalance is quadratic in $N$.
+that in the worst case the imbalance is quadratic in $N$\footnote{Note that in
+this situation, $c \sim N$ also.}.
 
 However, for most real-world datasets with the cover tree implementation in {\bf
 mlpack} \citep{mlpack2013} and the reference implementation
 \citep{langford2006}, the tree imbalance is near-linear with the number of
-points.  Most of the cover tree imbalance is contributed by leaf nodes whose
-parent has scale greater than $s_{\min}$.  At this time, no cover tree
-construction algorithm specifically aims to minimize imbalance.
+points.  Generally, most of the cover tree imbalance is contributed by leaf
+nodes whose parent has scale greater than $s_{\min}$.  At this time, no cover
+tree construction algorithm specifically aims to minimize imbalance.
 
 %To demonstrate this, Table \ref{tab:emp_imbalance} shows empirically
 %calculated cover tree imbalance for cover trees on a number of datasets built

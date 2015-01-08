@@ -40,14 +40,16 @@ $d_{\max}(\mathscr{N}_q, \mathscr{N}_r) \in [l, u]$}
 \end{algorithm}
 
 In the range search problem, the task is to find the set of reference points
-%\begin{equation}
+
+\begin{equation}
 $S[p_q] = \{ p_r \in S_r : d(p_q, p_r) \in [l, u] \}$
-%\end{equation}
+\end{equation}
+
 for each query point $p_q$, where $[l, u]$ is the given
 range.  The range count problem is practically identical, but only the size of
 the set, $|S[p_q]|$, is desired.
 Our proof works for both of these algorithms
-identically, but we will focus on range search.  A \texttt{BaseCase()} and
+similarly, but we will focus on range search.  A \texttt{BaseCase()} and
 \texttt{Score()} function are given in Algorithms \ref{alg:rs_bc} and
 \ref{alg:rs_sc}, respectively \citep[a correctness proof can be found
 in][]{curtin2013tree}.  The sets $N[p_q]$ (for each $p_q$) are
@@ -68,7 +70,8 @@ set $S_r$, and range $[l, u]$ as
 
 Small $| S_{\max} |$ implies an easy problem; large $| S_{\max} |$ implies a
 difficult problem.  For bounding the running time of range search, we require
-one more definition.
+one more notion of difficulty, related to how $| S_{\max} |$ changes due to
+changes in the range $[l, u]$.
 
 \begin{defn}
 For a range search problem with query set $S_q$, reference set $S_r$, range $[l,
@@ -86,7 +89,10 @@ S^{\alpha}[p_q] = \{ p_r : p_r \in S_r, (1 - \alpha) l \le d(p_q, p_r) \le (1 +
 \end{equation}
 \end{defn}
 
-Using these notions, we may now bound the running time of range search.
+When the $\alpha$-expansion of the set $S_{\max}$ is approximately the same size
+as $S_{\max}$, then the problem would not be significantly more difficult if the
+range $[l, u]$ was increased slightly.  Using these notions, then, we may now
+bound the running time of range search.
 
 \begin{thm}
 Given a reference set $S_r$ of size $N$ with expansion constant $c_r$, and a
@@ -123,7 +129,7 @@ Equation \ref{eqn:smax}.
 \begin{proof}
 Both \texttt{BaseCase()} (Algorithm \ref{alg:rs_bc}) and \texttt{Score()}
 (Algorithm \ref{alg:rs_sc}) take $O(1)$ time.  Therefore, using Lemma
-\ref{thm:ct-runtime} we know that the runtime of the algorithm is bounded by
+\ref{thm:ct-runtime}, we know that the runtime of the algorithm is bounded by
 $O(c_r^4 |R^*| (N + i_t(\mathscr{N}_q) + \theta))$.  As with the previous
 proofs, then, our only task is to bound the maximum size of the reference set,
 $|R^*|$.
@@ -223,7 +229,7 @@ l).
 \end{equation}
 
 This set is necessarily a subset of $S^{\alpha}[p_q]$; by
-definition, the number of points in this set is bounded above by $|S_{\max}| +
+assumption, the number of points in this set is bounded above by $|S_{\max}| +
 C$.  We may then conclude that $|R^*| \le |S_{\max}| + C$.  By taking the
 maximum of the sizes of $|R^*|$ in both cases above, we obtain the statement of
 the theorem.

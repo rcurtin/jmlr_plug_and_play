@@ -59,20 +59,38 @@ neighbor search algorithm due to \citet{langford2006}.  We will consider that
 algorithm, but in a tree-independent sense as given by \citet{curtin2013tree};
 this means that to describe the algorithm, we require only a \texttt{BaseCase()}
 and \texttt{Score()} function; these are given in Algorithms
-\ref{alg:nn_base_case} and \ref{alg:nn_score}, respectively.
+\ref{alg:nn_base_case} and \ref{alg:nn_score}, respectively.  The
+point-to-point \texttt{BaseCase()} function compares a query point $p_q$ and a
+reference point $p_r$, updating the list of candidate neighbors for $p_q$ if
+necessary.
+
+The node-to-node \texttt{Score()} function determines if the entire
+subtree of nodes under the reference node $\mathscr{N}_r$ can improve the
+candidate neighbors for all descendant points of the query node $\mathscr{N}_q$;
+if not, the node combination is pruned.  The \texttt{Score()} function depends
+on the function $d_{\min}(\cdot, \cdot)$, which represents the minimum possible
+distance between any two descendants of two nodes.  Its definition for cover
+tree nodes is
+
+\begin{equation}
+d_{\min}(\mathscr{N}_q, \mathscr{N}_r) = d(p_q, p_r) - 2^{s_q + 1} - 2^{s_r +
+1}.
+\end{equation}
 
 Given a type of tree and traversal, these two functions store the current
 nearest neighbor candidates in the array $N$ and their distances in the array
-$D$. \citep[see][for a more complete
+$D$. \citep[See][for a more complete
 discussion of how this algorithm works and a proof of
 correctness.]{curtin2013tree}  The
 \texttt{Score()} function depends on a bound function $B(\mathscr{N}_q)$ which
 represents the maximum distance that could possibly improve a nearest neighbor
 candidate for any descendant point of the query node $\mathscr{N}_q$.  The
-standard bound function $B(\mathscr{N}_q)$ used for cover trees is
-%\begin{equation}
-$B(\mathscr{N}_q) \le D[p_q] + 2^{s_q + 1}$ \citep[this is adapted from][]{langford2006}.
-%\end{equation}
+standard bound function $B(\mathscr{N}_q)$ used for cover trees is adapted from
+\citep{langford2006}:
+
+\begin{equation}
+B(\mathscr{N}_q) := D[p_q] + 2^{s_q + 1}
+\end{equation}
 
 %\begin{figure}
 
@@ -123,7 +141,7 @@ $c'_r$ is the expansion constant of the set $S_r \cup \{ p_q \}$.
 Using cover trees, the standard cover tree pruning dual-tree traversal, and the
 nearest neighbor search \texttt{BaseCase()} and \texttt{Score()} as given in
 Algorithms \ref{alg:nn_base_case} and \ref{alg:nn_score}, respectively, and also
-given a reference set $S_r$ with expansion constant $c_r$, a query set $S_q$,
+given a reference set $S_r$ with expansion constant $c_r$, and a query set $S_q$,
 the running time of the algorithm is bounded by $O(c_r^4 c_{qr}^5 (N +
 i_t(\mathscr{T}_q) + \theta))$ with $i_t(\mathscr{T}_q$ and $\theta$ defined as
 in Definition \ref{def:imbalance} and Lemma \ref{lem:extcase3}, respectively.
@@ -152,7 +170,7 @@ Using the definition of $d_{\min}(\cdot, \cdot)$ and $B(\cdot)$, we
 expand the equation.  Note that $p_q$ is the point held in $\mathscr{N}_q$ and
 $p_r$ is the point held in $\mathscr{N}_r$.  Also, take $\hat{p}_r$ to be the
 current nearest neighbor candidate for $p_q$; that is, $D[p_q] = d(p_q,
-\hat{p}_r)$.  Then,
+\hat{p}_r)$ and $N[p_q] = \hat{p}_r$.  Then,
 
 \begin{eqnarray}
 %d(p_q, p_r) - \lambda(\mathscr{N}_q) - \lambda(\mathscr{N}_r) &\le& D[p_q] +
@@ -160,6 +178,7 @@ current nearest neighbor candidate for $p_q$; that is, $D[p_q] = d(p_q,
 %d(p_q, p_r) &\le& d(p_q, \hat{p}_r) + \lambda(\mathscr{N}_q) +
 %\lambda(\mathscr{N}_r) + 2^{s_q + 1} \\
 %d(p_q, p_r) - 2^{s_q + 1} - 2^{s_r + 1} &\le& D[p_q] + 2^{s_q + 1} \\
+d_{\min}(\mathscr{N}_q, \mathscr{N}_r) &\le& B(\mathscr{N}_q) \\
 d(p_q, p_r) &\le& d(p_q, \hat{p}_r) + 2^{s_q + 1} + 2^{s_r + 1} + 2^{s_q + 1}
 \label{eqn:pr_dist} \\
  &\le& d(p_q, \hat{p}_r) + 2(2^{s_r^{\max} + 1})
@@ -178,7 +197,7 @@ in $R^*$ (that is, $P = \{ p_r \in \mathscr{P}(\mathscr{N}_r) : \mathscr{N}_r
 %$\mathscr{N}_r \in R$ is such that
 
 \begin{equation}
-P \subseteq B_{S_r}(p_q, d(p_q, \hat{p}_r) + 2(2^{s_r^{\max} + 1}))
+P \subseteq B_{S_r}(p_q, d(p_q, \hat{p}_r) + 2(2^{s_r^{\max} + 1})).
 \end{equation}
 
 %\noindent or that
@@ -215,7 +234,7 @@ constant, the ball must be centered at a point in the set; now, the center
 B_{S_r \cup \{ p_q \}}(p_q, 4 d(p_q, p_r^*)) | \\
 % &\le& | B_{S_{qr}}(p_q, 8 d(p_q, p_r^*)) | \\
 % &\le& (c'_r)^3 | B_{S_r \cup \{ p_q \}}(p_q, d(p_q, p_r^*) / 2) | \\
- &\le& c_{qr}^3 | B_{S_r \cup \{ p_q \}}(p_q, d(p_q, p_r^*) / 2 |
+ &\le& c_{qr}^3 | B_{S_r \cup \{ p_q \}}(p_q, d(p_q, p_r^*) / 2) |
 \end{eqnarray}
 
 \noindent which follows because the expansion constant of the set $S_r \cup \{
@@ -312,5 +331,5 @@ c_{qr}^5$.
 In the monochromatic case where $S_q = S_r$, the bound is $O(c^9 (N +
 i_t(\mathscr{T}))$ because $c = c_r = c_{qr}$ and $\theta = 0$.  For
 well-behaved trees where $i_t(\mathscr{T}_q)$ is linear or sublinear in $N$,
-this represents the current best worse-case runtime bound for nearest neighbor
-search.
+this represents the current tightest worst-case runtime bound for nearest
+neighbor search.

@@ -14,15 +14,15 @@ f^*(p_q) = \sum_{p_r \in S_r} \mathcal{K}(p_q, p_r).
 \end{equation}
 
 In the case of an infinite-tailed kernel $\mathcal{K}(\cdot, \cdot)$, the
-computation cannot be accelerated; thus, attention has turned towards tractable
-approximation schemes.  Two simple schemes for the approximation of $f^*(p_q)$
-are well-known: {\it absolute value approximation} and {\it relative value
-approximation}.  Absolute value approximation requires that each density
+exact computation cannot be accelerated; thus, attention has turned towards
+tractable approximation schemes.  Two simple schemes for the approximation of
+$f^*(p_q)$ are well-known: {\it absolute value approximation} and {\it relative
+value approximation}.  Absolute value approximation requires that each density
 estimate $f(p_q)$ is within $\epsilon$ of the true estimate $f^*(p_q)$:
 
 \begin{equation}
 \label{eqn:ava}
-| f(p_q) - f^*(p_q) | < N \epsilon.
+| f(p_q) - f^*(p_q) | < \epsilon \; \; \forall p_q \in S_q.
 \end{equation}
 
 Relative value approximation is a more flexible approximation scheme; given some
@@ -31,7 +31,7 @@ relative tolerance of $f^*(p_q):$
 
 \begin{equation}
 \label{eqn:rva}
-\frac{| f(p_q) - f^*(p_q) |}{| f^*(p_q) |} < N \epsilon.
+\frac{| f(p_q) - f^*(p_q) |}{| f^*(p_q) |} < \epsilon \; \; \forall p_q \in S_q.
 \end{equation}
 
 Kernel density estimation is related to the well-studied problem of kernel
@@ -57,7 +57,7 @@ Laplacian and Epanechnikov kernels.
 \subsection{Absolute value approximation}
 
 A tree-independent algorithm for solving approximate kernel density estimation
-with absolute value approximation under the previous assumptions on th kernel
+with absolute value approximation under the previous assumptions on the kernel
 is given as a \texttt{BaseCase()} function in Algorithm \ref{alg:kde_base_case}
 and a \texttt{Score()} function in Algorithm \ref{alg:kde_score}  \citep[a
 correctness proof can be found in][]{curtin2013tree}.  The list $f_p$ holds
@@ -79,7 +79,8 @@ must be extracted.  This can be done by traversing the query tree and
 calculating $f(p_q) = f_p(p_q) + \sum_{\mathscr{N}_i \in T}
 f_n(\mathscr{N}_i)$, where $T$ is the set of nodes in $\mathscr{T}_q$ that
 have $p_q$ as a descendant.  %It is possible to implement this in a way where
-Each query node needs to be visited only once.
+Each query node needs to be visited only once to perform this calculation; it
+may therefore be accomplished in $O(N)$ time.
 
 Note that this version is far simpler than other dual-tree algorithms that have
 been proposed for approximate kernel density estimation \citep[see, for
@@ -133,17 +134,17 @@ $\mathscr{N}_r$, list of node kernel estimates $\hat{f}_n$
 
 \begin{thm}
 Assume that $\mathcal{K}(\cdot, \cdot)$ is a kernel satisfying the assumptions
-of the previous section.  Then, given a query set $S_q$ and a reference set
+of the previous subsection.  Then, given a query set $S_q$ and a reference set
 $S_r$ with expansion constant $c_r$, and using the approximate kernel density
 estimation \texttt{BaseCase()} and \texttt{Score()} as given in Algorithms
 \ref{alg:kde_base_case} and \ref{alg:kde_score}, respectively, with the
 traversal given in Algorithm \ref{alg:cover-tree-dual}, the running time of
-approximate kernel density estimation for some $\epsilon$ error parameter is
+approximate kernel density estimation for some error parameter $\epsilon$ is
 bounded by
 %\begin{equation}
 $O(c_r^{8 + \lceil \log_2 \zeta \rceil} (N + i_t(\mathscr{T}_q) + \theta))$
 %\end{equation}
-where $\zeta = -\mathcal{K}'(h) \mathcal{K}^{-1}(\epsilon) \epsilon^{-1}$,
+with $\zeta = -\mathcal{K}'(h) \mathcal{K}^{-1}(\epsilon) \epsilon^{-1}$,
 $i_t(\mathscr{T}_q)$ defined as in Definition \ref{def:imbalance}, and $\theta$
 defined as in Lemma \ref{lem:extcase3}.
 
@@ -156,10 +157,10 @@ so Theorem \ref{thm:ct-runtime} implies the total runtime of the dual-tree
 algorithm is bounded by $O(c_r^4 |R^*| (N + i_t(\mathscr{T}_q) + \theta))$.
 Thus, we will bound $|R^*|$ using techniques related to those used by
 \citet{ram2009}.  The bounding of $|R^*|$ is split into two sections: first,
-show that when the scale $s_r^{\max}$ is small enough, $R^*$ is empty.  Second,
-bound $R^*$ when $s_r^{\max}$ is larger.
+we show that when the scale $s_r^{\max}$ is small enough, $R^*$ is empty.
+Second, we bound $R^*$ when $s_r^{\max}$ is larger.
 
-The \texttt{Score()} function is such that any node in $|R^*|$ for a given query
+The \texttt{Score()} function is such that any node in $R^*$ for a given query
 node $\mathscr{N}_q$ obeys
 
 \begin{equation}
@@ -172,9 +173,9 @@ Thus, we are interested in the maximum possible value $\mathcal{K}(a) -
 \mathcal{K}(b)$ for a fixed value of $b - a > 0$.  Due to our assumptions, the
 maximum value of $\mathcal{K}'(\cdot)$ is
 $\mathcal{K}'(h)$; therefore, the maximum possible value of $\mathcal{K}(a) -
-\mathcal{K}(b)$ is when the interval $[a, b]$ is centered on $h$.  Further,
-$\mathcal{K}(a) - \mathcal{K}(b) \le \epsilon$ when $(b - a) \le (-\epsilon /
-\mathcal{K}'(h))$.  Note that
+\mathcal{K}(b)$ is when the interval $[a, b]$ is centered on $h$.  This allows
+us to say that $\mathcal{K}(a) - \mathcal{K}(b) \le \epsilon$ when $(b - a) \le
+(-\epsilon / \mathcal{K}'(h))$.  Note that
 
 \begin{eqnarray}
 d_{\max}(\mathscr{N}_q, \mathscr{N}_r) - d_{\min}(\mathscr{N}_q, \mathscr{N}_r)
@@ -190,9 +191,9 @@ $s_r^{\max} \le \log_2( -\epsilon / \mathcal{K}'(h) ) - 2$.
 %\end{equation}
 %
 Consider, then, the case when $s_r^{\max} > \log_2( -\epsilon /
-\mathcal{K}'(h) ) - 2$.  It is trivial to see that for any $\mathscr{N}_r \in
+\mathcal{K}'(h) ) - 2$.  Because of the pruning rule, for any $\mathscr{N}_r \in
 R^*$, $\mathcal{K}(d_{\min}(\mathscr{N}_q, \mathscr{N}_r)) > \epsilon$;
-alternately stated, this means that
+we may refactor this by applying definitions to show
 %\begin{equation}
 $d(p_q, p_r) < \mathcal{K}^{-1}(\epsilon) + 2^{s_r^{\max} + 1}$.
 %\end{equation}
@@ -201,10 +202,13 @@ Therefore, bounding the number of points in the set
 $B_{S_r}(p_q, \mathcal{K}^{-1}(\epsilon) + 2^{s_r^{\max} + 1}) \cap
 C_{s_r^{\max}}$
 %\end{equation}
-is sufficient to bound $|R^*|$.  For notational convenience, define $\omega = \mathcal{K}^{-1}(\epsilon) /
-2^{s_r^{\max} + 1} + 1$.  Using Lemma \ref{lem:packing} with $\delta =
-2^{s_r^{\max}}$ and $\rho = 2 \omega$ gives $|R^*| = c_r^{3 + \lceil \log_2
-\omega \rceil}$.
+is sufficient to bound $|R^*|$.  For notational convenience, define $\omega =
+(\mathcal{K}^{-1}(\epsilon) / 2^{s_r^{\max} + 1}) + 1$, and the statement may be
+more concisely written as $B_{S_r}(p_q, \omega 2^{s_r^{\max} + 1}) \cap
+C_{s_r^{\max}}$.
+
+Using Lemma \ref{lem:packing} with $\delta = 2^{s_r^{\max}}$ and $\rho = 2
+\omega$ gives $|R^*| = c_r^{3 + \lceil \log_2 \omega \rceil}$.
 
 %The procedure to bound this will be the same as
 %for the nearest neighbor search proof---a packing bound.  See that
@@ -371,17 +375,11 @@ $\mathcal{K}_g^{-1}(\epsilon) = \sigma \sqrt{2 \ln (1 / \epsilon)}$.  This means
 that for the Gaussian kernel, $\zeta = \sqrt{(-2 \ln \epsilon) / (e
 \epsilon^2)}$.  Again, as $\epsilon \to 0$, the
 runtime diverges; however, note that there is no dependence on the kernel
-bandwidth $\sigma$.  For a reasonably chosen $\epsilon = 0.05$, the runtime is
-approximately $O(c_r^{8.89} (N + \theta))$; for $\epsilon = 0.01$, the runtime
-is approximately $O(c_r^{11.52} (N + \theta))$.  For very small $\epsilon =
+bandwidth $\sigma$.  To demonstrate the relationship of runtime to $\epsilon$,
+see that for a reasonably chosen $\epsilon = 0.05$, the runtime is approximately
+$O(c_r^{8.89} (N + \theta))$; for $\epsilon = 0.01$, the runtime is
+approximately $O(c_r^{11.52} (N + \theta))$.  For very small $\epsilon =
 0.00001$, the runtime is approximately $O(c_r^{22.15} (N + \theta))$.
-
-To understand the lack of dependence on kernel bandwidth more intuitively,
-consider that as the kernel bandwidth increases, two things happen: {\it (a)}
-the reference set $R$ becomes empty at larger scales, and {\it (b)}
-$\mathcal{K}^{-1}(\epsilon)$ grows, allowing less pruning at higher levels.
-These effects are opposite, and for the Gaussian kernel they cancel each other
-out, giving the same bound regardless of bandwidth.
 
 Next, consider the Laplacian kernel:
 $\mathcal{K}_l(d) = \exp(-d / \sigma)$.  For this kernel, $h = 0$ (that is, the
@@ -390,6 +388,13 @@ algebraic manipulation gives $\mathcal{K}^{-1}_l(\epsilon) = -\sigma \ln
 \epsilon$, resulting in $\zeta = -\mathcal{K}'_l(h) \mathcal{K}^{-1}_l(\epsilon)
 \epsilon^{-1} = \epsilon^{-1} \ln \epsilon$.  So both the Laplacian and Gaussian
 kernels do not exhibit dependence on the bandwidth.
+
+To understand the lack of dependence on kernel bandwidth more intuitively,
+consider that as the kernel bandwidth increases, two things happen: {\it (a)}
+the reference set $R$ becomes empty at larger scales, and {\it (b)}
+$\mathcal{K}^{-1}(\epsilon)$ grows, allowing less pruning at higher levels.
+These effects are opposite, and for the Gaussian and Laplacian kernels they
+cancel each other out, giving the same bound regardless of bandwidth.
 
 %Next, consider this sigmoidal kernel: $\mathcal{K}_s(d) = (1 + \exp(\alpha (d -
 %\beta)))^{-1}$; note that this is not the more common `sigmoid kernel', which is
@@ -443,10 +448,10 @@ is the division by the term $|f^*(p_q)|$.  But we can quickly bound
 $|f^*(p_q)|$:
 
 \begin{equation}
-f^*(p_q) \ge N \mathcal{K}\left(\max_{p_r \in S_r} d(p_q, p_r)\right).
+|f^*(p_q)| \ge N \mathcal{K}\left(\max_{p_r \in S_r} d(p_q, p_r)\right).
 \end{equation}
 
-This is clearly true, because each point in $S_r$ must contribute more than
+This is clearly true: each point in $S_r$ must contribute more than
 $\mathcal{K}(\max_{p_r \in S_r} d(p_q, p_r))$ to $f^*(p_q)$.  Now, we may revise
 the relative approximation condition in Equation \ref{eqn:rva}:
 
@@ -455,8 +460,9 @@ the relative approximation condition in Equation \ref{eqn:rva}:
 \end{equation}
 
 \noindent where $\mathcal{K}^{\max}$ is lower bounded by $\mathcal{K}(\max_{p_r
-\in S_r} d(p_q, p_r))$.  This allows us to create a \texttt{Score()} algorithm,
-given in Algorithm \ref{alg:kde_rva_score}.
+\in S_r} d(p_q, p_r))$.  Assuming we have some estimate $\mathcal{K}^{\max}$,
+this allows us to create a \texttt{Score()} algorithm, given in Algorithm
+\ref{alg:kde_rva_score}.
 
 \begin{algorithm}[tb]
   \begin{algorithmic}[1]
@@ -491,12 +497,12 @@ Using this, we may prove linear runtime bounds for relative value approximate
 kernel density estimation.
 
 \begin{thm}
-Assume that $\mathcal{K}(\cdot, \cdot)$ is a kernel satisfying the assumptions
-of the previous section.  Then, given a query set $S_q$ and a reference set
-$S_r$ both of size $O(N)$, it is possible to perform relative value
-approximate kernel density estimation (satisfying the condition of Equation
-\ref{eqn:rva}) in $O(N)$ time, assuming that the expansion constant $c_r$ of
-$S_r$ is not dependent on $N$.
+Assume that $\mathcal{K}(\cdot, \cdot)$ is a kernel satisfying the same
+assumptions as Theorem \ref{thm:kde-bound}.  Then, given a query set $S_q$ and a
+reference set $S_r$ both of size $O(N)$, it is possible to perform relative
+value approximate kernel density estimation (satisfying the condition of
+Equation \ref{eqn:rva}) in $O(N)$ time, assuming that the expansion constant
+$c_r$ of $S_r$ is not dependent on $N$.
 \end{thm}
 
 \begin{proof}

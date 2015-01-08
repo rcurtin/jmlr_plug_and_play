@@ -2,7 +2,7 @@ For simplicity, the algorithms considered in this paper will be presented in a
 tree-independent context, as in \citet{curtin2013tree}, but the only type of
 tree we will consider is the cover tree \citep{langford2006}, and the only type
 of traversal we will consider is the cover tree pruning dual-tree traversal,
-which we will describe below.
+which we will describe later.
 
 As we will be making heavy use of trees, we must establish notation \citep[taken
 from][]{curtin2013tree}.  The notation we will be using is defined in Table
@@ -61,7 +61,7 @@ p_j) > 2^{s_i}$.
 \end{itemize}
 \end{quote}
 
-A consequence of this definition is if there exists a node $\mathscr{N}_i$,
+As a consequence of this definition, if there exists a node $\mathscr{N}_i$,
 containing the point $p_i$ at some scale $s_i$, then there will also exist a
 self-child node $\mathscr{N}_{ic}$ containing the point $p_i$ at scale $s_i - 1$
 which is a child of $\mathscr{N}_i$.  In addition, every descendant point of the
@@ -71,14 +71,18 @@ at the point $p_i$; therefore, $\lambda_i = 2^{s_i + 1}$ and $\mu_i = p_i$
 
 Note that the cover tree may be interpreted as an infinite-leveled tree, with
 $C_{\infty}$ containing only the root point, $C_{-\infty} = S$, and all levels
-between defined according to the definitions above.  \citep{langford2006} find
+between defined as above.  \citet{langford2006} find
 this representation (which they call the {\it implicit} representation) easier
-for description of their algorithms and some of their proofs.  But naturally,
+for description of their algorithms and some of their proofs.  But clearly,
 this is not suitable for implementation; hence, there is an {\it explicit}
-representation in which all nodes that have only a self-child are coalesced.
+representation in which all nodes that have only a self-child are coalesced
+upwards (that is, the node's self-child is removed, and the children of that
+self-child are taken to be the children of the node).  Figure
+\ref{fig:implicit-explicit} shows an example cover tree and highlights implicit
+and explicit nodes.
 
-In our work here, we consider only the explicit representation of a cover tree,
-and do not concern ourselves with the construction of the tree\footnote{A batch
+In this work, we consider only the explicit representation of a cover tree, and
+do not concern ourselves with the details of tree construction\footnote{A batch
 construction algorithm is given by \citet{langford2006}, called
 \texttt{Construct}.}.
 
@@ -126,9 +130,17 @@ $\int_{\mathcal{B}_{\mathcal{H}}(p, \Delta)} f(x) dx > 0$, and with
 $\mathcal{B}_{\mathcal{H}}(p, \Delta)$ defined as the closed ball of radius
 $\Delta$ in the space $\mathcal{H}$.
 
-Take $f(x)$ as a uniform spherical distribution in $\mathcal{R}^d$: for any $|x|
-\le 1$, $f(x)$ is a constant; for $|x| > 1$, $f(x) = 0$.  It is easy to see that
-$c_f$ in this situation is $2^d$. % To demonstrate this convergence, Table
+As a simple example, take $f(x)$ as a uniform spherical distribution in
+$\mathcal{R}^d$: for any $|x| \le 1$, $f(x)$ is a constant; for $|x| > 1$, $f(x)
+= 0$.  It is easy to see that $c_f$ in this situation is $2^d$, and thus for
+some dataset $S$, $c$ must converge to that value as more and more points are
+added to $S$.  Closed-form solutions for $c_f$ for more complex distributions
+are less easy to derive; however, empirical speedup results from
+\citet{langford2006} suggest the existence of datasets where $c$ is not strongly
+dependent on $d$.  For instance, the \texttt{covtype} dataset has 54 dimensions
+but the expansion constant is much smaller than other, lower-dimensional
+datasets.
+% To demonstrate this convergence, Table
 %\ref{tab:ec_scaling} shows results for 10 trials of empirically calculated
 %expansion constants for datasets drawn from this distribution, for varying $d$.
 
@@ -172,9 +184,11 @@ entirely on the surface of a unit hypersphere.  If one adds a single point at
 the origin, producing the set $S'$, then $c$ explodes to $|S'|$ whereas before
 it may have been much smaller than $|S|$.  Adding a single point may also
 decrease $c$ significantly.  Suppose one adds a point arbitrarily close to the
-origin to $S'$; now, the expansion constant will be $|S'| / 2$.  So, although we
-can bound the behavior of $c$ as $|S| \to \infty$ for $S$ from a stationary
-distribution, we are not able to easily say much about its convergence behavior.
+origin to $S'$; now, the expansion constant will be $|S'| / 2$.  Both of these
+situations are degenerate cases not commonly encountered in real-world behavior;
+we discuss them in order to point out that although we can bound the behavior of
+$c$ as $|S| \to \infty$ for $S$ from a stationary distribution, we are not able
+to easily say much about its convergence behavior.
 
 The expansion constant can be used to show a few useful bounds on various
 properties of the cover tree; we restate these results below, given some cover
@@ -212,7 +226,7 @@ version of their argument.
 \begin{lemma}
 Consider a dataset $S$ with expansion constant $c$ and a subset $C \subseteq S$
 such that every point in $C$ is separated by $\delta$.  Then, for any point
-$p \not\in S$ and any radius $\rho \delta > 0$:
+$p$ (which may or may not be in $S$), and any radius $\rho \delta > 0$:
 \begin{equation}
 | B_S(p, \rho \delta) \cap C | \le c^{2 + \lceil \log_2 \rho \rceil}.
 \end{equation}

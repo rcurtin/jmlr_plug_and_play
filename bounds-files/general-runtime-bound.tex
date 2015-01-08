@@ -1,11 +1,11 @@
 Perhaps more interesting than measures of tree imbalance is the way cover trees
 are actually used in dual-tree algorithms.  Although cover trees were originally
-intended for nearest neighbor search \citep*[see Algorithm
+intended for nearest neighbor search \citep[See Algorithm
 \texttt{Find-All-Nearest},][]{langford2006}, they can be adapted to a wide
 variety of problems: minimum
 spanning tree calculation \citep{march2010euclidean}, approximate nearest neighbor
 search \citep{ram2009rank}, Gaussian processes posterior calculation
-\citep{moore2014fast}, max-kernel search \citep{curtin2014dual} are some
+\citep{moore2014fast}, and max-kernel search \citep{curtin2014dual} are some
 examples.  Further, through the tree-independent dual-tree algorithm abstraction
 of \citet{curtin2013tree}, other existing dual-tree algorithms can easily be
 adapted for use with cover trees.
@@ -26,7 +26,7 @@ $R$ \label{alg:line:ct-dual-input}
     \medskip
     \STATE $s^{\max}_r \gets \max_{\mathscr{N}_r \in R} s_r$
 \label{alg:line:ct-dual-srmax}
-    \IF{$(s_q < s^{\max}_r)$ {\bf or} $(s^{\max}_r = -\infty)$}
+    \IF{$(s_q < s^{\max}_r)$}
 \label{alg:line:ct-dual-ref-recursion-start}
       \FORALL{$\mathscr{N}_r \in R$} \label{alg:line:ct-dual-base-case-start}
         \STATE \texttt{BaseCase($p_q$, $p_r$)}
@@ -58,10 +58,10 @@ When using cover trees, the typical pruning dual-tree traversal is an adapted
 form of the original nearest neighbor search algorithm \citep[see
 \texttt{Find-All-Nearest},][]{langford2006}; this traversal is implemented in
 both the cover tree reference implementation and in the more flexible {\bf
-mlpack} library \citep{mlpack2013}.  The algorithm is given in Algorithm
-\ref{alg:cover-tree-dual} and was originally presented by
+mlpack} library \citep{mlpack2013}.  The problem-independent traversal is given
+in Algorithm \ref{alg:cover-tree-dual} and was originally presented by
 \citet{curtin2014dual}.  Initially, it is called with the root of the query tree
-and a reference set containing only the root of the reference tree.
+and a reference set $R$ containing only the root of the reference tree.
 
 This dual-tree recursion is a depth-first recursion in the query tree and a
 breadth-first recursion in the reference tree; to this end, the recursion
@@ -71,26 +71,28 @@ reference set is $s_r^{\max}$ (line \ref{alg:line:ct-dual-srmax}).  Each single
 recursion will descend either the query tree or the reference tree, not both;
 the conditional in line \ref{alg:line:ct-dual-ref-recursion-start}, which
 determines whether the query or reference tree will be recursed, is aimed at
-keeping the relative scales of query nodes and reference nodes equal.
+keeping the relative scales of query nodes and reference nodes close.
 
 A query recursion (lines
 \ref{alg:line:ct-dual-query-recursion-start}--\ref{alg:line:ct-dual-query-recursion-end})
 is straightforward: for each child $\mathscr{N}_{qc}$ of $\mathscr{N}_q$, the
 node combinations $(\mathscr{N}_{qc}, \mathscr{N}_r)$ are scored for each
 $\mathscr{N}_r$ in the reference set $R$.  If possible, these combinations are
-pruned to form the set $R'$ (line \ref{alg:line:ct-dual-query-recursion}), and
-then the algorithm recurses with $\mathscr{N}_{qc}$ and $R'$.
+pruned to form the set $R'$ (line \ref{alg:line:ct-dual-query-recursion}) by
+checking the output of the \texttt{Score()} function, and then the algorithm
+recurses with $\mathscr{N}_{qc}$ and $R'$.
 
 A reference recursion (lines
 \ref{alg:line:ct-dual-ref-recursion-start}--\ref{alg:line:ct-dual-ref-recursion-end})
 is similar to a query recursion, but the pruning strategy is significantly more
-complicated.  We score each node combination $(\mathscr{N}_q, \mathscr{N}_r)$
-for all $\mathscr{N}_r$ in $R_{r - 1}$, which is the set of children of all
-nodes in $R$ that have scale $s_r^{\max}$ (that set is $R_r$).  The set of
-reference nodes in $R_{r - 1}$ that were not pruned create the set $R'_{r - 1}$.
-Then, this set is combined with $R \setminus R_r$---that is, each of the nodes
-in $R$ that was {\em not} recursed into---to produce $R'$, and the algorithm
-recurses with $\mathscr{N}_q$ and the reference set $R'$.
+complicated.  Given $R$, we calculate $R_r$, which is the set of nodes in $R$
+that have scale $s_r^{\max}$.  Then, for each node $\mathscr{N}_r$ in the set of
+children of nodes in $R_r$, the node combinations $(\mathscr{N}_q,
+\mathscr{N}_r)$ are scored and pruned if possible.  Those reference nodes that
+were not pruned form the set $R'_{r - 1}$.  Then, this set is combined with $R
+\setminus R_r$---that is, each of the nodes in $R$ that was {\em not} recursed
+into---to produce $R'$, and the algorithm recurses with $\mathscr{N}_q$ and the
+reference set $R'$.
 
 The reference recursion only recurses into the top-level subset of the reference
 nodes in order to preserve the separation invariant.  It is easy to show that
@@ -110,12 +112,13 @@ recursion, the result obviously holds.  Now consider any reference set $R$ and
 assume the statement of the lemma holds for this set $R$, and define
 $s_r^{\max}$ as the maximum scale of any node in $R$.  Construct the set
 $R_{r - 1}$ as in line \ref{alg:line:ct-dual-ref-children} of Algorithm
-\ref{alg:cover-tree-dual}.
+\ref{alg:cover-tree-dual}; if $| R_{r - 1} | \le 1$, then $R_{r - 1}$ satisfies
+the desired property.
 
-Now, take any $\mathscr{N}_i, \mathscr{N}_j$ in $R_{r - 1}$, with points $p_i$
-and $p_j$, respectively, and scales $s_i$ and $s_j$, respectively.  Clearly, if
-$s_i = s_j = s_r^{\max} - 1$, then by the separation invariant $d(p_i, p_j) >
-2^{s_r^{\max} - 1}$.
+Otherwise, take any $\mathscr{N}_i, \mathscr{N}_j$ in $R_{r - 1}$, with points
+$p_i$ and $p_j$, respectively, and scales $s_i$ and $s_j$, respectively.
+Clearly, if $s_i = s_j = s_r^{\max} - 1$, then by the separation invariant
+$d(p_i, p_j) > 2^{s_r^{\max} - 1}$.
 
 Now suppose that $s_i < s_r^{\max} - 1$.  This implies that there exists some
 implicit cover tree node with point $p_i$ and scale $s_r^{\max} - 1$ (as well an
@@ -128,9 +131,8 @@ conclusion.
 
 We may therefore conclude that each point of each node in $R_{r - 1}$ is
 separated by $2^{s_r^{\max} - 1}$.  Note that $R'_{r - 1} \subseteq R_{r - 1}$
-and that $R \setminus R_{r - 1} \subseteq R$, and that each point of each node
-is separated by $2^{s_r^{\max} - 1}$, to see that this condition holds for all
-nodes in $R' = R'_{r - 1} \cup (R \setminus R_{r - 1})$.
+and that $R \setminus R_{r - 1} \subseteq R$ in order to see that this condition
+holds for all nodes in $R' = R'_{r - 1} \cup (R \setminus R_{r - 1})$.
 
 Because we have shown that the condition holds for the initial reference set and
 for any reference set produced by a reference recursion, we have shown that the
@@ -163,15 +165,17 @@ dataset-dependent constants for the query set $S_q$ and the reference set $S_r$:
 
 These constants are directly related to the aspect ratio of the datasets;
 indeed, $\eta_q / \delta_q$ is exactly the aspect ratio of $S_q$.  Further,
-let us define the top and bottom levels of each tree:
+let us define and bound the top and bottom levels of each tree:
 
 \begin{itemize}
-  \item The {\it top scale} of the query tree $\mathscr{T}_q$ is defined as
-$s_q^T = \lceil \log_2(\eta_q) \rceil$.
+  \item The {\it top scale} $s_q^T$ of the query tree $\mathscr{T}_q$ is such
+that as $\lceil \log_2(\eta_q) \rceil - 1 \le s_q^T \le \lceil \log_2(\eta_q)
+\rceil$.
   \item The {\it minimum scale} of the query tree $\mathscr{T}_r$ is defined as
 $s_q^{\min} = \lceil \log_2(\delta_q) \rceil$.
-  \item The top scale of the reference tree $\mathscr{T}_r$ is defined as $s_r^T
-= \lceil \log_2(\eta_r) \rceil$.
+  \item The top scale $s_r^T$ of the reference tree $\mathscr{T}_r$ is such that
+as $\lceil \log_2(\eta_r) \rceil - 1 \le s_r^T \le \lceil \log_2(\eta_r)
+\rceil$.
   \item The minimum scale of the reference tree $\mathscr{T}_r$ is defined as
 $s_r^{\min} = \lceil \log_2(\delta_r) \rceil$.
 \end{itemize}
@@ -194,19 +198,28 @@ the traversal given in Algorithm \ref{alg:cover-tree-dual}, the number of extra
 reference recursions that happen before the first query recursion is bounded by
 
 \begin{equation}
-\min\left(O(N), \lceil \log_2(\eta_r / \eta_q) \rceil\right).
+\min\left(O(N), \log_2(\eta_r / \eta_q) - 1\right).
 \end{equation}
 \end{lemma}
 
 \begin{proof}
-The first query recursion happens once $s_q > s_r^{\max}$.  The number of
+The first query recursion happens once $s_q \ge s_r^{\max}$.  The number of
 reference recursions before the first query recursion is then bounded as the
 number of levels in the reference tree between $s_r^T$ and $s_q^T$ that have at
 least one explicit node.  Because there are $O(N)$ nodes in the reference tree,
 the number of levels cannot be greater than $O(N)$ and thus the result holds.
 
 The second bound holds by applying the definitions of $s_r^T$ and $s_q^T$ to the
-expression $s_r^T - s_q^T$.
+expression $s_r^T - s_q^T - 1$:
+
+\begin{eqnarray}
+s_r^T - s_q^T - 1 &\le& \lceil \log_2(\eta_r) \rceil - (\lceil \log_2(\eta_q)
+\rceil - 1) - 1 \\
+&\le& \log_2(\eta_r) + 1 - \log_2(\eta_q)
+\end{eqnarray}
+
+\noindent which gives the statement of the lemma after applying logarithmic
+identities.
 \end{proof}
 
 Note that the $O(N)$ bound may be somewhat loose, but it suffices for our later
@@ -219,25 +232,33 @@ the traversal given in Algorithm \ref{alg:cover-tree-dual}, the number of extra
 reference recursions that happen after the last query recursion is bounded by
 
 \begin{equation}
-\theta = \max\left\{\min\left[O(N \lceil \log_2(\delta_q / \delta_r) \rceil),
+\theta = \max\left\{\min\left[O(N \log_2(\delta_q / \delta_r)),
 O(N^2)\right], \; 0\right\}.
 \end{equation}
 \end{lemma}
 
 \begin{proof}
 Our goal here is to count the number of reference recursions after the final
-query recursion at level $s_q^{\min}$.  Because query nodes are not pruned in
+query recursion at level $s_q^{\min}$; the first of these reference recursions
+is at scale $s_r^{\max} = s_q^{\min}$.  Because query nodes are not pruned in
 this traversal, each reference recursion we are counting will be duplicated over
 the whole set of $O(N)$ query nodes.  The first part of the bound follows by
-observing that $s_q^{\min} - s_r^{\min} = \lceil \log_2(\delta_q) \rceil -
-\lceil \log_2(\delta_r) \rceil \le \lceil \log_2(\delta_q / \delta_r) \rceil$.
+observing that
+$s_q^{\min} - s_r^{\min} \le \lceil \log_2(\delta_q) \rceil -
+\lceil \log_2(\delta_r) \rceil - 1 \le \log_2(\delta_q / \delta_r)$.
+
 The second part follows by simply observing that there are $O(N)$ reference
 nodes.
 \end{proof}
 
 These two previous lemmas allow us a better understanding of what happens as the
-reference set and query set become different.  Using them, we will prove general
-runtime bounds for the cover tree traversal.
+reference set and query set become different.  Lemma \ref{lem:extcase1} shows
+that the number of extra recursions caused by a reference set with larger
+pairwise distances than the query set ($\eta_r$ larger than $\eta_q$) is modest;
+on the other hand, Lemma \ref{lem:extcase3} shows that for each extra level in
+the reference tree below $s_q^{\min}$, $O(N)$ extra recursions are required.
+Using these lemmas and this intuition, we will prove general runtime bounds for
+the cover tree traversal.
 
 \begin{thm}
 \label{thm:ct-runtime}
@@ -275,22 +296,23 @@ query recursions.
 
 Consider a reference recursion (lines
 \ref{alg:line:ct-dual-ref-recursion-start}--\ref{alg:line:ct-dual-ref-recursion-end}).
-The work done in the base case loop from lines
-\ref{alg:line:ct-dual-base-case-start}--\ref{alg:line:ct-dual-base-case-end} is
-$O(\chi | R |)$.  Define $| R^* |$ to be the largest set $|R|$ for any scale
+Define $R^*$ to be the largest set $R$ for any scale
 $s_r^{\max}$ and any query node $\mathscr{N}_q$ during the course of the
-algorithm; then, it is true that $| R | \le | R^* |$.
+algorithm; then, it is true that $| R | \le | R^* |$.  The work done in the base
+case loop from lines
+\ref{alg:line:ct-dual-base-case-start}--\ref{alg:line:ct-dual-base-case-end} is
+thus $O(\chi | R |) \le O(\chi | R^*|)$.
 %
 Then, lines \ref{alg:line:ct-dual-ref-children} and
 \ref{alg:line:ct-dual-ref-score} take $O(c_r^4 \psi | R |) \le O(c_r^4 \psi |
-R^* |)$ time, because each reference node has $c_r^4$ children.  So, one
+R^* |)$ time, because each reference node has up to $c_r^4$ children.  So, one
 full reference recursion takes $O(c_r^4 \psi \chi | R^* |)$ time.
 
 Now, note that there are $O(N)$ nodes in $\mathscr{T}_q$.  Thus, line
 \ref{alg:line:ct-dual-query-recursion} is visited $O(N)$ times.  The amount of
 work in line \ref{alg:line:ct-dual-query-pruning}, like in the reference
-recursion, is bounded as $O(c_r^4 \psi | R^* |)$. Therefore, the total
-runtime of all query recursions is $O(c_r^4 \psi | R^* | N)$.
+recursion, is bounded as $O(c_r^4 \psi | R^* |)$. Therefore, the total runtime
+of all query recursions is $O(c_r^4 \psi | R^* | N)$.
 
 Lastly, we must bound the total number of reference recursions.  Reference
 recursions happen in three cases: \textit{(1)} $s_r^{\max}$ is greater than the
@@ -309,17 +331,17 @@ Next, consider case \textit{(2)}.  In this situation, each query recursion
 implies at least one reference recursion before another query recursion.  For
 some query node $\mathscr{N}_q$, the exact number of reference recursions before
 the children of $\mathscr{N}_q$ are recursed into is bounded above by
-$i_t(\mathscr{N}_q) + 1$: if $\mathscr{N}_q$ has imbalance $0$, then it is
+$i_n(\mathscr{N}_q) + 1$: if $\mathscr{N}_q$ has imbalance $0$, then it is
 exactly one level below its parent, and thus there is only one reference
 recursion.  On the other hand, if $\mathscr{N}_q$ is many levels below its
 parent, then it is possible that a reference recursion may occur for each level
-in between; this is a maximum of $i_t(\mathscr{N}_q) + 1$.
+in between; this is a maximum of $i_n(\mathscr{N}_q) + 1$.
 
 Because each query node in $\mathscr{T}_q$ is recursed into once, the total
 number of reference recursions before each query recursion is
 
 \begin{equation}
-\sum_{\mathscr{N}_q \in \mathscr{T}_q} i_t(\mathscr{N}_q) + 1 = b(\mathscr{T}_q) +
+\sum_{\mathscr{N}_q \in \mathscr{T}_q} i_n(\mathscr{N}_q) + 1 = i_t(\mathscr{T}_q) +
 O(N)
 \end{equation}
 
@@ -332,8 +354,9 @@ We may now combine these results for the runtime of a query recursions with the
 total number of reference recursions in order to give the result of the theorem:
 
 \begin{equation}
-O(c_r^4 \psi \chi | R^* | (N + i_t(\mathscr{T}_q) + \theta)) + O(c_r^4 \psi | R^* | N) \sim O(c_r^4 \psi
-\chi |R^*| (N + i_t(\mathscr{T}_q + \theta)).
+O\left(c_r^4 |R^*| \psi \chi \left(N + i_t(\mathscr{T}_q) + \theta\right)\right)
++ O\left(c_r^4 |R^*| \psi N\right) \sim O\left(c_r^4 |R^*| \psi
+\chi \left(N + i_t(\mathscr{T}_q) + \theta\right)\right).
 \end{equation}
 \end{proof}
 
@@ -344,11 +367,11 @@ trivially simplify.
 \label{cor:ct-runtime-mono}
 Given the situation of Theorem \ref{thm:ct-runtime} but with $S_q = S_r = S$ so
 that $c_q = c_r = c$ and $\mathscr{T}_q = \mathscr{T}_r = \mathscr{T}$, a
-standard cover tree based dual-tree algorithm (Algorithm
+dual-tree algorithm using the standard cover tree traversal (Algorithm
 \ref{alg:cover-tree-dual}) takes
 
 \begin{equation}
-O\left(c^4 |R^*| \chi \psi (N + i_t(\mathscr{T}))\right)
+O\left(c^4 |R^*| \chi \psi \left(N + i_t(\mathscr{T})\right)\right)
 \end{equation}
 
 \noindent time, where $ | R^* | $ is the maximum size of the reference set $R$
@@ -366,7 +389,7 @@ set $R$; this value must be derived for each specific problem.  The bad
 performance of poorly-behaved datasets with large $c$ (or, in the worst case, $c
 \sim N$) is then captured in both of those terms.  Poorly-behaved datasets may
 also have a high cover tree imbalance $i_t(\mathscr{T})$; the linear dependence of
-runtime on imbalance is thus sensible.
+runtime on imbalance is thus sensible for well-behaved datasets.
 
 The bichromatic case ($S_q \ne S_r$) is a slightly more complex result which
 deserves a bit more attention.  The intuition for all terms except $\theta$
@@ -376,8 +399,8 @@ The term $\theta$ captures the effect of query and reference datasets with
 different widths, and has one unfortunate corner case: when $\delta_q > \eta_r$,
 then the query tree must be entirely descended before any reference recursion.
 This results in a bound of the form $O(N \log (\eta_r / \delta_r))$, or
-$O(N^2)$.  This is because the reference tree must be descended individually for
-each query point.
+$O(N^2)$ (See Lemma \ref{lem:extcase3}).  This is because the reference tree
+must be descended individually for each query point.
 
 The quantity $|R^*|$ bounds the amount of work that needs to be done for each
 recursion. In the worst case, $|R^*|$ can be $N$. However,
@@ -385,8 +408,7 @@ dual-tree algorithms rely on branch-and-bound techniques to prune away
 work (Lines \ref{alg:line:ct-dual-ref-score} and
 \ref{alg:line:ct-dual-query-pruning} in Algorithm \ref{alg:cover-tree-dual}). A
 small value of $|R^*|$ will imply that the algorithm is extremely successful in
-pruning away work at Line \ref{alg:line:ct-dual-ref-score} in Algorithm
-\ref{alg:cover-tree-dual}. An (upper) bound on $|R^*|$ (and the algorithm's
+pruning away work.  An (upper) bound on $|R^*|$ (and the algorithm's
 success in pruning work) will depend on the problem and the data.  As we will
 show, bounding $|R^*|$ is often possible. % In addition, we will also show that
 For many dual-tree algorithms, $\chi \sim \psi \sim O(1)$; often, cached
@@ -404,14 +426,15 @@ independent of $N$ and $\theta$ is no more than linear in $N$ (for large enough
 $N$), then the dual-tree algorithm for that problem has a runtime linear in $N$.
 Our theoretical result separates out the problem-dependent and the
 problem-independent elements of the runtime bound, which allows us to simply
-plug in the problem-dependent bounds to get runtime bounds for any dual-tree
-algorithm without requiring an analysis from scratch.
+plug in the problem-dependent bounds in order to get runtime bounds for any
+dual-tree algorithm without requiring an analysis from scratch.
 
 Our results are similar to that of \citet{ram2009}, but those results depend on
 a quantity called the {\it constant of bichromaticity}, denoted $\kappa$, which
 has unclear relation to cover tree imbalance.  The dependence on $\kappa$ is
 given as $c_q^{4 \kappa}$, which is not a good bound, especially because
-$\kappa$ may easily be very large.
+$\kappa$ may be much greater than $1$ in the bichromatic case (where $S_q \ne
+S_r$).
 
 The more recent results of \citet{curtin2014dual} are more related to these
 results, but they depend on the {\it inverse constant of bichromaticity} $\nu$

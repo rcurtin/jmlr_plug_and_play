@@ -101,7 +101,7 @@ Using cover trees, rigorous worst-case runtime
 guarantees have been proven for some of these algorithms. In this paper, we present a {\em
 problem-independent} runtime guarantee for {\em any} dual-tree algorithm using
 the cover tree, separating out the problem-dependent and the problem-independent
-elements. This allows us to plug in bounds for the problem-dependent
+elements.  This allows us to just plug in bounds for the problem-dependent
 elements to get runtime guarantees for dual-tree algorithms for any pairwise
 statistical problem without re-deriving the entire proof. We demonstrate this plug-and-play procedure for
 nearest-neighbor search and approximate kernel density estimation to get
@@ -130,13 +130,13 @@ spatial data structures to accelerate this type of computation
 \citep{finkel1974quad, langford2006}; these result in $O(\log N)$ runtime per
 query under favorable conditions.
 
-\citet{nbody} generalized the fast multipole method from
-computational physics to obtain dual-tree algorithms.  These are extremely
-useful when there are large query sets, not just a few query points.  Instead of
-building a tree on the reference set and searching with each query point
-separately, Gray and Moore suggest also building a query tree and traversing
-both the query and reference trees simultaneously (a {\it dual-tree traversal},
-from which the class of algorithms takes its name).
+Building upon this intuition, \citet{nbody} generalized the fast multipole
+method from computational physics to obtain dual-tree algorithms.  These are
+extremely useful when there are large query sets, not just a few query points.
+Instead of building a tree on the reference set and searching with each query
+point separately, Gray and Moore suggest also building a query tree and
+traversing both the query and reference trees simultaneously (a {\it dual-tree
+traversal}, from which the class of algorithms takes its name).
 
 Dual-tree algorithms can be easily understood through the recent framework of
 \citet{curtin2013tree}: two trees (a query tree and a reference
@@ -155,16 +155,16 @@ density estimation \citep{gray2003nonparametric}, mean shift \citep{wang2007fast
 minimum spanning tree calculation \citep{march2010euclidean}, $n$-point
 correlation function estimation \citep{march2012fast}, max-kernel search
 \citep{curtin2013fast}, particle smoothing \citep{klaas2006fast}, variational
-inference \citep{amizadeh2012variational}, and range search \citep{nbody}, to name
-a few.
+inference \citep{amizadeh2012variational}, range search \citep{nbody}, and
+embedding techniques \cite{maaten2014accelerating}, to name a few.
 
 Some of these algorithms are derived using the cover tree \citep{langford2006}, a
-data structure with beneficial theoretical qualities.  Dual-tree all
-nearest-neighbor search and approximate kernel density estimation with cover
-trees have $O(N)$ runtime guarantees for $O(N)$ queries \citep{ram2009}; minimum
-spanning tree calculation scales as $O(N \log N)$ \citep{march2010euclidean}.
-Other problems have similar worst-case guarantees \citep{curtin2014dual,
-march2013multi}.
+data structure with compelling theoretical qualities.  When cover trees are
+used, Dual-tree all-nearest-neighbor search and approximate kernel density
+estimation have $O(N)$ runtime guarantees for $O(N)$ queries \citep{ram2009};
+minimum spanning tree calculation scales as $O(N \log N)$
+\citep{march2010euclidean}.  Other problems have similar worst-case guarantees
+\citep{curtin2014dual, march2013multi}.
 
 In this work we combine the generalization of \citet{curtin2013tree} with the
 theoretical results of \citet{langford2006} and others in order to develop a
