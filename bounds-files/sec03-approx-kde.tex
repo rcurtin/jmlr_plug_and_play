@@ -52,7 +52,7 @@ that $\mathcal{K}(d)$ must be concave for $d \in [0, h]$ and convex for $d \in
 [h, \infty)$.  This assumption implies that the magnitude of the derivative
 $|\mathcal{K}'(d)|$ is maximized at $d = h$.  These are not restrictive
 assumptions; most standard kernels fall into this class, including the Gaussian,
-Laplacian and Epanechnikov kernels.
+exponential, and Epanechnikov kernels.
 
 \subsection{Absolute value approximation}
 
@@ -381,19 +381,19 @@ $O(c_r^{8.89} (N + \theta))$; for $\epsilon = 0.01$, the runtime is
 approximately $O(c_r^{11.52} (N + \theta))$.  For very small $\epsilon =
 0.00001$, the runtime is approximately $O(c_r^{22.15} (N + \theta))$.
 
-Next, consider the Laplacian kernel:
+Next, consider the exponential kernel:
 $\mathcal{K}_l(d) = \exp(-d / \sigma)$.  For this kernel, $h = 0$ (that is, the
 kernel is always convex), so then $\mathcal{K}'_l(h) = \sigma^{-1}$.  Simple
 algebraic manipulation gives $\mathcal{K}^{-1}_l(\epsilon) = -\sigma \ln
 \epsilon$, resulting in $\zeta = -\mathcal{K}'_l(h) \mathcal{K}^{-1}_l(\epsilon)
-\epsilon^{-1} = \epsilon^{-1} \ln \epsilon$.  So both the Laplacian and Gaussian
+\epsilon^{-1} = \epsilon^{-1} \ln \epsilon$.  So both the exponential and Gaussian
 kernels do not exhibit dependence on the bandwidth.
 
 To understand the lack of dependence on kernel bandwidth more intuitively,
 consider that as the kernel bandwidth increases, two things happen: {\it (a)}
 the reference set $R$ becomes empty at larger scales, and {\it (b)}
 $\mathcal{K}^{-1}(\epsilon)$ grows, allowing less pruning at higher levels.
-These effects are opposite, and for the Gaussian and Laplacian kernels they
+These effects are opposite, and for the Gaussian and exponential kernels they
 cancel each other out, giving the same bound regardless of bandwidth.
 
 %Next, consider this sigmoidal kernel: $\mathcal{K}_s(d) = (1 + \exp(\alpha (d -

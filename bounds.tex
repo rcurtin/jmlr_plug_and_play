@@ -60,10 +60,13 @@
   Schenedectadadaty, NY\\
   \AND
   \name William B. March \email march@ices.utexas.edu\\
-  \addr Austin, TX, USA\\
+  \addr Institute for Computational Engineering and Sciences\\
+  University of Texas, Austin\\
+  Austin, TX 78712-1229
   \AND
   \name Parikshit Ram \email p.ram@gatech.edu\\
-  \addr Skytree
+  \addr Skytree, Inc.\\
+  Atlanta, GA 30332
 }
 
 \editor{Unknown}
@@ -94,8 +97,8 @@
 %improved runtime guarantees.  Under some assumptions, we also present the first
 %linear runtime guarantee for dual-tree based range search.
 Numerous machine learning algorithms contain pairwise statistical problems at
-their core -- i.e. tasks that require computations over all pairs of input points if implemented directly. 
-Often, tree structures are used to solve these problems efficiently. Dual-tree algorithms 
+their core -- i.e. tasks that require computations over all pairs of input points if implemented directly.
+Often, tree structures are used to solve these problems efficiently. Dual-tree algorithms
 can efficiently solve or approximate many of these problems.
 Using cover trees, rigorous worst-case runtime
 guarantees have been proven for some of these algorithms. In this paper, we present a {\em
@@ -113,18 +116,18 @@ linear runtime guarantee for dual-tree based range search.
 \section{Dual-tree algorithms}
 
 A surprising number of machine learning algorithms have computational
-bottlenecks that can be expressed as pairwise statistical problems. 
-By this, we mean computational tasks that can be evaluated directly by iterating over all 
-pairs of input points. 
-Nearest neighbor search is one such problem, since for every query point, we can 
-evaluate its distance to every reference point and keep the closest one. 
+bottlenecks that can be expressed as pairwise statistical problems.
+By this, we mean computational tasks that can be evaluated directly by iterating over all
+pairs of input points.
+Nearest neighbor search is one such problem, since for every query point, we can
+evaluate its distance to every reference point and keep the closest one.
 This naively requires $O(N)$ time
 to answer in single query in a reference set of size $N$; answering $O(N)$
 queries subsequently requires prohibitive $O(N^2)$ time. Kernel density
-estimation is also a pairwise statistical problem, since we compute a sum over all 
+estimation is also a pairwise statistical problem, since we compute a sum over all
 reference points for each query point.
 This again requires $O(N^2)$
-time to answer $O(N)$ queries if done directly. 
+time to answer $O(N)$ queries if done directly.
 The reference set is typically indexed with
 spatial data structures to accelerate this type of computation
 \citep{finkel1974quad, langford2006}; these result in $O(\log N)$ runtime per
@@ -175,7 +178,7 @@ Section \ref{sec:preliminaries} lays out the required background, notation, and
 introduces the cover tree and its associated theoretical properties.  Readers
 familiar with the cover tree literature and dual-tree algorithms
 \citep[especially][]{curtin2013tree} may find that section to be review.
-Following that, we introduce an intuitive measure of cover tree imbalance, an 
+Following that, we introduce an intuitive measure of cover tree imbalance, an
 important property for understanding the runtime of dual-tree algorithms, in
 Section \ref{sec:imbalance}.  This measure of imbalance is then used to prove
 the main result of the paper in Section \ref{sec:bound}, which is a worst-case
