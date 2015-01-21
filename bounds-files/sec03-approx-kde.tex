@@ -451,19 +451,6 @@ $|f^*(p_q)|$:
 |f^*(p_q)| \ge N \mathcal{K}\left(\max_{p_r \in S_r} d(p_q, p_r)\right).
 \end{equation}
 
-This is clearly true: each point in $S_r$ must contribute more than
-$\mathcal{K}(\max_{p_r \in S_r} d(p_q, p_r))$ to $f^*(p_q)$.  Now, we may revise
-the relative approximation condition in Equation \ref{eqn:rva}:
-
-\begin{equation}
-| f(p_q) - f^*(p_q) | \le \epsilon \mathcal{K}^{\max}
-\end{equation}
-
-\noindent where $\mathcal{K}^{\max}$ is lower bounded by $\mathcal{K}(\max_{p_r
-\in S_r} d(p_q, p_r))$.  Assuming we have some estimate $\mathcal{K}^{\max}$,
-this allows us to create a \texttt{Score()} algorithm, given in Algorithm
-\ref{alg:kde_rva_score}.
-
 \begin{algorithm}[tb]
   \begin{algorithmic}[1]
     \STATE {\bfseries Input:} query node $\mathscr{N}_q$, reference node
@@ -492,6 +479,19 @@ $\mathscr{N}_r$, list of node kernel estimates $\hat{f}_n$
 \texttt{Score()}}
   \label{alg:kde_rva_score}
 \end{algorithm}
+
+This is clearly true: each point in $S_r$ must contribute more than
+$\mathcal{K}(\max_{p_r \in S_r} d(p_q, p_r))$ to $f^*(p_q)$.  Now, we may revise
+the relative approximation condition in Equation \ref{eqn:rva}:
+
+\begin{equation}
+| f(p_q) - f^*(p_q) | \le \epsilon \mathcal{K}^{\max}
+\end{equation}
+
+\noindent where $\mathcal{K}^{\max}$ is lower bounded by $\mathcal{K}(\max_{p_r
+\in S_r} d(p_q, p_r))$.  Assuming we have some estimate $\mathcal{K}^{\max}$,
+this allows us to create a \texttt{Score()} algorithm, given in Algorithm
+\ref{alg:kde_rva_score}.
 
 Using this, we may prove linear runtime bounds for relative value approximate
 kernel density estimation.

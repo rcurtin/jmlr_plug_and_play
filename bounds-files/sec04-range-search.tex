@@ -1,3 +1,32 @@
+In the range search problem, the task is to find the set of reference points
+
+\begin{equation}
+S[p_q] = \{ p_r \in S_r : d(p_q, p_r) \in [l, u] \}
+\end{equation}
+
+\noindent for each query point $p_q$, where $[l, u]$ is the given
+range.  The range count problem is practically identical, but only the size of
+the set, $|S[p_q]|$, is desired.
+Our proof works for both of these algorithms
+similarly, but we will focus on range search.  A \texttt{BaseCase()} and
+\texttt{Score()} function are given in Algorithms \ref{alg:rs_bc} and
+\ref{alg:rs_sc}, respectively \citep[a correctness proof can be found
+in][]{curtin2013tree}.  The sets $N[p_q]$ (for each $p_q$) are
+initialized to $\emptyset$ at the beginning of the traversal.
+
+In order to bound the running time of dual-tree range search, we require better
+notions for understanding the difficulty of the problem.  Observe that if the
+range is sufficiently large, then for every query point $p_q$, $S[p_q] = S_r$.
+Clearly, for $S_q \sim S_r \sim O(N)$, this cannot be solved in anything less
+than quadratic time simply due to the time required to fill each output array
+$S[p_q]$.  Define the maximum result size for a given query set $S_q$, reference
+set $S_r$, and range $[l, u]$ as
+
+\begin{equation}
+| S_{\max} | = \max_{p_q \in S_q} | S[p_q] |.
+\label{eqn:smax}
+\end{equation}
+
 \begin{algorithm}[tb]
 %  \SetAlgoLined
 \begin{algorithmic}[1]
@@ -38,35 +67,6 @@ $d_{\max}(\mathscr{N}_q, \mathscr{N}_r) \in [l, u]$}
   \caption{Range search \texttt{Score()}}
   \label{alg:rs_sc}
 \end{algorithm}
-
-In the range search problem, the task is to find the set of reference points
-
-\begin{equation}
-S[p_q] = \{ p_r \in S_r : d(p_q, p_r) \in [l, u] \}
-\end{equation}
-
-\noindent for each query point $p_q$, where $[l, u]$ is the given
-range.  The range count problem is practically identical, but only the size of
-the set, $|S[p_q]|$, is desired.
-Our proof works for both of these algorithms
-similarly, but we will focus on range search.  A \texttt{BaseCase()} and
-\texttt{Score()} function are given in Algorithms \ref{alg:rs_bc} and
-\ref{alg:rs_sc}, respectively \citep[a correctness proof can be found
-in][]{curtin2013tree}.  The sets $N[p_q]$ (for each $p_q$) are
-initialized to $\emptyset$ at the beginning of the traversal.
-
-In order to bound the running time of dual-tree range search, we require better
-notions for understanding the difficulty of the problem.  Observe that if the
-range is sufficiently large, then for every query point $p_q$, $S[p_q] = S_r$.
-Clearly, for $S_q \sim S_r \sim O(N)$, this cannot be solved in anything less
-than quadratic time simply due to the time required to fill each output array
-$S[p_q]$.  Define the maximum result size for a given query set $S_q$, reference
-set $S_r$, and range $[l, u]$ as
-
-\begin{equation}
-| S_{\max} | = \max_{p_q \in S_q} | S[p_q] |.
-\label{eqn:smax}
-\end{equation}
 
 Small $| S_{\max} |$ implies an easy problem; large $| S_{\max} |$ implies a
 difficult problem.  For bounding the running time of range search, we require

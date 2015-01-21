@@ -12,42 +12,42 @@ digraph bct {
   c5[label=""]
   c6[label=""]
   c7[label=""]
-  c8[label=""]
+//  c8[label=""]
   c9[label=""]
   c10[label=""]
-  c11[label=""]
+//  c11[label=""]
   c12[label=""]
   c13[label=""]
   c14[label=""]
   c15[label=""]
-  c16[label=""]
-  c17[label=""]
-  c18[label=""]
-  c19[label=""]
+//  c16[label=""]
+//  c17[label=""]
+//  c18[label=""]
+//  c19[label=""]
   c20[label=""]
   c21[label=""]
   c22[label=""]
   c23[label=""]
   c24[label=""]
-  c25[label=""]
-  c26[label=""]
-  c27[label=""]
-  c28[label=""]
+//  c25[label=""]
+//  c26[label=""]
+//  c27[label=""]
+//  c28[label=""]
   c29[label=""]
   c30[label=""]
-  c31[label=""]
-  c32[label=""]
+//  c31[label=""]
+//  c32[label=""]
   c33[label=""]
   c34[label=""]
   c35[label=""]
   c36[label=""]
   c37[label=""]
-  c38[label=""]
-  c39[label=""]
-  c40[label=""]
+//  c38[label=""]
+//  c39[label=""]
+//  c40[label=""]
   c41[label=""]
   c42[label=""]
-  c43[label=""]
+//  c43[label=""]
   c44[label=""]
   c45[label=""]
   c46[label=""]
@@ -62,14 +62,14 @@ digraph bct {
   c55[label=""]
   c56[label=""]
   c57[label=""]
-  c58[label=""]
-  c59[label=""]
-  c60[label=""]
-  c61[label=""]
-  c62[label=""]
-  c63[label=""]
-  c64[label=""]
-  c65[label=""]
+//  c58[label=""]
+//  c59[label=""]
+//  c60[label=""]
+//  c61[label=""]
+//  c62[label=""]
+//  c63[label=""]
+//  c64[label=""]
+//  c65[label=""]
   c66[label=""]
   c67[label=""]
   c68[label=""]
@@ -80,58 +80,107 @@ digraph bct {
   c73[label=""]
 
   // level 1
-  root -> c1;
-  root -> c2;
+  root -> c1[weight=0];
+  root -> c2[weight=1];
 
   // level 2
-  c2 -> c3;
-  c2 -> c4;
-  c2 -> c5;
+  c2 -> c3[weight=0];
+  c2 -> c4[weight=1];
+  c2 -> c5[weight=0];
 
   // level 3
-  c3 -> c6;
-  c3 -> c7;
+  c3 -> c6[weight=0];
+  c3 -> c7[weight=1];
 
-  c4 -> c8;
-  c4 -> c9;
-  c4 -> c10;
-  c4 -> c11;
+//  c4 -> c8[weight=0];
+  c4 -> c9[weight=1];
+  c4 -> c10[weight=0];
+//  c4 -> c11;
 
-  c5 -> c12;
-  c5 -> c13;
+  c5 -> c12[weight=1];
+  c5 -> c13[weight=0];
 
   // level 4
-  c6 -> { c14 c15 c16 }
-  c7 -> { c17 c18 }
-  c8 -> { c19 }
-  c9 -> { c20 c21 c22 }
-  c10 -> { c23 c24 }
-  c11 -> { c25 c26 c27 c28 }
-  c12 -> { c29 c30 c31 }
-  c13 -> { c32 }
+  c6 -> c14[weight=0];
+  c6 -> c15[weight=1];
+
+  c7 -> c41[weight=1];
+  c7 -> c42[weight=0];
+
+//  c8 -> c19[weight=1];
+
+  c9 -> c20[weight=1];
+  c9 -> c21[weight=0];
+  c9 -> c22[weight=0];
+
+  c10 -> c23[weight=1];
+  c10 -> c24[weight=0];
+
+//  c11 -> { c25 c26 c27 c28 }
+
+  c12 -> c29[weight=0];
+  c12 -> c30[weight=1];
+  c12 -> c71[weight=0];
+
+//  c13 -> c32[weight=1];
 
   // level 5
-  c14 -> { c33 c34 }
-  c15 -> { c35 c36 c37 }
-  c16 -> { c38 c39 c40 }
-  c17 -> { c41 }
-  c18 -> { c42 }
-  c19 -> { c43 }
-  c20 -> { c44 c45 }
-  c21 -> { c46 c47 c48 }
-  c22 -> { c49 }
-  c23 -> { c50 c51 c52 c53 c54 }
-  c24 -> { c55 c56 c57 }
-  c25 -> { c58 c59 }
-  c26 -> { c60 }
-  c27 -> { c61 c62 }
-  c28 -> { c63 c64 c65 }
-  c29 -> { c66 c67 c68 }
-  c30 -> { c69 c70 }
-  c31 -> { c71 }
-  c32 -> { c72 c73 }
+  c14 -> c33[weight=0];
+  c14 -> c34[weight=1];
 
-  {rank=same; c1 c33 c34 c35 c36 c37 c38 c39 c40 c41 c42 c43 c44 c45 c46 c47 c48
-c49 c50 c51 c52 c54 c54 c55 c56 c57 c58 c59 c60 c61 c62 c63 c64 c65 c66 c67 c68
+  c15 -> c35[weight=0];
+  c15 -> c36[weight=1];
+  c15 -> c37[weight=0];
+
+//  c16 -> { c38 c39 c40 }
+
+//  c17 -> c41[weight=1];
+
+//  c18 -> c42[weight=0];
+
+//  c19 -> { c43 }
+
+  c20 -> c44[weight=1];
+  c20 -> c45[weight=0];
+
+  c21 -> c46[weight=1];
+  c21 -> c47[weight=0];
+
+  c22 -> c48[weight=1];
+  c22 -> c49[weight=0];
+
+  c23 -> c50[weight=0];
+  c23 -> c51[weight=0];
+  c23 -> c52[weight=1];
+  c23 -> c53[weight=0];
+  c23 -> c54[weight=0];
+
+  c24 -> c55[weight=0];
+  c24 -> c56[weight=1];
+  c24 -> c57[weight=0];
+
+//  c25 -> { c58 c59 }
+//  c26 -> { c60 }
+//  c27 -> { c61 c62 }
+//  c28 -> { c63 c64 c65 }
+
+  c29 -> c66[weight=0];
+  c29 -> c67[weight=1];
+  c29 -> c68[weight=0];
+
+  c30 -> c69[weight=1];
+  c30 -> c70[weight=0];
+
+//  c31 -> c71[weight=0];
+
+  c13 -> c72[weight=1];
+  c13 -> c73[weight=0];
+
+//  {rank=same; c3 c4 c5}
+  {rank=same; c6 c9 c12 c13}
+  {rank=same; c7 c14 c15 c20 c21 c22 c23 c24 c29 c30 }
+
+  {rank=same; c1 c33 c34 c35 c36 c37 c41 c42 c44 c45 c46 c47 c48
+c49 c50 c51 c52 c54 c54 c55 c56 c57 c66 c67 c68
 c69 c70 c71 c72 c73 }
 }

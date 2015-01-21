@@ -1,0 +1,28 @@
+Dear Drs. Murphy and Schölkopf:
+
+My co-authors (William March, Parikshit Ram, and Dongryeol Lee) would like to
+submit our manuscript "Plug-and-play dual-tree algorithm runtime analysis" for
+publication in the Journal of Machine Learning Research.  This paper establishes
+a generalized technique for proving runtime bounds on the class of algorithms
+known as dual-tree algorithms.  These algorithms are commonly used for
+computations such as nearest neighbor search, range search, kernel density
+estimation, and other applications.  For each of the three problems just listed,
+we have shown linear runtime bounds using our generalized bounds (though it must
+be noted that these bounds depend on the intrinsic dimensionality of the
+dataset).
+
+Each co-author is aware of this submission and consent to its review, and the
+paper has not been submitted to any other venues.  There are no conflicts of
+interest, since no co-author has recently collaborated with any action editor.
+
+Our suggestions for action editors are those who have published papers relating
+to dual-tree algorithms in the past or are familiar with the approach and
+existing theory.  These include Sanjoy Dasgupta, Nando de Freitas, and possibly
+Guy Lebanon.
+
+If there is anything we have neglected to do in the submission process, please
+let us know and we will rectify the issue immediately.
+
+Thank you for your consideration,
+
+Ryan Curtin
