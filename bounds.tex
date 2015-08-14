@@ -191,6 +191,14 @@ approximate kernel density estimation (Section \ref{sec:akde}), and range search
 / range count (Section \ref{sec:rs}), showing linear runtime bounds for each of
 those algorithms.  Each of these bounds is an improvement on the
 state-of-the-art, and in the case of range search, is the first such bound.
+Despite the intuition this provides for the scaling properties of all dual-tree
+algorithms\footnote{Dual-tree algorithms using $kd$-trees and other types of
+trees have been observed to empirically scale linearly for tasks that take
+quadratic time without the use of trees; see the empirical results of
+\citet{nbody, march2010euclidean, vladymyrov2014linear, klaas2006fast,
+gray2003nonparametric}.}, it must be kept in mind that these worst-case bounds
+only apply to dual-tree algorithms that use the cover tree and the standard
+cover tree traversal.
 %  We
 %then investigate the empirical performance of cover trees for these algorithms
 %in Section \ref{sec:emp}, with a focus on understanding the dataset-dependent

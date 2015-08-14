@@ -131,17 +131,17 @@ construction algorithm is given by \citet{langford2006}, called
   \label{fig:cover-tree-ex}
 \end{subfigure}
   \vspace*{-0.5em}
-\caption{Example cover tree on six points.  (a) $\mathscr{N}_a$ is centered at
-$p_0$ with scale $1$.  (b) $\mathscr{N}_b$ and $\mathscr{N}_c$ are centered at
-$p_0$ and $p_1$, respectively, and have scale $0$.  (c) $\mathscr{N}_d$ and
-$\mathscr{N}_e$ are centered at $p_0$ and $p_2$, respectively, and have scale
-$-1$.  The leaves, $\mathscr{N}_0$ through $\mathscr{N}_6$, are centered at each
-of the six points, with scale $-\infty$ (and therefore radius 0).  Note that
-although node $\mathscr{N}_b$ in subfigure (b) overlaps node $\mathscr{N}_c$,
-point $p_1$ only belongs to $\mathscr{N}_c$, not $\mathscr{N}_b$.  Note also
-that this is only one valid cover tree that could be built on the data; other
-configurations are possible; for instance, selecting a different root point
-gives different valid cover trees.}
+\caption{Example cover tree on six points in $\mathcal{R}^2$.  (a)
+$\mathscr{N}_a$ is centered at $p_0$ with scale $1$.  (b) $\mathscr{N}_b$ and
+$\mathscr{N}_c$ are centered at $p_0$ and $p_1$, respectively, and have scale
+$0$.  (c) $\mathscr{N}_d$ and $\mathscr{N}_e$ are centered at $p_0$ and $p_2$,
+respectively, and have scale $-1$.  The leaves, $\mathscr{N}_0$ through
+$\mathscr{N}_6$, are centered at each of the six points, with scale $-\infty$
+(and therefore radius 0).  Note that although node $\mathscr{N}_b$ in subfigure
+(b) overlaps node $\mathscr{N}_c$, point $p_1$ only belongs to $\mathscr{N}_c$,
+not $\mathscr{N}_b$.  Note also that this is only one valid cover tree that
+could be built on the data; other configurations are possible; for instance,
+selecting a different root point gives different valid cover trees.}
 \label{fig:example-cover-tree}
 \end{figure}
 
@@ -169,14 +169,14 @@ smallest $c \ge 2$ such that
 \end{defn}
 
 The expansion constant is used heavily in the cover tree literature.  It is,
-in some sense, a notion of instrinic dimensionality, and previous work has shown
-that there are many scenarios where $c$ is independent of the number of points
-in the dataset \citep{karger2002finding, langford2006,
-krauthgamer2004navigating, ram2009}.  Note also that if points in $S \subset
-\mathcal{H}$ are being drawn according to a stationary distribution $f(x)$, then
-$c$ will converge to some finite value $c_f$ as $|S| \to \infty$.  To see this,
-define $c_f$ as a generalization of the expansion constant for distributions.
-$c_f \ge 2$ is the smallest value such that
+in some sense, a notion of instrinic dimensionality, most useful in scenarios
+where $c$ is independent of the number of points in the dataset
+\citep{karger2002finding, langford2006, krauthgamer2004navigating, ram2009}.
+Note also that if points in $S \subset \mathcal{H}$ are being drawn according to
+a stationary distribution $f(x)$, then $c$ will converge to some finite value
+$c_f$ as $|S| \to \infty$.  To see this, define $c_f$ as a generalization of the
+expansion constant for distributions.  $c_f \ge 2$ is the smallest value such
+that
 
 \begin{equation}
 \int_{\mathcal{B}_{\mathcal{H}}(p, 2 \Delta)} f(x) dx \le c_{f}
