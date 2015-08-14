@@ -194,7 +194,7 @@ this observation, let us quantify these extra reference recursions:
 
 \begin{lemma}
 \label{lem:extcase1}
-For a dual-tree algorithm with $S_q \sim S_r \sim O(N)$ using cover trees and
+For a dual-tree algorithm with $|S_q| \sim |S_r| \sim O(N)$ using cover trees and
 the traversal given in Algorithm \ref{alg:cover-tree-dual}, the number of extra
 reference recursions that happen before the first query recursion is bounded by
 
@@ -228,7 +228,7 @@ purposes.  Now let us consider the other case:
 
 \begin{lemma}
 \label{lem:extcase3}
-For a dual-tree algorithm with $S_q \sim S_r \sim O(N)$ using cover trees and
+For a dual-tree algorithm with $|S_q| \sim |S_r| \sim O(N)$ using cover trees and
 the traversal given in Algorithm \ref{alg:cover-tree-dual}, the number of extra
 reference recursions that happen after the last query recursion is bounded by
 
@@ -283,7 +283,7 @@ the cover tree traversal.
 %\ref{alg:line:ct-dual-input}) at any point in the dual-tree pruning traversal,
 %$\chi$ is the longest possible running time of \texttt{BaseCase()}, and $\psi$
 %is the longest possible running time of \texttt{Score()}.
-Given a reference set $S_r$ of size $N$ with an expansion constant $c_r$ and a
+Given a reference set $S_r$ of size $O(N)$ with an expansion constant $c_r$ and a
 set of queries $S_q$ of size $O(N)$, a standard cover tree based dual-tree
 algorithm (Algorithm \ref{alg:cover-tree-dual}) takes
 

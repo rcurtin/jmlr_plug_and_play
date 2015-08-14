@@ -134,13 +134,13 @@ $\mathscr{N}_r$, list of node kernel estimates $\hat{f}_n$
 
 \begin{thm}
 Assume that $\mathcal{K}(\cdot, \cdot)$ is a kernel satisfying the assumptions
-of the previous subsection.  Then, given a query set $S_q$ and a reference set
-$S_r$ with expansion constant $c_r$, and using the approximate kernel density
-estimation \texttt{BaseCase()} and \texttt{Score()} as given in Algorithms
-\ref{alg:kde_base_case} and \ref{alg:kde_score}, respectively, with the
-traversal given in Algorithm \ref{alg:cover-tree-dual}, the running time of
-approximate kernel density estimation for some error parameter $\epsilon$ is
-bounded by
+of the previous subsection.  Then, given a query set $S_q$ of size $O(N)$ and a
+reference set $S_r$ of size $O(N)$ with expansion constant $c_r$, and using the
+approximate kernel density estimation \texttt{BaseCase()} and \texttt{Score()}
+as given in Algorithms \ref{alg:kde_base_case} and \ref{alg:kde_score},
+respectively, with the traversal given in Algorithm \ref{alg:cover-tree-dual},
+the running time of approximate kernel density estimation for some error
+parameter $\epsilon$ is bounded by
 %\begin{equation}
 $O(c_r^{8 + \lceil \log_2 \zeta \rceil} (N + I_t(\mathscr{T}_q) + \theta))$
 %\end{equation}
