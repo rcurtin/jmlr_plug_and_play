@@ -141,10 +141,11 @@ $c'_r$ is the expansion constant of the set $S_r \cup \{ p_q \}$.
 Using cover trees, the standard cover tree pruning dual-tree traversal, and the
 nearest neighbor search \texttt{BaseCase()} and \texttt{Score()} as given in
 Algorithms \ref{alg:nn_base_case} and \ref{alg:nn_score}, respectively, and also
-given a reference set $S_r$ with expansion constant $c_r$, and a query set $S_q$,
-the running time of the algorithm is bounded by $O(c_r^4 c_{qr}^5 (N +
-I_t(\mathscr{T}_q) + \theta))$ with $I_t(\mathscr{T}_q)$ and $\theta$ defined as
-in Definition \ref{def:imbalance} and Lemma \ref{lem:extcase3}, respectively.
+given a reference set $S_r$ of size $O(N)$ with expansion constant $c_r$, and a
+query set $S_q$ of size $O(N)$, the running time of the algorithm is bounded by
+$O(c_r^4 c_{qr}^5 (N + I_t(\mathscr{T}_q) + \theta))$ with $I_t(\mathscr{T}_q)$
+and $\theta$ defined as in Definition \ref{def:imbalance} and Lemma
+\ref{lem:extcase3}, respectively.
 \label{thm:nns}
 \end{thm}
 
