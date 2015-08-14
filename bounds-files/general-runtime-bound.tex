@@ -233,10 +233,22 @@ the traversal given in Algorithm \ref{alg:cover-tree-dual}, the number of extra
 reference recursions that happen after the last query recursion is bounded by
 
 \begin{equation}
-\theta = \max\left\{\min\left[O(N \log_2(\delta_q / \delta_r)),
+\max\left\{\min\left[O(N \log_2(\delta_q / \delta_r)),
 O(N^2)\right], \; 0\right\}.
 \end{equation}
 \end{lemma}
+
+For convenience, we define a term that encapsulates this bound.
+
+\begin{defn}
+Define $\theta$ as a bound on the number of extra reference recursions tha
+happen after the last query recursion.  Then,
+
+\begin{equation}
+\theta = \max\left\{\min\left[O(N \log_2(\delta_q / \delta_r)), O(N^2)\right],
+\; 0\right\}.
+\end{equation}
+\end{defn}
 
 \begin{proof}
 Our goal here is to count the number of reference recursions after the final
