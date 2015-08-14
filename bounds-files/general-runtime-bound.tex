@@ -373,8 +373,10 @@ O\left(c_r^4 |R^*| \psi \chi \left(N + I_t(\mathscr{T}_q) + \theta\right)\right)
 \end{equation}
 \end{proof}
 
-When we consider the monochromatic case (where $S_q = S_r$), the results
-trivially simplify.
+When we consider the monochromatic case (where $S_q = S_r$)\footnote{In the
+monochromatic case, we do not take a point as its own nearest neighbor, so
+slight modification of {\tt BaseCase()} is necessary.  The runtime bound result
+remains unchanged.}, the results trivially simplify.
 
 \begin{cor}
 \label{cor:ct-runtime-mono}
