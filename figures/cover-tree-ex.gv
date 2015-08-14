@@ -1,0 +1,36 @@
+digraph bct {
+  size="4,4";
+  node [color=black, fillcolor=lightgray, style=filled];
+
+  na[label="a"]
+
+  nb[label="b"]
+  nc[label="c"]
+
+  nd[label="d"]
+  ne[label="e"]
+
+  nf[label="f"]
+  ng[label="g"]
+  nh[label="h"]
+  ni[label="i"]
+  nj[label="j"]
+  nk[label="k"]
+
+  na -> nb;
+  na -> nc;
+
+  nb -> nd;
+  nb -> ne;
+
+  nd -> nf;
+  nd -> ng;
+  ne -> nh;
+  ne -> ni;
+  nc -> nj;
+  nc -> nk;
+
+  {rank=same; nb nc}
+  {rank=same; nd ne}
+  {rank=same; nf ng nh ni nj nk}
+}

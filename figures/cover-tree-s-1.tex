@@ -1,0 +1,20 @@
+\draw [dashed] (p0) circle (1.0) { };
+\coordinate (p0a) at ($(p0) + (0.05, 0.0)$);
+\coordinate (p0e) at ($(p0) + (1.0, 0.0)$);
+\coordinate (p0l) at ($(p0) + (0.5, 0.0)$);
+
+\node [draw,circle,inner sep=1pt, fill=red] at (p0) { };
+\draw [<->] (p0a) -- (p0e) { };
+\node [above] at (p0l) { $1$ };
+
+\draw [dashed] (p2) circle (1.0) { };
+\coordinate (p2a) at ($(p2) + (0.0, 0.05)$);
+\coordinate (p2e) at ($(p2) + (0.0, 1.0)$);
+\coordinate (p2l) at ($(p2) + (0.0, 0.5)$);
+
+\node [draw,circle,inner sep=1pt, fill=red] at (p2) { };
+\draw [<->] (p2a) -- (p2e) { };
+\node [right] at (p2l) { $1$ };
+
+\node [below,left] at (0.0, -1.25) { $\mathscr{N}_d$ };
+\node [above,right] at ($(p2) + (0.75, 0.75)$) { $\mathscr{N}_e$ };

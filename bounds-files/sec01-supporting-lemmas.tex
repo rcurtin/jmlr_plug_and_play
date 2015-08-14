@@ -77,14 +77,73 @@ for description of their algorithms and some of their proofs.  But clearly,
 this is not suitable for implementation; hence, there is an {\it explicit}
 representation in which all nodes that have only a self-child are coalesced
 upwards (that is, the node's self-child is removed, and the children of that
-self-child are taken to be the children of the node).  %Figure
-%\ref{fig:implicit-explicit} shows an example cover tree and highlights implicit
-%and explicit nodes.
+self-child are taken to be the children of the node).  Figure
+\ref{fig:example-cover-tree} shows each of the levels of an example cover tree
+(in the explicit representation) on a simple six-point dataset.
 
 In this work, we consider only the explicit representation of a cover tree, and
 do not concern ourselves with the details of tree construction\footnote{A batch
 construction algorithm is given by \citet{langford2006}, called
 \texttt{Construct}.}.
+
+\begin{figure}
+\begin{subfigure}[b]{0.495\textwidth}
+  \begin{center}
+    \begin{tikzpicture}[scale=0.8]
+      \input{figures/cover-tree-points}
+      \input{figures/cover-tree-s1}
+    \end{tikzpicture}
+  \end{center}
+  \vspace*{-0.5em}
+  \caption{Root node at scale $1$.}
+  \label{fig:cover-tree-s1}
+\end{subfigure}
+\begin{subfigure}[b]{0.495\textwidth}
+  \begin{center}
+    \begin{tikzpicture}[scale=0.85]
+      \input{figures/cover-tree-points}
+      \input{figures/cover-tree-s0}
+    \end{tikzpicture}
+  \end{center}
+  \vspace*{-0.5em}
+  \caption{Nodes at scale $0$.}
+  \label{fig:cover-tree-s0}
+\end{subfigure}
+\begin{subfigure}[b]{0.355\textwidth}
+  \begin{center}
+    \begin{tikzpicture}[scale=0.85]
+      \input{figures/cover-tree-points}
+      \input{figures/cover-tree-s-1}
+    \end{tikzpicture}
+  \end{center}
+  \vspace*{-0.5em}
+  \caption{Nodes at scale $-1$.}
+  \label{fig:cover-tree-s-1}
+\end{subfigure}
+\begin{subfigure}[b]{0.64\textwidth}
+  \begin{center}
+    \begin{tikzpicture}[scale=0.6]
+      \input{figures/cover-tree-ex}
+    \end{tikzpicture}
+  \end{center}
+  \vspace*{-0.5em}
+  \caption{Abstract representation.}
+  \label{fig:cover-tree-ex}
+\end{subfigure}
+  \vspace*{-0.5em}
+\caption{Example cover tree on six points.  (a) $\mathscr{N}_a$ is centered at
+$p_0$ with scale $1$.  (b) $\mathscr{N}_b$ and $\mathscr{N}_c$ are centered at
+$p_0$ and $p_1$, respectively, and have scale $0$.  (c) $\mathscr{N}_d$ and
+$\mathscr{N}_e$ are centered at $p_0$ and $p_2$, respectively, and have scale
+$-1$.  The leaves, $\mathscr{N}_0$ through $\mathscr{N}_6$, are centered at each
+of the six points, with scale $-\infty$ (and therefore radius 0).  Note that
+although node $\mathscr{N}_b$ in subfigure (b) overlaps node $\mathscr{N}_c$,
+point $p_1$ only belongs to $\mathscr{N}_c$, not $\mathscr{N}_b$.  Note also
+that this is only one valid cover tree that could be built on the data; other
+configurations are possible; for instance, selecting a different root point
+gives different valid cover trees.}
+\label{fig:example-cover-tree}
+\end{figure}
 
 \subsection{Expansion constant}
 

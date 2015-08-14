@@ -1,0 +1,10 @@
+\draw [dashed] (p0) circle (4.0) { };
+\coordinate (p0a) at ($(p0) + (0.05, 0.0)$);
+\coordinate (p0e) at ($(p0) + (4.0, 0.0)$);
+\coordinate (p0l) at ($(p0) + (2.0, 0.0)$);
+
+\node [draw,circle,inner sep=1pt, fill=red] at (p0) { };
+\draw [<->] (p0a) -- (p0e) { };
+\node [below] at (p0l) { $4$ };
+
+\node [above,right] at (3.0, 3.0) { $\mathscr{N}_a$ };
