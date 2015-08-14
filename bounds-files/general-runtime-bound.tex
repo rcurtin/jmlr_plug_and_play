@@ -101,10 +101,10 @@ every pair of points held in nodes in $R$ is separated by at least
 $2^{s_r^{\max}}$:
 
 \begin{lemma}
-For all nodes $\mathscr{N}_i, \mathscr{N}_j \in R$ (in the context of Algorithm
-\ref{alg:cover-tree-dual}) which contain points $p_i$ and $p_j$, respectively,
-$d(p_i, p_j) > 2^{s_r^{\max}}$, with $s_r^{\max}$ defined as in line
-\ref{alg:line:ct-dual-srmax}.
+For all distinct nodes $\mathscr{N}_i, \mathscr{N}_j \in R$ (in the context of
+Algorithm \ref{alg:cover-tree-dual}) which contain points $p_i$ and $p_j$,
+respectively, $d(p_i, p_j) > 2^{s_r^{\max}}$, with $s_r^{\max}$ defined as in
+line \ref{alg:line:ct-dual-srmax}.
 \end{lemma}
 
 \begin{proof}
@@ -172,7 +172,7 @@ let us define and bound the top and bottom levels of each tree:
   \item The {\it top scale} $s_q^T$ of the query tree $\mathscr{T}_q$ is such
 that as $\lceil \log_2(\eta_q) \rceil - 1 \le s_q^T \le \lceil \log_2(\eta_q)
 \rceil$.
-  \item The {\it minimum scale} of the query tree $\mathscr{T}_r$ is defined as
+  \item The {\it minimum scale} of the query tree $\mathscr{T}_q$ is defined as
 $s_q^{\min} = \lceil \log_2(\delta_q) \rceil$.
   \item The top scale $s_r^T$ of the reference tree $\mathscr{T}_r$ is such that
 as $\lceil \log_2(\eta_r) \rceil - 1 \le s_r^T \le \lceil \log_2(\eta_r)
@@ -233,8 +233,8 @@ the traversal given in Algorithm \ref{alg:cover-tree-dual}, the number of extra
 reference recursions that happen after the last query recursion is bounded by
 
 \begin{equation}
-\max\left\{\min\left[O(N \log_2(\delta_q / \delta_r)),
-O(N^2)\right], \; 0\right\}.
+\max\left\{\min\left(O(N \log_2(\delta_q / \delta_r)),
+O(N^2)\right), \; 0\right\}.
 \end{equation}
 \end{lemma}
 
@@ -245,7 +245,7 @@ Define $\theta$ as a bound on the number of extra reference recursions tha
 happen after the last query recursion.  Then,
 
 \begin{equation}
-\theta = \max\left\{\min\left[O(N \log_2(\delta_q / \delta_r)), O(N^2)\right],
+\theta = \max\left\{\min\left(O(N \log_2(\delta_q / \delta_r)), O(N^2)\right),
 \; 0\right\}.
 \end{equation}
 \end{defn}
@@ -400,11 +400,12 @@ the monochromatic case (this case arises, for instance, in all-nearest-neighbor
 search).  The linear dependence on $N$ arises from the fact that all query nodes
 must be visited.  The dependence on the reference tree, however, is encapsulated
 by the term $c^4 |R^*|$, with $|R^*|$ being the maximum size of the reference
-set $R$; this value must be derived for each specific problem.  The bad
-performance of poorly-behaved datasets with large $c$ (or, in the worst case, $c
-\sim N$) is then captured in both of those terms.  Poorly-behaved datasets may
-also have a high cover tree imbalance $I_t(\mathscr{T})$; the linear dependence of
-runtime on imbalance is thus sensible for well-behaved datasets.
+set $R$; this value must be derived for each specific problem.  The poor
+performance of trees on datasets with large $c$ (or, in the worst case, $c
+\sim N$) is then captured in both of those terms.  These datasets for which
+trees perform poorly may also have a high cover tree imbalance
+$I_t(\mathscr{T})$; the linear dependence of runtime on imbalance is thus
+sensible for datasets where trees perform well.
 
 The bichromatic case ($S_q \ne S_r$) is a slightly more complex result which
 deserves a bit more attention.  The intuition for all terms except $\theta$
@@ -434,13 +435,13 @@ These results hold for any dual-tree algorithm regardless of the problem. Hence,
 %for any pairwise statistical problem, the runtime of the dual-tree algorithm (of
 the runtime of any dual-tree algorithm
 %that problem)
-would be at least $O(N)$ using our bound, which matches the intuition that
-answering $O(N)$ queries would take at least $O(N)$ time. For a particular
-problem and data, if $c_r$, $|R^*|$, $\chi$, $\psi$ are bounded by constants
-independent of $N$ and $\theta$ is no more than linear in $N$ (for large enough
-$N$), then the dual-tree algorithm for that problem has a runtime linear in $N$.
-Our theoretical result separates out the problem-dependent and the
-problem-independent elements of the runtime bound, which allows us to simply
+can be bounded no more tightly than $O(N)$ with our bound, which matches the
+intuition that answering $O(N)$ queries will take at least $O(N)$ time. For a
+particular problem and data, if $c_r$, $|R^*|$, $\chi$, $\psi$ are bounded by
+constants independent of $N$ and $\theta$ is no more than linear in $N$ (for
+large enough $N$), then the dual-tree algorithm for that problem has a runtime
+linear in $N$.  Our theoretical result separates out the problem-dependent and
+the problem-independent elements of the runtime bound, which allows us to simply
 plug in the problem-dependent bounds in order to get runtime bounds for any
 dual-tree algorithm without requiring an analysis from scratch.
 
@@ -457,16 +458,17 @@ which suffers from the same problem as $\kappa$.  Although the dependence on
 $\nu$ is linear (that is, $O(\nu N)$), bounding $\nu$ is difficult and it is not
 true that $\nu = 1$ in the monochromatic case.
 
-$\nu$ corresponds to the maximum number of reference recursions between a single
-query recursion, and $\kappa$ corresponds to the maximum number of query
-recursions between a single reference recursion.  The respective proofs that use
-these constants then apply them as a worst-case measure for the whole algorithm:
-when using $\kappa$, \citet{ram2009} assume that {\it every} reference recursion
-may be followed by $\kappa$ query recursions; similarly, \citet{curtin2014dual}
-assume that {\it every} query recursion may be followed by $\nu$ reference
-recursions.  Here, we have simply used $I_t(\mathscr{T}_q)$ and $\theta$ as an
-exact summation of the total extra reference recursions, which gives us a much
-tighter bound than $\nu$ or $\kappa$ on the running time of the whole algorithm.
+The quantity $\nu$ corresponds to the maximum number of reference recursions
+between a single query recursion, and $\kappa$ corresponds to the maximum number
+of query recursions between a single reference recursion.  The respective proofs
+that use these constants then apply them as a worst-case measure for the whole
+algorithm: when using $\kappa$, \citet{ram2009} assume that {\it every}
+reference recursion may be followed by $\kappa$ query recursions; similarly,
+\citet{curtin2014dual} assume that {\it every} query recursion may be followed
+by $\nu$ reference recursions.  Here, we have simply used $I_t(\mathscr{T}_q)$
+and $\theta$ as an exact summation of the total extra reference recursions,
+which gives us a much tighter bound than $\nu$ or $\kappa$ on the running time
+of the whole algorithm.
 
 Further, both $\nu$ and $\kappa$ are difficult to empirically calculate and
 require an entire run of the dual-tree algorithm.  On the other hand, bounding
