@@ -142,10 +142,10 @@ traversal given in Algorithm \ref{alg:cover-tree-dual}, the running time of
 approximate kernel density estimation for some error parameter $\epsilon$ is
 bounded by
 %\begin{equation}
-$O(c_r^{8 + \lceil \log_2 \zeta \rceil} (N + i_t(\mathscr{T}_q) + \theta))$
+$O(c_r^{8 + \lceil \log_2 \zeta \rceil} (N + I_t(\mathscr{T}_q) + \theta))$
 %\end{equation}
 with $\zeta = -\mathcal{K}'(h) \mathcal{K}^{-1}(\epsilon) \epsilon^{-1}$,
-$i_t(\mathscr{T}_q)$ defined as in Definition \ref{def:imbalance}, and $\theta$
+$I_t(\mathscr{T}_q)$ defined as in Definition \ref{def:imbalance}, and $\theta$
 defined as in Lemma \ref{lem:extcase3}.
 
 \label{thm:kde-bound}
@@ -154,7 +154,7 @@ defined as in Lemma \ref{lem:extcase3}.
 \begin{proof}
 It is clear that \texttt{BaseCase()} and \texttt{Score()} both take $O(1)$ time,
 so Theorem \ref{thm:ct-runtime} implies the total runtime of the dual-tree
-algorithm is bounded by $O(c_r^4 |R^*| (N + i_t(\mathscr{T}_q) + \theta))$.
+algorithm is bounded by $O(c_r^4 |R^*| (N + I_t(\mathscr{T}_q) + \theta))$.
 Thus, we will bound $|R^*|$ using techniques related to those used by
 \citet{ram2009}.  The bounding of $|R^*|$ is split into two sections: first,
 we show that when the scale $s_r^{\max}$ is small enough, $R^*$ is empty.

@@ -80,7 +80,7 @@ horrendously; motivated by this observation, we define a measure of tree
 imbalance.
 
 \begin{defn}
-The {\it cover node imbalance} $i_n(\mathscr{N}_i)$ for a cover tree node
+The {\it cover node imbalance} $I_n(\mathscr{N}_i)$ for a cover tree node
 $\mathscr{N}_i$ with scale $s_i$ in the cover tree $\mathscr{T}$ is defined as
 the cumulative number of missing levels between the node and its parent
 $\mathscr{N}_p$ (which has scale $s_p$).  If
@@ -91,7 +91,7 @@ $\mathscr{N}_i$ is the root of the tree, then the cover node imbalance is 0.
 Explicitly written, this calculation is
 
 \begin{equation}
-i_n(\mathscr{N}_i) = \begin{dcases*}
+I_n(\mathscr{N}_i) = \begin{dcases*}
   s_p - s_i - 1 & if $\mathscr{N}_i$ is not a leaf and not the root node \\
   \max(s_p - s_{\min} - 1, \; 0) & if $\mathscr{N}_i$ is a leaf \\
   0 & if $\mathscr{N}_i$ is the root node.
@@ -105,20 +105,20 @@ it, we can generalize to a measure of imbalance for the full tree.
 
 \begin{defn}
 \label{def:imbalance}
-The {\it cover tree imbalance} $i_t(\mathscr{T})$ for a cover tree $\mathscr{T}$
+The {\it cover tree imbalance} $I_t(\mathscr{T})$ for a cover tree $\mathscr{T}$
 is defined as the cumulative number of missing levels in the tree.  This can be
 expressed as a function of cover node imbalances easily:
 
 \begin{equation}
-i_t(\mathscr{T}) = \sum_{\mathscr{N}_i \in \mathscr{T}} i_n(\mathscr{N}_i).
+I_t(\mathscr{T}) = \sum_{\mathscr{N}_i \in \mathscr{T}} I_n(\mathscr{N}_i).
 \end{equation}
 \end{defn}
 
 A perfectly balanced cover tree $\mathscr{T}_b$ with no missing levels has
-imbalance $i_t(\mathscr{T}_b) = 0$ (for instance, Figure
+imbalance $I_t(\mathscr{T}_b) = 0$ (for instance, Figure
 \ref{fig:imbalance-good}).  A worst-case cover tree $\mathscr{T}_w$ which is
 entirely a chain-like structure with maximum scale $s_{\max}$ and minimum scale
-$s_{\min}$ will have imbalance $i_t(\mathscr{T}_w) \sim N (s_{\max} -
+$s_{\min}$ will have imbalance $I_t(\mathscr{T}_w) \sim N (s_{\max} -
 s_{\min})$.  Because of this chain-like structure, each level has only one node
 and thus there are at least $N$ levels; or, $s_{\max} - s_{\min} \ge N$, meaning
 that in the worst case the imbalance is quadratic in $N$\footnote{Note that in

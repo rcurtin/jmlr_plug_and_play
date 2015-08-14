@@ -276,7 +276,7 @@ set of queries $S_q$ of size $O(N)$, a standard cover tree based dual-tree
 algorithm (Algorithm \ref{alg:cover-tree-dual}) takes
 
 \begin{equation}
-O\left(c_r^4 | R^* | \chi \psi (N + i_t(\mathscr{T}_q) + \theta)\right)
+O\left(c_r^4 | R^* | \chi \psi (N + I_t(\mathscr{T}_q) + \theta)\right)
 \end{equation}
 
 \noindent time, where $ | R^* | $ is the maximum size of the reference set $R$
@@ -332,17 +332,17 @@ Next, consider case \textit{(2)}.  In this situation, each query recursion
 implies at least one reference recursion before another query recursion.  For
 some query node $\mathscr{N}_q$, the exact number of reference recursions before
 the children of $\mathscr{N}_q$ are recursed into is bounded above by
-$i_n(\mathscr{N}_q) + 1$: if $\mathscr{N}_q$ has imbalance $0$, then it is
+$I_n(\mathscr{N}_q) + 1$: if $\mathscr{N}_q$ has imbalance $0$, then it is
 exactly one level below its parent, and thus there is only one reference
 recursion.  On the other hand, if $\mathscr{N}_q$ is many levels below its
 parent, then it is possible that a reference recursion may occur for each level
-in between; this is a maximum of $i_n(\mathscr{N}_q) + 1$.
+in between; this is a maximum of $I_n(\mathscr{N}_q) + 1$.
 
 Because each query node in $\mathscr{T}_q$ is recursed into once, the total
 number of reference recursions before each query recursion is
 
 \begin{equation}
-\sum_{\mathscr{N}_q \in \mathscr{T}_q} i_n(\mathscr{N}_q) + 1 = i_t(\mathscr{T}_q) +
+\sum_{\mathscr{N}_q \in \mathscr{T}_q} I_n(\mathscr{N}_q) + 1 = I_t(\mathscr{T}_q) +
 O(N)
 \end{equation}
 
@@ -355,9 +355,9 @@ We may now combine these results for the runtime of a query recursions with the
 total number of reference recursions in order to give the result of the theorem:
 
 \begin{equation}
-O\left(c_r^4 |R^*| \psi \chi \left(N + i_t(\mathscr{T}_q) + \theta\right)\right)
+O\left(c_r^4 |R^*| \psi \chi \left(N + I_t(\mathscr{T}_q) + \theta\right)\right)
 + O\left(c_r^4 |R^*| \psi N\right) \sim O\left(c_r^4 |R^*| \psi
-\chi \left(N + i_t(\mathscr{T}_q) + \theta\right)\right).
+\chi \left(N + I_t(\mathscr{T}_q) + \theta\right)\right).
 \end{equation}
 \end{proof}
 
@@ -372,7 +372,7 @@ dual-tree algorithm using the standard cover tree traversal (Algorithm
 \ref{alg:cover-tree-dual}) takes
 
 \begin{equation}
-O\left(c^4 |R^*| \chi \psi \left(N + i_t(\mathscr{T})\right)\right)
+O\left(c^4 |R^*| \chi \psi \left(N + I_t(\mathscr{T})\right)\right)
 \end{equation}
 
 \noindent time, where $ | R^* | $ is the maximum size of the reference set $R$
@@ -389,7 +389,7 @@ by the term $c^4 |R^*|$, with $|R^*|$ being the maximum size of the reference
 set $R$; this value must be derived for each specific problem.  The bad
 performance of poorly-behaved datasets with large $c$ (or, in the worst case, $c
 \sim N$) is then captured in both of those terms.  Poorly-behaved datasets may
-also have a high cover tree imbalance $i_t(\mathscr{T})$; the linear dependence of
+also have a high cover tree imbalance $I_t(\mathscr{T})$; the linear dependence of
 runtime on imbalance is thus sensible for well-behaved datasets.
 
 The bichromatic case ($S_q \ne S_r$) is a slightly more complex result which
@@ -450,13 +450,13 @@ these constants then apply them as a worst-case measure for the whole algorithm:
 when using $\kappa$, \citet{ram2009} assume that {\it every} reference recursion
 may be followed by $\kappa$ query recursions; similarly, \citet{curtin2014dual}
 assume that {\it every} query recursion may be followed by $\nu$ reference
-recursions.  Here, we have simply used $i_t(\mathscr{T}_q)$ and $\theta$ as an
+recursions.  Here, we have simply used $I_t(\mathscr{T}_q)$ and $\theta$ as an
 exact summation of the total extra reference recursions, which gives us a much
 tighter bound than $\nu$ or $\kappa$ on the running time of the whole algorithm.
 
 Further, both $\nu$ and $\kappa$ are difficult to empirically calculate and
 require an entire run of the dual-tree algorithm.  On the other hand, bounding
-$i_t(\mathscr{T}_q)$ (and $\theta$) can be done in one pass of the tree
+$I_t(\mathscr{T}_q)$ (and $\theta$) can be done in one pass of the tree
 (assuming the tree is already built).  Thus, not only is our bound tighter when
 the cover tree imbalance is sublinear in $N$, it more closely reflects the
 actual behavior of dual-tree algorithms, and the constants which it depends upon
