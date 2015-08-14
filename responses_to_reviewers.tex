@@ -1,0 +1,108 @@
+\documentclass[10pt]{article} % For LaTeX2e
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{mathrsfs}
+
+\begin{document}
+
+Dear reviewers:
+
+Thank you for your time in reviewing our manuscript.  We appreciate the detailed
+comments and have incorporated several important changes:
+
+\begin{itemize}
+  \item The imbalance has been renamed $I_t(\cdot)$ (from $i_t(\cdot)$), to
+avoid confusion with the index $i$ which used in other contexts.
+
+  \item The spelling and grammatical errors have been fixed.
+
+  \item The quantity $\theta$ is now defined outside Lemma 4.
+
+  \item We have added a table of empirical results for the imbalance of cover
+trees on a handful of real-world datasets (Table 1).
+
+  \item We have added Figure 1, an example cover tree, which should help readers
+develop intuition for cover trees.
+
+  \item We have emphasized in the introduction that these bounds only apply to
+cover trees, not other types of trees.  Unfortunately, other types of trees have
+not (at this time) had any comparable adaptive analysis performed, so we cannot
+compare our results with results for other tree types.
+\end{itemize}
+
+Now, we answer a few questions that came up during the reviews:
+
+\begin{quote}
+{\bf (Reviewer 1)} In particular, it seems non-trivial to derive similar bounds
+for other efficient search structures like kd-trees, ball trees, or vantage
+point trees, as these are not amenable to the notion of imbalancedness that the
+authors use in their bounds. Are existing bounds for these tree structures
+better or worse (or similar) than the bounds derived here? And more importantly,
+what is the performance of cover trees compared to these other structures in
+practice?
+\end{quote}
+
+We are not aware of existing worst-case bounds for other tree structures that
+are non-trivial and very loose (i.e. $O(N^2)$ for nearest neighbor search), so
+unfortunately we cannot compare our theoretical results in any meaningful way.
+The empirical performance of cover trees is often comparable with that of
+$kd$-trees, metric trees, and other types of trees.  Here is an interesting
+empirical survey that supports this claim:
+
+A.M. Kibriya, E. Frank, "An empirical comparison of exact nearest neighbour
+algorithms", PKDD 2007.  (Table 1 is of particular interest, though it is
+restricted to single-tree search.)
+\url{http://www.cs.waikato.ac.nz/~ml/publications/2007/KibriyaAndFrankPKDD07.pdf}
+
+In addition, our experiences with mlpack development seem to indicate that
+$kd$-trees and cover trees can perform comparably.  Of course, the actual
+performance is dependent on the data; sometimes cover trees are faster (usually
+in medium dimensions), sometimes $kd$-trees are faster (usually in lower
+dimensions).
+
+We've added some references in the introduction to highlight the
+already-documented empirical performance of dual-tree algorithms, too.
+
+\begin{quote}
+{\bf (Reviewer 1)} The authors state that "tree imbalance is near-linear with
+the number of points", which would imply the run-time bounds behave more like
+O(N*N) in practice?
+\end{quote}
+
+We think there has been a slight misunderstanding here.  The bound is of the
+form O(N + imbalance), so linear imbalance scaling still gives O(N) scaling.
+
+\begin{quote}
+{\bf (Reviewer 2)} Does the result extend to k-nearest neighbor search?
+\end{quote}
+
+Yes; you get a bound of the form $O(k(N + I_t(\mathscr{T}_q) + \theta))$.
+Essentially the only thing that needs to change is Equation 24, where the ball
+$B_{S_r \cup \{ p_q \}}(p_q, d(p_q, p_r^*) / 2)$ now contains a maximum of $k$
+points instead of $1$ point.
+
+\begin{quote}
+{\bf (Reviewer 3)} Lemma 1 proof: the definition of the expansion constant is an
+inequality.  How can you assert the equality?
+\end{quote}
+
+This was a typo.  We have replaced the $=$ with $\le$ as it should be.
+
+\begin{quote}
+{\bf (Reviewer 3)} I find it strange that you are defining the "top" and
+"minimum"... why not "top" and "bottom" or "maximum" and "minimum"?
+\end{quote}
+
+Unfortunately we are forced to use these terms here.  In our view, ``bottom
+scale'' would imply the bottom of the tree, and the minimum scale is not the
+scale of the bottom of the tree (that scale is $-\infty$).  We also can't use
+the term ``maximum scale'', because that term is used heavily in the proof of
+Lemma 2 to refer to the maximum scale present in the set $R$:
+
+$$s_r^{\max} = \max_{\mathscr{N}_i \in R} s_i.$$
+
+Again, thank you all for your comments!
+
+
+
+\end{document}
