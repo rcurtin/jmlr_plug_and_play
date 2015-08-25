@@ -87,13 +87,12 @@ A reference recursion (lines
 \ref{alg:line:ct-dual-ref-recursion-start}--\ref{alg:line:ct-dual-ref-recursion-end})
 is similar to a query recursion, but the pruning strategy is significantly more
 complicated.  Given $R$, we calculate $R_r$, which is the set of nodes in $R$
-that have scale $s_r^{\max}$.  Then, for each node $\mathscr{N}_r$ in the set of
-children of nodes in $R_r$, the node combinations $(\mathscr{N}_q,
-\mathscr{N}_r)$ are scored and pruned if possible.  Those reference nodes that
-were not pruned form the set $R'_{r - 1}$.  Then, this set is combined with $R
-\setminus R_r$---that is, each of the nodes in $R$ that was {\em not} recursed
-into---to produce $R'$, and the algorithm recurses with $\mathscr{N}_q$ and the
-reference set $R'$.
+that have scale $s_r^{\max}$.  We expand each node in $R_r$ to construct $R_{r -
+1}$: this is the set of children of all nodes in $R_r$.  This set is then
+combined with $R \setminus R_r$ (that is, the set of references nodes not at
+scale $s_r^{\max}$) to produce $R_{r - 1}$.  Each node in $R_{r - 1}$ is then
+scored and pruned if possible, resulting in the pruned reference set $R'_{r -
+1}$.  The algorithm then recurses with $\mathscr{N}_q$ and $R'_{r - 1}$.
 
 The reference recursion only recurses into the top-level subset of the reference
 nodes in order to preserve the separation invariant.  It is easy to show that
