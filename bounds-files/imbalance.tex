@@ -129,13 +129,15 @@ mlpack} \citep{mlpack2013} and the reference implementation
 \citep{langford2006}, the tree imbalance is near-linear with the number of
 points.  We have constructed cover trees on $N$ uniformly subsampled points
 from a variety of datasets and calculated the imbalance; see Table
-\ref{tab:imbalance} for the results.  These results are normalized with respect
-to $N$, for which the values of $5000$, $50000$, and $500000$ were chosen.
-The `power', `susy', `higgs', and `covertype' datasets are found in the UCI
-Machine Learning Repository \cite{ucimlrepository}, the `mnist' dataset is from
-\cite{lecun2000mnist}, and the `lcdm` and `sdss' datasets are Sloan Digital Sky
-Survey data \cite{adelman2008sixth}.  The imbalances on each of these datasets
-tend to be near-linear.
+\ref{tab:imbalance} for the results.  Ten trials were performed for each dataset
+and each $N$, and the mean imbalance is given.  These results are normalized
+with respect to $N$, for which the values of $5000$, $50000$, and $500000$ were
+chosen.  The `power', `susy', `higgs', and `covertype' datasets are found in the
+UCI Machine Learning Repository \cite{ucimlrepository}, the `mnist' dataset is
+from \cite{lecun2000mnist}, the `lcdm` and `sdss' datasets are Sloan Digital Sky
+Survey data \cite{adelman2008sixth}, and the `randu' dataset is
+randomly-generated uniformly-distributed data in 10 dimensions.  The imbalances
+on each of these datasets tend to be near-linear.
 
 Currently, no cover tree construction algorithm specifically aims to minimize
 imbalance.
@@ -148,20 +150,21 @@ imbalance.
 \hline
 Dataset & $d$ & $N = 5k$ & $N = 50k$ & $N = 500k$ \\
 \hline
-%lcdm & 3 & 29402 & 313190 & 3400305 \\
-lcdm & 3 & 5.88 & 6.26 & 6.80 \\
-%sdss & 4 & 17691 & 191716 & 1483711 \\
-sdss & 4 & 3.54 & 3.83 & 2.97 \\
-% power & 7 & 22152 & 202050 & 1345825 \\
-power & 7 & 4.43 & 4.04 & 2.69 \\
-% susy & 18 & 3686 & 64231 & 930969 \\
-susy & 18 & 0.74 & 1.28 & 1.86 \\
-% higgs & 29 & 404 & 1272 & 73793 \\
-higgs & 29 & 0.08 & 0.03 & 0.15 \\
-% covertype & 55 & 9680 & 100344 & 1319447 \\
-covertype & 55 & 1.94 & 2.01 & 2.64 \\
-% mnist & 784 & 4004 & 79375 & 983554 \\
-mnist & 784 & 0.80 & 1.59 & 1.97 \\
+%lcdm & 3 & 22417.9 & 257445.6 & 2621239.6 \\
+lcdm & 3 & 4.48 & 5.15 & 5.24 \\
+% sdss & 4 & 10853.6 & 140431.6 & 1486808.8 \\
+sdss & 4 & 2.17 & 2.81 & 2.97 \\
+% power & 7 & 27042.2 & 323125.6 & 2251317.2
+power & 7 & 5.41 & 6.46 & 4.50 \\
+% susy & 18 & 3701.3 & 37823.7 & 431784.8 \\
+susy & 18 & 0.74 & 0.76 & 0.86 \\
+%randu-10 & 10 & 1156.0 & 10763.4 & 297041.2 \\
+randu & 10 & 0.23 & 0.22 & 0.59 \\
+% higgs & 29 & 4963.6 & 84171.8 &  \\ need one more...
+%covertype & 54 & 6609.6 & 88296.4 & 1247820.7 \\
+covertype & 54 & 1.322 & 1.766 & 2.495 \\
+% mnist & 784 & 4974.1 & 83658.6 & 1044075.0 \\
+mnist & 784 & 0.99 & 1.67 & 2.09 \\
 \hline
 \end{tabular}
 \end{center}
