@@ -44,7 +44,7 @@ R_r \} \cup (R \setminus R_r)$ \label{alg:line:ct-dual-ref-children}
       \STATE \COMMENT{Perform a query recursion.}
       \FORALL{$\mathscr{N}_{qc} \in \mathscr{C}(\mathscr{N}_q)$}
         \STATE $R' \gets \{ \mathscr{N}_r \in R :
-\texttt{Score(}\mathscr{N}_q\texttt{,} \mathscr{N}_r\texttt{)} \ne \infty \}$
+\texttt{Score(}\mathscr{N}_{qc}\texttt{,} \mathscr{N}_r\texttt{)} \ne \infty \}$
 \label{alg:line:ct-dual-query-pruning}
         \STATE recurse with $\mathscr{N}_{qc}$ and $R'$
 \label{alg:line:ct-dual-query-recursion}
