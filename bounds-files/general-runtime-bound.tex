@@ -74,6 +74,20 @@ the conditional in line \ref{alg:line:ct-dual-ref-recursion-start}, which
 determines whether the query or reference tree will be recursed, is aimed at
 keeping the relative scales of query nodes and reference nodes close.
 
+Keeping the query and reference scales close is both beneficial for the later
+theory and intuitively reasonable: recursing too quickly in the either the query
+or reference node will unnecessarily duplicate work.  Suppose we recurse many
+levels down the query tree before recursing down the reference tree, giving us a
+set of query nodes we are considering.  For {\it each} of these query nodes, we
+will then need to descend the reference tree.  Because these query nodes are
+close together (with respect to the reference nodes we are considering, which
+are of larger scale and thus further apart), the pruning decisions at each level
+of recursion are likely to be the same for each query node.  Therefore,
+recursing too far in the query tree may cause a large amount of duplicated work.
+The symmetric argument applies for recursing too far in the reference tree
+before recursing in the query tree.  This justifies the approach of keeping the
+query and reference scales approximately equal.
+
 A query recursion (lines
 \ref{alg:line:ct-dual-query-recursion-start}--\ref{alg:line:ct-dual-query-recursion-end})
 is straightforward: for each child $\mathscr{N}_{qc}$ of $\mathscr{N}_q$, the
