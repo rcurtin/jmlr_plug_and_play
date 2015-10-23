@@ -151,6 +151,12 @@ holds for all nodes in $R' = R'_{r - 1} \cup (R \setminus R_{r - 1})$.
 Because we have shown that the condition holds for the initial reference set and
 for any reference set produced by a reference recursion, we have shown that the
 statement of the lemma is true.
+
+Note that in this proof, we have considered the child reference set $R_{r - 1}$,
+not the original reference set $R$, and shown that with respect to $s_r^{\max}$
+as defined by $R$ (not $R_{r - 1}$), all nodes are separated by $2^{s_r^{\max} -
+1}$.  Then, in the frame of the next recursion where $R \gets R_{r - 1}$, the
+lemma will hold, as $s_r^{\max}$ will then be the maximum scale present in $R$.
 \end{proof}
 
 This observation means that the set of points $P$ held by all nodes in $R$ is
