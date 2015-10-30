@@ -86,7 +86,7 @@ correctness.]{curtin2013tree}  The
 represents the maximum distance that could possibly improve a nearest neighbor
 candidate for any descendant point of the query node $\mathscr{N}_q$.  The
 standard bound function $B(\mathscr{N}_q)$ used for cover trees is adapted from
-\citep{langford2006}:
+\citet{langford2006}:
 
 \begin{equation}
 B(\mathscr{N}_q) := D[p_q] + 2^{s_q + 1}
@@ -329,7 +329,10 @@ c_{qr}^5$.
 
 %\noindent which gives the result because $c_r^5 \le c_{qr}^5$.
 
-In the monochromatic case where $S_q = S_r$, the bound is $O(c^9 (N +
+In the monochromatic case where $S_q = S_r$\footnote{In the monochromatic case,
+we do not take a point as its own nearest neighbor, so slight modification of
+{\tt BaseCase()} is necessary.  The runtime bound result remains unchanged.},
+the bound is $O(c^9 (N +
 I_t(\mathscr{T}))$ because $c = c_r = c_{qr}$ and $\theta = 0$.  For
 well-behaved trees where $I_t(\mathscr{T}_q)$ is linear or sublinear in $N$,
 this represents the current tightest worst-case runtime bound for nearest

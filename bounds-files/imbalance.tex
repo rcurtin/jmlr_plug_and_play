@@ -25,7 +25,7 @@ refer to this as an {\em imbalanced cover tree}.  Note that in our definition,
 the balance of a cover tree has nothing to do with differing number of
 descendants in each child branch but instead only missing levels.
 
-\begin{figure}
+\begin{figure}[b!]
 \begin{subfigure}[b]{0.585\textwidth}
   \begin{center}
     \input{figures/balanced-cover-tree.tex}
@@ -85,7 +85,7 @@ The {\it cover node imbalance} $I_n(\mathscr{N}_i)$ for a cover tree node
 $\mathscr{N}_i$ with scale $s_i$ in the cover tree $\mathscr{T}$ is defined as
 the cumulative number of missing levels between the node and its parent
 $\mathscr{N}_p$ (which has scale $s_p$).  If
-the node is a leaf child (that is, $s_i = -\infty$), then number of missing
+the node is a leaf (that is, $s_i = -\infty$), then the number of missing
 levels is defined as the difference between $s_p$ and $s_{\min} - 1$ where
 $s_{\min}$ is the smallest scale of a non-leaf node in $\mathscr{T}$.  If
 $\mathscr{N}_i$ is the root of the tree, then the cover node imbalance is 0.
@@ -122,8 +122,8 @@ entirely a chain-like structure with maximum scale $s_{\max}$ and minimum scale
 $s_{\min}$ will have imbalance $I_t(\mathscr{T}_w) \sim N (s_{\max} -
 s_{\min})$.  Because of this chain-like structure, each level has only one node
 and thus there are at least $N$ levels; or, $s_{\max} - s_{\min} \ge N$, meaning
-that in the worst case the imbalance is quadratic in $N$\footnote{Note that in
-this situation, $c \sim N$ also.}.
+that in the worst case the imbalance is quadratic in $N$.\footnote{Note that in
+this situation, $c \sim N$ also.}
 
 However, for most real-world datasets with the cover tree implementation in {\bf
 mlpack} \citep{mlpack2013} and the reference implementation
@@ -134,9 +134,9 @@ from a variety of datasets and calculated the imbalance; see Table
 and each $N$, and the mean imbalance is given.  These results are normalized
 with respect to $N$, for which the values of $5000$, $50000$, and $500000$ were
 chosen.  The `power', `susy', `higgs', and `covertype' datasets are found in the
-UCI Machine Learning Repository \cite{ucimlrepository}, the `mnist' dataset is
+UCI Machine Learning Repository \citep{ucimlrepository}, the `mnist' dataset is
 from \cite{lecun2000mnist}, the `lcdm` and `sdss' datasets are Sloan Digital Sky
-Survey data \cite{adelman2008sixth}, and the `randu' dataset is
+Survey data \citep{adelman2008sixth}, and the `randu' dataset is
 randomly-generated uniformly-distributed data in 10 dimensions.  The imbalances
 on each of these datasets tend to be near-linear.
 
@@ -161,7 +161,8 @@ power & 7 & 5.41 & 6.46 & 4.50 \\
 susy & 18 & 0.74 & 0.76 & 0.86 \\
 %randu-10 & 10 & 1156.0 & 10763.4 & 297041.2 \\
 randu & 10 & 0.23 & 0.22 & 0.59 \\
-higgs & 29 & 4963.6 & 84171.8 & 781268.7 \\
+%higgs & 29 & 4963.6 & 84171.8 & 781268.7 \\
+higgs & 29 & 0.99 & 1.68 & 1.56 \\
 %covertype & 54 & 6609.6 & 88296.4 & 1247820.7 \\
 covertype & 54 & 1.322 & 1.766 & 2.495 \\
 % mnist & 784 & 4974.1 & 83658.6 & 1044075.0 \\

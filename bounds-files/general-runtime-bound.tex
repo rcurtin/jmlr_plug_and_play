@@ -135,22 +135,23 @@ Clearly, if $s_i = s_j = s_r^{\max} - 1$, then by the separation invariant
 $d(p_i, p_j) > 2^{s_r^{\max} - 1}$.
 
 Now suppose that $s_i < s_r^{\max} - 1$.  This implies that there exists some
-implicit cover tree node with point $p_i$ and scale $s_r^{\max} - 1$ (as well an
-implicit child of this node $p_i$ with scale $s_r^{\max} - 2$ and so forth until
-one of these implicit nodes has child $p_i$ with scale $s_i$).  Because the
-separation invariant applies to both implicit and explicit representations of
-the tree, we conclude that $d(p_i, p_j) > 2^{s_r^{\max}} - 1$.  The same
+implicit cover tree node with point $p_i$ and scale $s_r^{\max} - 1$ (as well as
+an implicit child of this node $p_i$ with scale $s_r^{\max} - 2$ and so forth
+until one of these implicit nodes has child $p_i$ with scale $s_i$).  Because
+the separation invariant applies to both implicit and explicit representations
+of the tree, we conclude that $d(p_i, p_j) > 2^{s_r^{\max}} - 1$.  The same
 argument may be made for the case where $s_j < s_r^{\max} - 1$, with the same
 conclusion.
 
 We may therefore conclude that each point of each node in $R_{r - 1}$ is
 separated by $2^{s_r^{\max} - 1}$.  Note that $R'_{r - 1} \subseteq R_{r - 1}$
 and that $R \setminus R_{r - 1} \subseteq R$ in order to see that this condition
-holds for all nodes in $R' = R'_{r - 1} \cup (R \setminus R_{r - 1})$.
+holds for all nodes in $R'_{r - 1}$.
 
 Because we have shown that the condition holds for the initial reference set and
-for any reference set produced by a reference recursion, we have shown that the
-statement of the lemma is true.
+for any reference set produced by a reference recursion (which will be $R$ at
+some other level of recursion), we have shown that the statement of the lemma is
+true.
 
 Note that in this proof, we have considered the child reference set $R_{r - 1}$,
 not the original reference set $R$, and shown that with respect to $s_r^{\max}$
@@ -260,7 +261,7 @@ O(N^2)\right), \; 0\right\}.
 For convenience, we define a term that encapsulates this bound.
 
 \begin{defn}
-Define $\theta$ as a bound on the number of extra reference recursions tha
+Define $\theta$ as a bound on the number of extra reference recursions that
 happen after the last query recursion.  Then,
 
 \begin{equation}
@@ -322,7 +323,7 @@ First, split the algorithm into two parts: reference recursions (lines
 \ref{alg:line:ct-dual-ref-recursion-start}--\ref{alg:line:ct-dual-ref-recursion-end})
 and query recursions (lines
 \ref{alg:line:ct-dual-query-recursion-start}--\ref{alg:line:ct-dual-query-recursion-end}).
-The runtime of the algorithm is bounded as the runtime of a reference recursion
+The runtime of the algorithm is the runtime of a reference recursion
 times the total number of reference recursions plus the total runtime of all
 query recursions.
 
@@ -392,10 +393,7 @@ O\left(c_r^4 |R^*| \psi \chi \left(N + I_t(\mathscr{T}_q) + \theta\right)\right)
 \end{equation}
 \end{proof}
 
-When we consider the monochromatic case (where $S_q = S_r$)\footnote{In the
-monochromatic case, we do not take a point as its own nearest neighbor, so
-slight modification of {\tt BaseCase()} is necessary.  The runtime bound result
-remains unchanged.}, the results trivially simplify.
+When we consider the monochromatic case (where $S_q = S_r$), the results trivially simplify.
 
 \begin{cor}
 \label{cor:ct-runtime-mono}
@@ -434,13 +432,13 @@ The term $\theta$ captures the effect of query and reference datasets with
 different widths, and has one unfortunate corner case: when $\delta_q > \eta_r$,
 then the query tree must be entirely descended before any reference recursion.
 This results in a bound of the form $O(N \log (\eta_r / \delta_r))$, or
-$O(N^2)$ (See Lemma \ref{lem:extcase3}).  This is because the reference tree
-must be descended individually for each query point.
+$O(N^2)$ (see Lemma \ref{lem:extcase3}).  This is because the reference tree
+must be descended separately for each query point.
 
 The quantity $|R^*|$ bounds the amount of work that needs to be done for each
 recursion. In the worst case, $|R^*|$ can be $N$. However,
 dual-tree algorithms rely on branch-and-bound techniques to prune away
-work (Lines \ref{alg:line:ct-dual-ref-score} and
+work (lines \ref{alg:line:ct-dual-ref-score} and
 \ref{alg:line:ct-dual-query-pruning} in Algorithm \ref{alg:cover-tree-dual}). A
 small value of $|R^*|$ will imply that the algorithm is extremely successful in
 pruning away work.  An (upper) bound on $|R^*|$ (and the algorithm's
@@ -456,7 +454,7 @@ the runtime of any dual-tree algorithm
 %that problem)
 can be bounded no more tightly than $O(N)$ with our bound, which matches the
 intuition that answering $O(N)$ queries will take at least $O(N)$ time. For a
-particular problem and data, if $c_r$, $|R^*|$, $\chi$, $\psi$ are bounded by
+particular problem and data, if $c_r$, $|R^*|$, $\chi$, and $\psi$ are bounded by
 constants independent of $N$ and $\theta$ is no more than linear in $N$ (for
 large enough $N$), then the dual-tree algorithm for that problem has a runtime
 linear in $N$.  Our theoretical result separates out the problem-dependent and
