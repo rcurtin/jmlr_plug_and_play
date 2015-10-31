@@ -1,0 +1,260 @@
+\documentclass[twoside,11pt]{article}
+\usepackage{jmlr2e}
+\usepackage{hyperref}
+\hypersetup{colorlinks, urlcolor=blue, citecolor=green, linkcolor=red}
+\usepackage{url}
+
+\usepackage{mathrsfs}
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\begin{document}
+
+Dear editors and reviewers: \\
+
+\medskip
+
+Thank you for your time and consideration in reviewing our paper,
+``Plug-and-play dual-tree algorithm runtime analysis''.  We are glad to see that
+it has been accepted, and we have addressed the issues pointed out by each
+reviewer.  We apologize for the long delay in our final submission; multiple
+authors have changed jobs since the original submission, and one (the
+corresponding author) was unfortunately particularly busy defending his thesis.
+With those things now firmly in the past, we found the time to complete our
+revisions and assemble this document (which is a sort of changelog from the
+submission).  We'll address the concerns of each reviewer individually in the
+following sections.
+
+\medskip
+
+\section{Reviewer 1}
+
+\begin{quote}{\it
+In particular, it seems non-trivial to derive similar bounds for other
+efficient search structures like kd-trees, ball trees, or vantage point trees,
+as these are not amenable to the notion of imbalancedness that the authors use
+in their bounds.
+}\end{quote}
+
+This is absolutely true, and we have re-emphasized at the end of Section 1 that
+these results are only applicable to cover trees.  To our knowledge nobody has
+been able to prove better than worst-case runtime bounds on $kd$-trees or ball
+trees or any other type of trees for exact nearest neighbor search.  Part of the
+reason can be seen in the complexity of the cover tree: very specific structure
+and traversal types are required for bounding the number of reference nodes
+considered at any point during the traversal.  With the notion of the expansion
+constant, at least, it is unclear how to do this for any type of tree other than
+the cover tree (or direct derivatives thereof).
+
+However, these bounds do support the empirical observations that dual-tree
+algorithms with other types of trees (like the aforementioned $kd$-tree or ball
+tree) do tend to scale linearly.  We've mentioned this in footnote 1 at the
+bottom of page 3, providing some useful references.
+
+\begin{quote}{\it
+And more importantly, what is the performance of cover trees compared to these
+other structures in practice?
+}\end{quote}
+
+Performance of the cover tree vs. the $kd$-tree has been shown to be about
+comparable in a survey by Kibriya et~al.: ``An Empirical Comparison of Exact
+Nearest Neighbour Search Algorithms'', 2007.  However, that paper only considers
+the single-tree nearest neighbor search algorithm, which isn't what we are
+considering in this paper.  Our own experiences (which are readily verifiable
+with mlpack's {\tt allknn} program) show that cover trees perform comparably to
+$kd$-trees on most datasets, and for larger dimensionalities tend to outperform
+$kd$-trees.
+
+\begin{quote}{\it
+Can the authors present some empirical results on the actual tree imbalance
+measured on real data sets, to allow the reader to gauge the importance of the
+imbalancedness value in the O(N * imbalance) runtimes?
+}\end{quote}
+
+To this end, we've added Table 2, on page 9, which has some empirical
+simulations.
+
+\begin{quote}{\it
+The authors state that "tree imbalance is near-linear with the number of
+points", which would imply the run-time bounds behave more like O(N*N) in
+practice?
+}\end{quote}
+
+The bound is of the form $O(N + i(\mathscr{T}_q))$, not $O(N i(\mathscr{T}_q))$,
+so linear (or better) imbalance implies $O(N)$ scaling, not $O(N^2)$.
+
+\section{Reviewer 2}
+
+\begin{quote}{\it
+1) It would be nice to have a better understanding of the relationship between
+the expansion constant and possible values of these tree-dependent quantities.
+Is there a similar amortized run time bound of the form poly(c)n?  Are there
+examples where these tree-related quantities can be constant in n, while is c is
+not?  Having such a discussion would be helpful for the reader.
+}\end{quote}
+
+We agree, but unfortunately it is unclear how to relate the imbalance to the
+expansion constant despite quite some time trying.  We have elaborated on the
+intuition behind the imbalance somewhat, showing (and describing) some
+worst-case situations.
+
+\begin{quote}{\it
+The authors consider 1-nearest neighbor search, finding the closest point to
+each query point.  For this problem, the monochromatic case (where the reference
+set is the query set) is not very meaningful, so the simplified bound after
+Theorem 2 is not very sensible.
+}\end{quote}
+
+We've added a footnote, number 6 on page 19, which describes the {\tt
+BaseCase()} modification necessary to perform meaningful monochromatic nearest
+neighbor search.  We apologize for the confusion.
+
+\begin{quote}{\it
+Does the result extend to k-nearest neighbor search?
+}\end{quote}
+
+Yes, the result can be re-derived for $k$-nearest neighbor search, but it
+becomes significantly more complicated.  The proof strategy is basically
+identical; the major change will be the bound function $B(\mathscr{N}_q)$.  For
+brevity we chose to omit this extension.
+
+\begin{quote}{\it
+The statement of Theorem 2 is missing a closing ")" after the imbalance
+notation.
+}\end{quote}
+
+Thank you for pointing this out; this is now fixed.
+
+\begin{quote}{\it
+It's not a good idea to have definitions inside lemmas, so I'd strongly suggest
+to define theta outside Lemma 4.  For one thing, Lemma 4 defines theta under the
+condition that both $S_q$ and $S_r$ are have $O(N)$ points while Theorem 2 is
+stated more generally.  Speaking of Lemma 4, $S_q$ and $S_r$ are defined as
+sets, so you should probably have $|S_q| = |S_r| = O(N)$ in the statement of the
+lemma.
+}\end{quote}
+
+This is a good suggestion and we have rewritten the affected lemma, adding a
+definition for $\theta$.
+
+\section{Reviewer 3}
+
+\begin{quote}{\it
+This naively requires $O(N)$ time to answer [in/a] single query
+}\end{quote}
+
+Thanks; fixed.
+
+\begin{quote}{\it
+I feel that an illustration of a cover tree would be very helpful.
+}\end{quote}
+
+We have added a detailed illustration in Figure 1.  We hope this is helpful.
+
+\begin{quote}{\it
+Lemma 1: "every point in $C$ is separated by" is not clear enough.  Do you mean
+that no two points can be closer than $\delta$?  That every point in $C$ is
+separated from every other point in $C$ by exactly $\delta$?  Spell out what you
+mean.
+}\end{quote}
+
+We have clarified this; our meaning was ``every two points in $C$ are separated
+by at least $\delta$''.
+
+\begin{quote}{\it
+Lemma 1 proof: ... The definition of the expansion constant is an inequality.
+How can
+you assert the equality?
+}\end{quote}
+
+This was a typo, and should have been an inequality.  This has been fixed;
+thanks for pointing it out.
+
+\begin{quote}{\it
+You are already using "$i$" for the scale "$s_i$", so I would urge you to
+use another symbol for imbalance.
+}\end{quote}
+
+We switched our notation to use capital $I$ as a result; thank you for the
+suggestion.
+
+\begin{quote}{\it
+pg 10: "aspect ratio"... please indicate somehow that this is a
+technical definition of "aspect ratio", not the colloquial one.
+}\end{quote}
+
+We've clarified that by aspect ratio we mean the maximum pairwise distance
+divided by the minimum pairwise distance.
+
+\begin{quote}{\it
+pg 10:
+in "The minimum scale fo the query tree", you have a subscript $T_r$, not $T_t$.
+}\end{quote}
+
+Thanks, this is now fixed.
+
+\begin{quote}{\it
+pg 10: I find it strange that you are defining the "top" and "minimum"... why
+not "top" and "bottom" or "maximum" and "minimum"?
+}\end{quote}
+
+The goal here was to avoid reusing the term ``maximum scale'', because that
+already refers to the maximum scale in a set, $s_r^{\max}$.  However, the term
+``bottom'' would imply the scale of the leaves of the tree, but we actually want
+the minimum non-leaf scale, so we believe ``minimum'' is a better term to use
+here despite the strangeness of combining ``top'' and ``minimum''.
+
+\begin{quote}{\it
+eqn 10: just use normal parens on your min and max functions.  Typeset them
+bigger to show grouping.
+}\end{quote}
+
+Fixed.
+
+\begin{quote}{\it
+I don't like the notion of a "poorly-behaved dataset".  The data are
+the data!  It is the performance of the data structures \& algorithms
+given that dataset that is poor.  Please rephrase.
+}\end{quote}
+
+This is an excellent point.  We have refactored our discussion for
+clarification: ``These datasets for which trees perform poorly \ldots''.
+
+\begin{quote}{\it
+pg 14:
+"Hence, the runtime of any dual-tree algorithm would be at least $O(N)$
+using our bound, which matches the intuition that answering $O(N)$
+queries would take at least $O(N)$ time."
+
+You can't say anything about the minimum amount of time an algorithm
+would take when all you have is a big-O bound.
+}\end{quote}
+
+We aren't saying that $O(N)$ is a lower bound on the amount of time necessary to
+return results for $N$ queries---instead we are saying that when the various
+parameters are plugged into our bound, it yields something linear (or greater)
+in $N$, and this matches an intuitive inspection of these dual-tree algorithms.
+We hope this clarifies our statement somewhat.
+
+\begin{quote}{\it
+pg 14:
+Rework the paragraphs so that you don't need to start a paragraph with $\nu$.
+}\end{quote}
+
+Fixed.
+
+\section{Final notes}
+
+We have reworked a few other sections, provided some more explanation of the
+dual-tree traversal and how it works, qualitatively, and fixed some other
+minor grammatical errors that we missed for the original submission.  We have
+now checked over our final draft thoroughly, addressed the reviewer comments,
+and our final submission is enclosed.
+
+Again, thanks to everyone involved in the review of this paper.  We hope our
+revisions are satisfactory and again apologize for our high latency final
+revision.  If there are any further issues, please let us know and we will not
+hesitate to get them taken care of (this time with less turnaround time).
+
+\end{document}
